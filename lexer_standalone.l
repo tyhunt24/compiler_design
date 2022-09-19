@@ -32,45 +32,31 @@ NUMBER      {digit}+(\.{digit}+)?(E[+\-]?(digit)+)?
 
 "int"	{words++; chars += strlen(yytext); 
 		 printf("%s : TYPE\n", yytext);
-         yylval.string = strdup(yytext);
-         return TYPE;
 		}
 
 "write"	{words++; 
 		 chars += strlen(yytext);
 		 printf("%s : KEYWORD\n", yytext);
-         yylval.string = strdup(yytext);
-         return WRITE;
 		}
 
 {ID}	{words++; chars += strlen(yytext);
 		 printf("%s : IDENTIFIER\n",yytext);
-         yylval.string = strdup(yytext);
-         return ID;
-        }
+		}
 
 {NUMBER}	{words++; chars += strlen(yytext);
 			  printf("%s : NUMBER\n",yytext);
-              yylval.number = atoi(strdup(yytext));
-              return NUMBER
 			}
 
 ";"		{chars++;
 		 printf("%s : SEMICOLON \n", yytext);
-         yylval.string = strdup(yytext);
-         return SEMICOLON;
 		}
 
 "="		{chars++;
 		 printf("%s : EQ\n", yytext);
-         yylval.string = strdup(yytext);
-         return EQ;
 		}
 
 "+" {chars++;
      printf("%s : OPERATOR\n", yytext);
-     yylval.string = strdup(yytext);
-     return OPERATOR;
     }
 
 [\n]	{lines++; chars=0;}
