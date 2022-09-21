@@ -5,7 +5,7 @@
 #include <string.h>
 
 extern int yylex();
-//extern int yyparse();
+extern int yyparse();
 
 extern FILE* yyin;
 
@@ -37,12 +37,14 @@ char currentScope[50];
 %start Program
 
 %%
-Program: DeclList
+Program: DeclList   {$$ = $1;}
 
 ;
 
-DeclList:   Decl DeclList
-    | Decl
+DeclList:   Decl DeclList   {$1->left = $2;
+                             $$ = $1
+                            }
+    | Decl  { $$ = $1; }  
 ;
 
 Decl: VarDecl
@@ -65,17 +67,37 @@ Stmt: Expr SEMICOLON
 ;
 
 Expr:   Primary {printf("\nRECOGNIZED RULE: Simpliest Statement\n");}
-    |   Expr BinOp Expr {printf("\nRECONGINZED RULE: Addition statement");}
-    |   ID EQ Expr {printf("\nRECONGINZED RULE: Assignment statement");}
-    |   WRITE Expr {printf("\nRECONGIZED RULE: Print Statement");}
+    |   Expr BinOp Expr {printf("\nRECONGINZED RULE: Addition statement");
+                            // todo put this in the abstract syntax tree
+
+                            // todo Do Semantic Checks to make sure Expr equals Expr
+                        }
+    |   ID EQ Expr {printf("\nRECONGINZED RULE: Assignment statement");
+                    // todo send this to the abstract syntax tree
+
+                    // todo Do Semantic Checks to make the right side equals the left side 
+                    }
+    |   WRITE Expr {printf("\nRECONGIZED RULE: Print Statement");
+                    //todo put this in the abstract syntax tree
+                    }
 ;
 
-Primary: ID {printf("\n ID");}
+Primary: ID {printf("\n ID"); 
+                // ? Do I need to do something with all of these things below here
+            }
     | NUMBER {printf("\n Number");}
 ;
 
 BinOp:  OP {prinf("Plus Operator");}
 %%
+
+
+
+
+
+
+
+
 
 int main(int argc, char**argv)
 {
