@@ -76,3 +76,26 @@ Primary: ID {printf("\n ID");}
 
 BinOp:  OP {prinf("Plus Operator");}
 %%
+
+int main(int argc, char**argv)
+{
+	#ifdef YYDEBUG
+		yydebug = 1;
+	#endif
+
+	printf("\n\n##### COMPILER STARTED #####\n\n");
+	
+	if (argc > 1){
+	  if(!(yyin = fopen(argv[1], "r")))
+          {
+		perror(argv[1]);
+		return(1);
+	  }
+	}
+	yyparse();
+}
+
+void yyerror(const char* s) {
+	fprintf(stderr, "Parse error: %s\n", s);
+	exit(1);
+}
