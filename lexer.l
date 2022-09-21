@@ -5,6 +5,7 @@
 #include <string.h>
 
 #define YY_DECL int yylex()
+#include "parser.tab.h"
 
 int words = 0;
 int chars = 0;
