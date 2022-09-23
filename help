@@ -1,0 +1,32 @@
+
+StmtList:  Stmt StmtList
+;
+
+Stmt: Expr SEMICOLON
+;
+
+Expr:   Primary {printf("\nRECOGNIZED RULE: Simpliest Statement\n");}
+    |   Expr BinOp Expr {printf("\nRECONGINZED RULE: Addition statement");
+                            // todo put this in the abstract syntax tree
+
+                            // todo Do Semantic Checks to make sure Expr equals Expr
+                        }
+    |   ID EQ Expr {printf("\nRECONGINZED RULE: Assignment statement");
+                    // todo send this to the abstract syntax tree
+
+                    // todo Do Semantic Checks to make the right side equals the left side 
+                    }
+    |   WRITE Expr {printf("\nRECONGIZED RULE: Print Statement");
+                    //todo put this in the abstract syntax tree
+                    }
+;
+
+Primary: ID {printf("\n ID"); 
+                // ? Do I need to do something with all of these things below here
+            }
+    | NUMBER {printf("\n Number");
+                // ? What do I need to do with these two parts? and below as wel
+            }
+;
+
+BinOp:  OP {prinf("Plus Operator");}

@@ -4,6 +4,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "AST.h"
+
 extern int yylex();
 extern int yyparse();
 
@@ -42,7 +44,7 @@ Program: DeclList   {$$ = $1;}
 ;
 
 DeclList:   Decl DeclList   {$1->left = $2;
-                             $$ = $1
+                             $$ = $1;
                             }
     | Decl  { $$ = $1; }  
 ;
@@ -60,7 +62,8 @@ VarDecl:    TYPE ID SEMICOLON {printf("\n RECOGNIZED RULE: VARIABLE DECLERATION"
 
 ;
 
-StmtList:  Stmt StmtList
+StmtList: Stmt  
+        | Stmt StmtList
 ;
 
 Stmt: Expr SEMICOLON
@@ -75,7 +78,7 @@ Expr:   Primary {printf("\nRECOGNIZED RULE: Simpliest Statement\n");}
     |   ID EQ Expr {printf("\nRECONGINZED RULE: Assignment statement");
                     // todo send this to the abstract syntax tree
 
-                    // todo Do Semantic Checks to make the right side equals the left side 
+                    // todo Semantic Checks to make the right side equals the left side 
                     }
     |   WRITE Expr {printf("\nRECONGIZED RULE: Print Statement");
                     //todo put this in the abstract syntax tree
@@ -85,10 +88,12 @@ Expr:   Primary {printf("\nRECOGNIZED RULE: Simpliest Statement\n");}
 Primary: ID {printf("\n ID"); 
                 // ? Do I need to do something with all of these things below here
             }
-    | NUMBER {printf("\n Number");}
+    | NUMBER {printf("\n Number");
+                // ? What do I need to do with these two parts? and below as wel
+            }
 ;
 
-BinOp:  OP {prinf("Plus Operator");}
+BinOp:  OP {printf("Plus Operator");}
 %%
 
 
@@ -101,9 +106,9 @@ BinOp:  OP {prinf("Plus Operator");}
 
 int main(int argc, char**argv)
 {
-	#ifdef YYDEBUG
-		yydebug = 1;
-	#endif
+	// #ifdef YYDEBUG
+	// 	yydebug = 1;
+	// #endif
 
 	printf("\n\n##### COMPILER STARTED #####\n\n");
 	
