@@ -53,7 +53,7 @@ Decl: VarDecl
     | StmtList
 ;
 
-VarDecl:    TYPE ID SEMICOLON {printf("\n RECOGNIZED RULE: VARIABLE DECLERATION");
+VarDecl:    TYPE ID SEMICOLON {printf("\n RECOGNIZED RULE: VARIABLE DECLERATION\n");
                                 //Create a Symbol Table
                                 //search to see if it is already in there
                                 //If not found add in there
@@ -70,38 +70,31 @@ Stmt: Expr SEMICOLON
 ;
 
 Expr:   Primary {printf("\nRECOGNIZED RULE: Simpliest Statement\n");}
-    |   Expr BinOp Expr {printf("\nRECONGINZED RULE: Addition statement");
+    |   Expr BinOp Expr {printf("\nRECONGINZED RULE: Addition statement\n");
                             // todo put this in the abstract syntax tree
 
                             // todo Do Semantic Checks to make sure Expr equals Expr
                         }
-    |   ID EQ Expr {printf("\nRECONGINZED RULE: Assignment statement");
+    |   ID EQ Expr {printf("\nRECONGINZED RULE: Assignment statement\n");
                     // todo send this to the abstract syntax tree
 
                     // todo Semantic Checks to make the right side equals the left side 
                     }
-    |   WRITE Expr {printf("\nRECONGIZED RULE: Print Statement");
+    |   WRITE Expr {printf("\nRECONGIZED RULE: Print Statement\n");
                     //todo put this in the abstract syntax tree
                     }
 ;
 
-Primary: ID {printf("\n ID"); 
+Primary: ID {printf("\n ID\n"); 
                 // ? Do I need to do something with all of these things below here
             }
-    | NUMBER {printf("\n Number");
+    | NUMBER {printf("\n Number\n");
                 // ? What do I need to do with these two parts? and below as wel
             }
 ;
 
-BinOp:  OP {printf("Plus Operator");}
+BinOp:  OP {printf("Plus Operator\n");}
 %%
-
-
-
-
-
-
-
 
 
 int main(int argc, char**argv)

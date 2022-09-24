@@ -1365,7 +1365,7 @@ yyreduce:
 
   case 7:
 #line 56 "parser.y"
-                              {printf("\n RECOGNIZED RULE: VARIABLE DECLERATION");
+                              {printf("\n RECOGNIZED RULE: VARIABLE DECLERATION\n");
                                 //Create a Symbol Table
                                 //search to see if it is already in there
                                 //If not found add in there
@@ -1382,7 +1382,7 @@ yyreduce:
 
   case 12:
 #line 73 "parser.y"
-                        {printf("\nRECONGINZED RULE: Addition statement");
+                        {printf("\nRECONGINZED RULE: Addition statement\n");
                             // todo put this in the abstract syntax tree
 
                             // todo Do Semantic Checks to make sure Expr equals Expr
@@ -1392,7 +1392,7 @@ yyreduce:
 
   case 13:
 #line 78 "parser.y"
-                   {printf("\nRECONGINZED RULE: Assignment statement");
+                   {printf("\nRECONGINZED RULE: Assignment statement\n");
                     // todo send this to the abstract syntax tree
 
                     // todo Semantic Checks to make the right side equals the left side 
@@ -1402,7 +1402,7 @@ yyreduce:
 
   case 14:
 #line 83 "parser.y"
-                   {printf("\nRECONGIZED RULE: Print Statement");
+                   {printf("\nRECONGIZED RULE: Print Statement\n");
                     //todo put this in the abstract syntax tree
                     }
 #line 1409 "parser.tab.c"
@@ -1410,7 +1410,7 @@ yyreduce:
 
   case 15:
 #line 88 "parser.y"
-            {printf("\n ID"); 
+            {printf("\n ID\n"); 
                 // ? Do I need to do something with all of these things below here
             }
 #line 1417 "parser.tab.c"
@@ -1418,7 +1418,7 @@ yyreduce:
 
   case 16:
 #line 91 "parser.y"
-             {printf("\n Number");
+             {printf("\n Number\n");
                 // ? What do I need to do with these two parts? and below as wel
             }
 #line 1425 "parser.tab.c"
@@ -1426,7 +1426,7 @@ yyreduce:
 
   case 17:
 #line 96 "parser.y"
-           {printf("Plus Operator");}
+           {printf("Plus Operator\n");}
 #line 1431 "parser.tab.c"
     break;
 
@@ -1664,13 +1664,6 @@ yyreturn:
   return yyresult;
 }
 #line 97 "parser.y"
-
-
-
-
-
-
-
 
 
 
