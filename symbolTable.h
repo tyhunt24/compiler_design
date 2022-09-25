@@ -1,24 +1,60 @@
-// todo Attributes: ID, Add Item, Kind (function or variable), Type (int, char, etc)
-struct Entry {
-    int itemID;
-    char itemName[50];
-    char itemKind[8];
-    int arrayLength;
-    char scope[50];
+//Symbol table header
+#include <string.h>
+
+// This is a very simplistic implementation of a symbol table
+// You will use this as reference and build a much more robust one
+
+struct Entry
+{
+	int itemID;
+	char itemName[50];  //the name of the identifier
+	char itemKind[8];  //is it a function or a variable?
+	char itemType[8];  // Is it int, char, etc.?
+	int arrayLength;
+	char scope[50];     // global, or the name of the function
+};
+
+struct Entry symTabItems[100];
+int symTabIndex = 0;
+
+void symTabAccess(void){
+	printf("::::> Symbol table accessed.\n");
 }
 
-struct entry tableItems[100];
-int tableIndex = 0;
+void addItem(char itemName[50], char itemKind[8], char itemType[8], int arrayLength, char scope[50]){
+	// what about scope? should you add scope to this function?
+		symTabItems[symTabIndex].itemID = symTabIndex;
+		strcpy(symTabItems[symTabIndex].itemName, itemName);
+		strcpy(symTabItems[symTabIndex].itemKind, itemKind);
+		strcpy(symTabItems[symTabIndex].itemType, itemType);
+		symTabItems[symTabIndex].arrayLength = arrayLength;
+		strcpy(symTabItems[symTabIndex].scope, scope);
+		symTabIndex++;
+	
+}
 
-// todo Function to add Items to a list
-void addItem(char itemName[50], char itemKind[8], int arrayLength, char scope[50]) {}
+void showSymTable(){
+	printf("itemID    itemName    itemKind    itemType     ArrayLength    itemSCope\n");
+	printf("-----------------------------------------------------------------------\n");
+	for (int i=0; i<symTabIndex; i++){
+		printf("%5d %15s  %7s  %7s %6d %15s \n",symTabItems[i].itemID, symTabItems[i].itemName, symTabItems[i].itemKind, symTabItems[i].itemType, symTabItems[i].arrayLength, symTabItems[i].scope);
+	}
+	
 
-// todo - Function to and see if the item is found
-void found(char itemName[50], char scope[50]) {}
+	printf("-----------------------------------------------------------------------\n");
+}
 
-// todo - Print out our symbol table to the screen
-void print() {}
-
-// ? What is the scope? is it (Global or Local)
-// ? How much of your program can I borrow? 
-// ? Should we implement this using a linked list instead? How do you want us to go about this?
+int found(char itemName[50], char scope[50]){
+	// Lookup an identifier in the symbol table
+	// what about scope?
+	// return TRUE or FALSE
+	// Later on, you may want to return additional information
+	for(int i=0; i<100; i++){
+		int str1 = strcmp(symTabItems[i].itemName, itemName);
+		int str2 = strcmp(symTabItems[i].scope,scope);
+		if( str1 == 0 && str2 == 0){
+			return 1; // found the ID in the table
+		}
+	}
+	return 0;
+}

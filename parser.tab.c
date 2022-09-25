@@ -73,6 +73,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "symbolTable.h"
 #include "AST.h"
 
 extern int yylex();
@@ -84,7 +85,7 @@ void yyerror(const char* s);
 char currentScope[50];
 
 
-#line 88 "parser.tab.c"
+#line 89 "parser.tab.c"
 
 # ifndef YY_CAST
 #  ifdef __cplusplus
@@ -146,14 +147,14 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 19 "parser.y"
+#line 20 "parser.y"
 
     int number;
     char character;
     char* string;
     struct AST* ast;
 
-#line 157 "parser.tab.c"
+#line 158 "parser.tab.c"
 
 };
 typedef union YYSTYPE YYSTYPE;
@@ -529,8 +530,8 @@ static const yytype_int8 yytranslate[] =
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_int8 yyrline[] =
 {
-       0,    42,    42,    46,    49,    52,    53,    56,    65,    66,
-      69,    72,    73,    78,    83,    88,    91,    96
+       0,    43,    43,    47,    50,    53,    54,    57,    71,    72,
+      75,    78,    79,    84,    89,    94,    97,   102
 };
 #endif
 
@@ -722,15 +723,15 @@ yy_symbol_value_print (FILE *yyo, int yytype, YYSTYPE const * const yyvaluep)
   switch (yytype)
     {
     case 4: /* ID  */
-#line 34 "parser.y"
+#line 35 "parser.y"
          { fprintf(yyoutput, "%s", ((*yyvaluep).string)); }
-#line 728 "parser.tab.c"
+#line 729 "parser.tab.c"
         break;
 
     case 8: /* NUMBER  */
-#line 35 "parser.y"
+#line 36 "parser.y"
          { fprintf(yyoutput, "%d", ((*yyvaluep).number)); }
-#line 734 "parser.tab.c"
+#line 735 "parser.tab.c"
         break;
 
       default:
@@ -1344,94 +1345,99 @@ yyreduce:
   switch (yyn)
     {
   case 2:
-#line 42 "parser.y"
+#line 43 "parser.y"
                     {(yyval.ast) = (yyvsp[0].ast);}
-#line 1350 "parser.tab.c"
+#line 1351 "parser.tab.c"
     break;
 
   case 3:
-#line 46 "parser.y"
+#line 47 "parser.y"
                             {(yyvsp[-1].ast)->left = (yyvsp[0].ast);
                              (yyval.ast) = (yyvsp[-1].ast);
                             }
-#line 1358 "parser.tab.c"
+#line 1359 "parser.tab.c"
     break;
 
   case 4:
-#line 49 "parser.y"
+#line 50 "parser.y"
             { (yyval.ast) = (yyvsp[0].ast); }
-#line 1364 "parser.tab.c"
+#line 1365 "parser.tab.c"
     break;
 
   case 7:
-#line 56 "parser.y"
+#line 57 "parser.y"
                               {printf("\n RECOGNIZED RULE: VARIABLE DECLERATION\n");
                                 //Create a Symbol Table
+                                symTabAccess();
+
+                                addItem((yyvsp[-1].string), "Var", (yyvsp[-2].string), 0, currentScope);
                                 //search to see if it is already in there
+
+                                showSymTable();
                                 //If not found add in there
                                 //else: throw an error
                                 }
-#line 1375 "parser.tab.c"
-    break;
-
-  case 11:
-#line 72 "parser.y"
-                {printf("\nRECOGNIZED RULE: Simpliest Statement\n");}
 #line 1381 "parser.tab.c"
     break;
 
+  case 11:
+#line 78 "parser.y"
+                {printf("\nRECOGNIZED RULE: Simpliest Statement\n");}
+#line 1387 "parser.tab.c"
+    break;
+
   case 12:
-#line 73 "parser.y"
+#line 79 "parser.y"
                         {printf("\nRECONGINZED RULE: Addition statement\n");
                             // todo put this in the abstract syntax tree
 
                             // todo Do Semantic Checks to make sure Expr equals Expr
                         }
-#line 1391 "parser.tab.c"
+#line 1397 "parser.tab.c"
     break;
 
   case 13:
-#line 78 "parser.y"
+#line 84 "parser.y"
                    {printf("\nRECONGINZED RULE: Assignment statement\n");
                     // todo send this to the abstract syntax tree
 
                     // todo Semantic Checks to make the right side equals the left side 
                     }
-#line 1401 "parser.tab.c"
+#line 1407 "parser.tab.c"
     break;
 
   case 14:
-#line 83 "parser.y"
+#line 89 "parser.y"
                    {printf("\nRECONGIZED RULE: Print Statement\n");
                     //todo put this in the abstract syntax tree
                     }
-#line 1409 "parser.tab.c"
+#line 1415 "parser.tab.c"
     break;
 
   case 15:
-#line 88 "parser.y"
+#line 94 "parser.y"
             {printf("\n ID\n"); 
                 // ? Do I need to do something with all of these things below here
             }
-#line 1417 "parser.tab.c"
+#line 1423 "parser.tab.c"
     break;
 
   case 16:
-#line 91 "parser.y"
+#line 97 "parser.y"
              {printf("\n Number\n");
                 // ? What do I need to do with these two parts? and below as wel
             }
-#line 1425 "parser.tab.c"
-    break;
-
-  case 17:
-#line 96 "parser.y"
-           {printf("Plus Operator\n");}
 #line 1431 "parser.tab.c"
     break;
 
+  case 17:
+#line 102 "parser.y"
+           {printf("Plus Operator\n");}
+#line 1437 "parser.tab.c"
+    break;
 
-#line 1435 "parser.tab.c"
+
+#line 1441 "parser.tab.c"
 
       default: break;
     }
@@ -1663,7 +1669,7 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 97 "parser.y"
+#line 103 "parser.y"
 
 
 

@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "symbolTable.h"
 #include "AST.h"
 
 extern int yylex();
@@ -55,7 +56,14 @@ Decl: VarDecl
 
 VarDecl:    TYPE ID SEMICOLON {printf("\n RECOGNIZED RULE: VARIABLE DECLERATION\n");
                                 //Create a Symbol Table
+                                symTabAccess();
+
+                                addItem($2, "Var", $1, 0, currentScope);
                                 //search to see if it is already in there
+
+                                // todo Need to check for undelacred variables
+                                // todo Need to check if the variable has already been declared
+                                showSymTable();
                                 //If not found add in there
                                 //else: throw an error
                                 }
@@ -73,7 +81,7 @@ Expr:   Primary {printf("\nRECOGNIZED RULE: Simpliest Statement\n");}
     |   Expr BinOp Expr {printf("\nRECONGINZED RULE: Addition statement\n");
                             // todo put this in the abstract syntax tree
 
-                            // todo Do Semantic Checks to make sure Expr equals Expr
+                            // todo Need to check for Type Mismatch
                         }
     |   ID EQ Expr {printf("\nRECONGINZED RULE: Assignment statement\n");
                     // todo send this to the abstract syntax tree
