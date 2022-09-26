@@ -55,18 +55,15 @@ Decl: VarDecl
 ;
 
 VarDecl:    TYPE ID SEMICOLON {printf("\n RECOGNIZED RULE: VARIABLE DECLERATION\n");
-                                //Create a Symbol Table
-                                symTabAccess();
+                             // todo Show that we have access to symbol table
+                            // todo Check to see if the ID is in the symbol table
 
-                                addItem($2, "Var", $1, 0, currentScope);
-                                //search to see if it is already in there
+                            /* 
+                            todo if not in the symbol table add it
+                            todo if in the symbol table throw a semantic Error
 
-                                // todo Need to check for undelacred variables
-                                // todo Need to check if the variable has already been declared
-                                showSymTable();
-                                //If not found add in there
-                                //else: throw an error
-                                }
+                            */
+                             }
 
 ;
 
@@ -79,14 +76,30 @@ Stmt: Expr SEMICOLON
 
 Expr:   Primary {printf("\nRECOGNIZED RULE: Simpliest Statement\n");}
     |   Expr BinOp Expr {printf("\nRECONGINZED RULE: Addition statement\n");
-                            // todo put this in the abstract syntax tree
+                        // todo put this in the abstract syntax tree
+                        /*
+                        todo 1. Verify that the variables have been declared
+                        todo 2. Verify that Expr1 and Expr2 are the same type
+                            ! Where should I check this at? Within the Symbol table?
+                        todo 3. Throw an Error if the types are different.
+                        todo 4. if all of our checks pass generate the IR code
+                            ! write the external c code
 
-                            // todo Need to check for Type Mismatch
+                        */
+
+
                         }
     |   ID EQ Expr {printf("\nRECONGINZED RULE: Assignment statement\n");
-                    // todo send this to the abstract syntax tree
+                        // todo put this in the abstract syntax tree
+                        /*
+                        todo 1. Verify that the variables have been declared
+                        todo 2. Verify that Expr1 and Expr2 are the same type
+                            ! Where should I check this at? Within the Symbol table?
+                        todo 3. Throw an Error if the types are different.
+                        todo 4. if all of our checks pass generate the IR code
+                            ! write the external c code
 
-                    // todo Semantic Checks to make the right side equals the left side 
+                        */
                     }
     |   WRITE Expr {printf("\nRECONGIZED RULE: Print Statement\n");
                     //todo put this in the abstract syntax tree
