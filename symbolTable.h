@@ -12,6 +12,7 @@ struct Entry
 	char itemType[8];  // Is it int, char, etc.?
 	int arrayLength;
 	char scope[50];     // global, or the name of the function
+
 };
 
 struct Entry symTabItems[100];
@@ -53,8 +54,18 @@ int found(char itemName[50], char scope[50]){
 		int str1 = strcmp(symTabItems[i].itemName, itemName);
 		int str2 = strcmp(symTabItems[i].scope,scope);
 		if( str1 == 0 && str2 == 0){
-			return 1; // found the ID in the table
+			return i; // found the ID in the table
 		}
 	}
+	return 0;
+}
+
+int compareTypes(int itemIndex1, int itemIndex2) {
+	int check = strcmp(symTabItems[itemIndex1].itemType, symTabItems[itemIndex2].itemType);
+
+	if (check == 0) {
+		return 1;
+	}
+
 	return 0;
 }

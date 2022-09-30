@@ -55,14 +55,24 @@ Decl: VarDecl
 ;
 
 VarDecl:    TYPE ID SEMICOLON {printf("\n RECOGNIZED RULE: VARIABLE DECLERATION\n");
-                             // todo Show that we have access to symbol table
-                            // todo Check to see if the ID is in the symbol table
+                             //Show that we have access to symbol table
+                             int insymTab = found($2, currentScope);
+                            
+                            //Check to see if the ID is in the symbol table
+                            if (insymTab == 0) 
+                                addItem($2, "Var", $1, 0, currentScope); //if not in the symbol table add it
+                                
+                            //if in the symbol table throw a semantic Error
+                            else
+                                printf("Semantic Error: Var %s is already in the symbol table", $2);
+                            
+                            // print what the symbol table looks like
+                            showSymTable();
 
-                            /* 
-                            todo if not in the symbol table add it
-                            todo if in the symbol table throw a semantic Error
-
-                            */
+                            //place the type in the tree
+                            struct AST* type = tree($1, NULL, NULL);
+                            struct AST* id = tree($2, NULL, NULL);
+                        $$ = tree("Type", type, id);
                              }
 
 ;
@@ -75,43 +85,23 @@ Stmt: Expr SEMICOLON
 ;
 
 Expr:   Primary {printf("\nRECOGNIZED RULE: Simpliest Statement\n");}
-    |   Expr BinOp Expr {printf("\nRECONGINZED RULE: Addition statement\n");
-                        // todo put this in the abstract syntax tree
-                        /*
-                        todo 1. Verify that the variables have been declared
-                        todo 2. Verify that Expr1 and Expr2 are the same type
-                            ! Where should I check this at? Within the Symbol table?
-                        todo 3. Throw an Error if the types are different.
-                        todo 4. if all of our checks pass generate the IR code
-                            ! write the external c code
+    |   ID EQ Expr {printf("\nRECONGINZED RULE: Assignment statement\n");
+                        
+                    }
 
-                        */
-
+        |   Expr BinOp Expr {printf("\nRECONGINZED RULE: Addition statement\n");
 
                         }
-    |   ID EQ Expr {printf("\nRECONGINZED RULE: Assignment statement\n");
-                        // todo put this in the abstract syntax tree
-                        /*
-                        todo 1. Verify that the variables have been declared
-                        todo 2. Verify that Expr1 and Expr2 are the same type
-                            ! Where should I check this at? Within the Symbol table?
-                        todo 3. Throw an Error if the types are different.
-                        todo 4. if all of our checks pass generate the IR code
-                            ! write the external c code
 
-                        */
-                    }
+                        
     |   WRITE Expr {printf("\nRECONGIZED RULE: Print Statement\n");
-                    //todo put this in the abstract syntax tree
                     }
 ;
 
 Primary: ID {printf("\n ID\n"); 
-                // ? Do I need to do something with all of these things below here
             }
-    | NUMBER {printf("\n Number\n");
-                // ? What do I need to do with these two parts? and below as wel
-            }
+    | NUMBER {printf("\n Number\n");}
+
 ;
 
 BinOp:  OP {printf("Plus Operator\n");}

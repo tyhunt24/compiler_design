@@ -1,0 +1,10 @@
+----- Abstract Syntax Tree -----
+
+type
+int x
+    type 
+    int y
+        =
+       y 5
+            = 
+          x   y  
