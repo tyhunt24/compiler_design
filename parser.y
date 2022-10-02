@@ -6,6 +6,7 @@
 
 #include "symbolTable.h"
 #include "AST.h"
+//#include "IrCode.h"
 
 extern int yylex();
 extern int yyparse();
@@ -35,7 +36,7 @@ char currentScope[50];
 %printer { fprintf(yyoutput, "%s", $$); } ID;
 %printer { fprintf(yyoutput, "%d", $$); } NUMBER;
 
-%type <ast> Program DeclList Decl VarDecl StmtList Stmt Expr Primary BinOp
+%type <ast> Program DeclList Decl VarDecl StmtList Stmt Expr Primary
 
 %start Program
 
@@ -58,23 +59,18 @@ VarDecl:    TYPE ID SEMICOLON {printf("\n RECOGNIZED RULE: VARIABLE DECLERATION\
                              //Show that we have access to symbol table
                              int insymTab = found($2, currentScope);
                             
-                            //Check to see if the ID is in the symbol table
+                            //--------------- Semantic Checks ------------------
                             if (insymTab == 0) 
                                 addItem($2, "Var", $1, 0, currentScope); //if not in the symbol table add it
                                 
-                            //if in the symbol table throw a semantic Error
                             else
                                 printf("Semantic Error: Var %s is already in the symbol table", $2);
                             
                             // print what the symbol table looks like
                             showSymTable();
 
-                            //place the type in the tree
-                            struct AST* type = tree($1, NULL, NULL);
-                            struct AST* id = tree($2, NULL, NULL);
-                        $$ = tree("Type", type, id);
-                             }
-
+                            $$ = AST_assignment("Type", $1, $2);
+                        }
 ;
 
 StmtList: Stmt  
@@ -84,14 +80,51 @@ StmtList: Stmt
 Stmt: Expr SEMICOLON
 ;
 
-Expr:   Primary {printf("\nRECOGNIZED RULE: Simpliest Statement\n");}
-    |   ID EQ Expr {printf("\nRECONGINZED RULE: Assignment statement\n");
-                        
+Expr:   Primary {printf("\nRECOGNIZED RULE: Primary Statement\n");}
+    |   ID EQ ID {printf("\nRECONGINZED RULE: Assignment statement\n");
+                    //add this to the symbol table
+                    $$ = AST_assignment("=", $1, $3);
+
+                    //------------- Semantic Checks ----------------//
+                    int semanticChecks = 1;
+                    if(found($1, currentScope) || found($3, currentScope) == 0) {
+                        printf("Semantic Error: Variable %s or %s is not initialized\n", $1, $3);
+                        semanticChecks = 0;
                     }
 
-        |   Expr BinOp Expr {printf("\nRECONGINZED RULE: Addition statement\n");
+                    //checks to make sure they are the correct type
+                    if (compareTypes(found($1, currentScope), found($3, currentScope) == 0)) {
+                        printf("Semantic Error: Variables %s and %s type mismatch\n", $1, $3);
+                        semanticChecks = 0;
+                    }
 
+                    if(semanticChecks == 1) {
+                        printf("\nAll Semantics Check passed");
+                        //emitAssignment($1, $3);  Send IR code to seperate file
+                    }
+                 }
+
+    |   ID EQ NUMBER {printf("\n RECONGIZED RULE: Number Decleration\n");
+                        // ------------- Semantic Checks ----------------
+                        if(found($1, currentScope) == 0) {
+                            printf("Error: Variable %s not found", $1);
                         }
+
+                        //check if the statement is redundant
+                            // ! Make sure it does not print as IR code
+                        //change number to str
+                        char str[50];
+                        sprintf(str, "%d", $3);
+
+                       updateValue($1, currentScope, str); 
+
+                       $$ = AST_assignment("=", $1, str);
+                    }               
+
+    |   Expr OP Expr {printf("\nRECONGINZED RULE: Addition statement\n");
+                        $$ = newTree("+", $1, $3);
+
+                    }
 
                         
     |   WRITE Expr {printf("\nRECONGIZED RULE: Print Statement\n");
@@ -100,11 +133,11 @@ Expr:   Primary {printf("\nRECOGNIZED RULE: Simpliest Statement\n");}
 
 Primary: ID {printf("\n ID\n"); 
             }
-    | NUMBER {printf("\n Number\n");}
+    | NUMBER {printf("\n In Number\n");
+    }
 
 ;
 
-BinOp:  OP {printf("Plus Operator\n");}
 %%
 
 

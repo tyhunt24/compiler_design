@@ -12,11 +12,11 @@ struct Entry
 	char itemType[8];  // Is it int, char, etc.?
 	int arrayLength;
 	char scope[50];     // global, or the name of the function
-
+	char value[50];
 };
 
 struct Entry symTabItems[100];
-int symTabIndex = 0;
+int symTabIndex = 1;
 
 void symTabAccess(void){
 	printf("::::> Symbol table accessed.\n");
@@ -37,7 +37,7 @@ void addItem(char itemName[50], char itemKind[8], char itemType[8], int arrayLen
 void showSymTable(){
 	printf("itemID    itemName    itemKind    itemType     ArrayLength    itemSCope\n");
 	printf("-----------------------------------------------------------------------\n");
-	for (int i=0; i<symTabIndex; i++){
+	for (int i=1; i<symTabIndex; i++){
 		printf("%5d %15s  %7s  %7s %6d %15s \n",symTabItems[i].itemID, symTabItems[i].itemName, symTabItems[i].itemKind, symTabItems[i].itemType, symTabItems[i].arrayLength, symTabItems[i].scope);
 	}
 	
@@ -50,7 +50,7 @@ int found(char itemName[50], char scope[50]){
 	// what about scope?
 	// return TRUE or FALSE
 	// Later on, you may want to return additional information
-	for(int i=0; i<100; i++){
+	for(int i=1; i<100; i++){
 		int str1 = strcmp(symTabItems[i].itemName, itemName);
 		int str2 = strcmp(symTabItems[i].scope,scope);
 		if( str1 == 0 && str2 == 0){
@@ -60,6 +60,7 @@ int found(char itemName[50], char scope[50]){
 	return 0;
 }
 
+//compare two different types to make sure they are right. 
 int compareTypes(int itemIndex1, int itemIndex2) {
 	int check = strcmp(symTabItems[itemIndex1].itemType, symTabItems[itemIndex2].itemType);
 
@@ -68,4 +69,13 @@ int compareTypes(int itemIndex1, int itemIndex2) {
 	}
 
 	return 0;
+}
+
+//update the value to the symbol table
+void updateValue(char itemName[50], char scope[50], char value[50]) {
+	for(int i = 1; i<symTabIndex; i++) {
+		if (strcmp(symTabItems[i].itemName, itemName) && strcmp(symTabItems[i].itemName, itemName) == 0) {
+			strcpy(symTabItems[i].value, value);
+		}
+	}
 }
