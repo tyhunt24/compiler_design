@@ -532,7 +532,7 @@ static const yytype_int8 yytranslate[] =
 static const yytype_uint8 yyrline[] =
 {
        0,    44,    44,    48,    51,    54,    55,    58,    76,    77,
-      80,    83,    84,   107,   124,   130,   134,   136
+      80,    83,    87,   115,   132,   137,   142,   151
 };
 #endif
 
@@ -1388,20 +1388,28 @@ yyreduce:
 
   case 11:
 #line 83 "parser.y"
-                {printf("\nRECOGNIZED RULE: Primary Statement\n");}
-#line 1393 "parser.tab.c"
+                {printf("\nRECOGNIZED RULE: Primary Statement\n");
+                    (yyval.ast) = (yyvsp[0].ast);
+
+                }
+#line 1396 "parser.tab.c"
     break;
 
   case 12:
-#line 84 "parser.y"
+#line 87 "parser.y"
                  {printf("\nRECONGINZED RULE: Assignment statement\n");
                     //add this to the symbol table
                     (yyval.ast) = AST_assignment("=", (yyvsp[-2].string), (yyvsp[0].string));
 
                     //------------- Semantic Checks ----------------//
                     int semanticChecks = 1;
-                    if(found((yyvsp[-2].string), currentScope) || found((yyvsp[0].string), currentScope) == 0) {
-                        printf("Semantic Error: Variable %s or %s is not initialized\n", (yyvsp[-2].string), (yyvsp[0].string));
+                    if(found((yyvsp[-2].string), currentScope)  == 0) {
+                        printf("Semantic Error: %s is not intialized\n", (yyvsp[-2].string));
+                        semanticChecks = 0;
+                    }
+
+                    if(found((yyvsp[0].string), currentScope)  == 0) {
+                        printf("Semantic Error: %s is not intialized\n", (yyvsp[0].string));
                         semanticChecks = 0;
                     }
 
@@ -1416,11 +1424,11 @@ yyreduce:
                         //emitAssignment($1, $3);  Send IR code to seperate file
                     }
                  }
-#line 1420 "parser.tab.c"
+#line 1428 "parser.tab.c"
     break;
 
   case 13:
-#line 107 "parser.y"
+#line 115 "parser.y"
                      {printf("\n RECONGIZED RULE: Number Decleration\n");
                         // ------------- Semantic Checks ----------------
                         if(found((yyvsp[-2].string), currentScope) == 0) {
@@ -1437,41 +1445,49 @@ yyreduce:
 
                        (yyval.ast) = AST_assignment("=", (yyvsp[-2].string), str);
                     }
-#line 1441 "parser.tab.c"
+#line 1449 "parser.tab.c"
     break;
 
   case 14:
-#line 124 "parser.y"
+#line 132 "parser.y"
                      {printf("\nRECONGINZED RULE: Addition statement\n");
-                        (yyval.ast) = newTree("+", (yyvsp[-2].ast), (yyvsp[0].ast));
-
-                    }
-#line 1450 "parser.tab.c"
-    break;
-
-  case 15:
-#line 130 "parser.y"
-                   {printf("\nRECONGIZED RULE: Print Statement\n");
+                       (yyval.ast) = newTree("+", (yyvsp[-2].ast), (yyvsp[0].ast));
                     }
 #line 1457 "parser.tab.c"
     break;
 
+  case 15:
+#line 137 "parser.y"
+                   {printf("\nRECONGIZED RULE: Print Statement\n");
+                    (yyval.ast) = AST_Write("Write", (yyvsp[0].ast), NULL);
+                    }
+#line 1465 "parser.tab.c"
+    break;
+
   case 16:
-#line 134 "parser.y"
-            {printf("\n ID\n"); 
+#line 142 "parser.y"
+            {printf("\n ID\n");
+            if(found((yyvsp[0].string), currentScope) == 0) {
+                printf("SemanticError: %s is not found\n", (yyvsp[0].string));
             }
-#line 1464 "parser.tab.c"
+
+            (yyval.ast) = newTree((yyvsp[0].string), NULL, NULL);
+        }
+#line 1477 "parser.tab.c"
     break;
 
   case 17:
-#line 136 "parser.y"
+#line 151 "parser.y"
              {printf("\n In Number\n");
+        char str[50];
+        sprintf(str, "%d", (yyvsp[0].number));
+        (yyval.ast) = newTree(str, NULL, NULL); // put the number into the bottom of the tree
     }
-#line 1471 "parser.tab.c"
+#line 1487 "parser.tab.c"
     break;
 
 
-#line 1475 "parser.tab.c"
+#line 1491 "parser.tab.c"
 
       default: break;
     }
@@ -1703,7 +1719,7 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 141 "parser.y"
+#line 159 "parser.y"
 
 
 

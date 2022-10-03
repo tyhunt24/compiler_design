@@ -63,12 +63,12 @@ struct AST * AST_Func(char nodeType[50], char LHS[50], char RHS[50]){
 	
 }
 
-struct AST * AST_Write(char nodeType[50], char LHS[50], char RHS[50]){
+struct AST * AST_Write(char nodeType[50], struct AST *l, struct AST *r){
 	
 	struct AST* ASTtype = malloc(sizeof(struct AST));
 	strcpy(ASTtype->nodeType, nodeType);
-	strcpy(ASTtype->LHS, LHS);
-	strcpy(ASTtype->LHS, RHS);
+	ASTtype->left = l;
+	ASTtype->right = r;
 		
 	return ASTtype;
 	
@@ -80,4 +80,5 @@ struct AST * newTree(char nodeType[50], struct AST *l, struct AST *r) {
 	astTree->left = l;
 	astTree->right = r;
 }
+
 

@@ -80,15 +80,23 @@ StmtList: Stmt
 Stmt: Expr SEMICOLON
 ;
 
-Expr:   Primary {printf("\nRECOGNIZED RULE: Primary Statement\n");}
+Expr:   Primary {printf("\nRECOGNIZED RULE: Primary Statement\n");
+                    $$ = $1;
+
+                }
     |   ID EQ ID {printf("\nRECONGINZED RULE: Assignment statement\n");
                     //add this to the symbol table
                     $$ = AST_assignment("=", $1, $3);
 
                     //------------- Semantic Checks ----------------//
                     int semanticChecks = 1;
-                    if(found($1, currentScope) || found($3, currentScope) == 0) {
-                        printf("Semantic Error: Variable %s or %s is not initialized\n", $1, $3);
+                    if(found($1, currentScope)  == 0) {
+                        printf("Semantic Error: %s is not intialized\n", $1);
+                        semanticChecks = 0;
+                    }
+
+                    if(found($3, currentScope)  == 0) {
+                        printf("Semantic Error: %s is not intialized\n", $3);
                         semanticChecks = 0;
                     }
 
@@ -122,18 +130,28 @@ Expr:   Primary {printf("\nRECOGNIZED RULE: Primary Statement\n");}
                     }               
 
     |   Expr OP Expr {printf("\nRECONGINZED RULE: Addition statement\n");
-                        $$ = newTree("+", $1, $3);
-
+                       $$ = newTree("+", $1, $3);
                     }
 
                         
     |   WRITE Expr {printf("\nRECONGIZED RULE: Print Statement\n");
+                    $$ = AST_Write("Write", $2, NULL);
                     }
 ;
 
-Primary: ID {printf("\n ID\n"); 
+Primary: ID {printf("\n ID\n");
+            if(found($1, currentScope) == 0) {
+                printf("SemanticError: %s is not found\n", $1);
             }
+
+            $$ = newTree($1, NULL, NULL);
+        }
+
+       
     | NUMBER {printf("\n In Number\n");
+        char str[50];
+        sprintf(str, "%d", $1);
+        $$ = newTree(str, NULL, NULL); // put the number into the bottom of the tree
     }
 
 ;
