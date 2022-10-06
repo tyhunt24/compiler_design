@@ -1,29 +1,15 @@
 %{
-
 /*
-    Where I am right now: 
-        AST Tree and they are doing what I need them to do
-            Make sure I have the right functions in the right places
-            I need to look at the mathexpression part and construct a correct AST.
-        Semantic Actions
-             See where else I need to add the semantic actions
-        IR Code
-            have some of the functons working but they need more work
-            I need to figure out how to store the registers
-            Need to figure out how we can go from one register to another
-            I need to see what else is suppose to go in here
-            I need to see how we can get this to print out the correct way.
+Where I am at:
+    - I am able to print the correct assembly code to a file for addition
 
-        Code Optimization
-        Code Generation
-            Need to figure out how to Put the IR code into Arm language
-            Make sure we have an executable
-    
-    At the bare minumum we need to have an exectuable so that we still can get
-    an okay grade.
+Things I need to add:
+   - In mips I need to have two write statements
+   - I need to figure out how to produce the correct IR code
+        - Once I figure that out we can start optimizations
+   - I need to figure out how to plan with Memory Allocation
 
 */
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -40,6 +26,8 @@ extern FILE* yyin;
 
 void yyerror(const char* s);
 char currentScope[50];
+
+int semanticChecks = 1;
 
 %}
 
@@ -61,7 +49,7 @@ char currentScope[50];
 %printer { fprintf(yyoutput, "%s", $$); } ID;
 %printer { fprintf(yyoutput, "%d", $$); } NUMBER;
 
-%type <ast> Program DeclList Decl VarDecl StmtList Stmt Expr MathExpr
+%type <ast> Program DeclList Decl VarDecl StmtList Stmt Expr Addition
 
 %start Program
 
@@ -107,13 +95,14 @@ StmtList: Stmt
 Stmt: Expr SEMICOLON
 ;
 
-Expr:   MathExpr {printf("\nRECOGNIZED RULE: Primary Statement\n");
+Expr:   Addition {printf("\nRECOGNIZED RULE: Primary Statement\n");
                     $$ = $1;
 
                 }
     |   ID EQ ID {printf("\nRECONGINZED RULE: Assignment statement\n");
                     $$ = AST_assignment("=", $1, $3);
 
+                    //updates our value in the Symbol Table
                     updateValue($1, currentScope, getValue($3, currentScope));
 
                     //------------- Semantic Checks ----------------//
@@ -148,15 +137,15 @@ Expr:   MathExpr {printf("\nRECOGNIZED RULE: Primary Statement\n");
                         sprintf(str, "%d", $3);
                         $$ = AST_assignment("=", $1, str);
                         
-                        int semanticChecks = 1;
-                        // ------------- Semantic Checks ----------------
+
+                        // ------------- Semantic Checks ----------------//
                         if(found($1, currentScope) == 0) {
                             printf("Error: Variable %s not found", $1);
                             semanticChecks = 0;
                         }
-                        char Int[] = "int";
 
-                        if (strcmp(getVariableType($1, currentScope), Int) != 0) {
+                        //checks to make sure that ID is an Integer.
+                        if (strcmp(getVariableType($1, currentScope), "int") != 0) {
                             printf("Error: Variable %s not found", $1);
                             semanticChecks = 0;
                         } 
@@ -165,13 +154,13 @@ Expr:   MathExpr {printf("\nRECOGNIZED RULE: Primary Statement\n");
                             // ! Make sure it does not print as IR code
                         //change number to str
 
-
-                       updateValue($1, currentScope, str); // Stores the value in the Symbol Table
+                       //updates value to the symbol table
+                       updateValue($1, currentScope, str);
 
                             if (semanticChecks == 1) {
                             printf("All Semantic Checks passed\n");
 
-                            //stores this in the IR code
+                            // ! works for now need to make some changes
                             emitConstantIntAssignment($1, str, currentScope);
 
                             //put what our value is into mips
@@ -179,16 +168,26 @@ Expr:   MathExpr {printf("\nRECOGNIZED RULE: Primary Statement\n");
                        }
                     }
 
-    | ID EQ MathExpr {printf("\nRecongized Rule: Math Expression\n");
+    | ID EQ Addition {printf("\nRecongized Rule: Math Expression\n");
                         //AST Tree: =: head, $1: left, $3: right
                         $$ = idMathexp("=", $1, $3);
+
+                        // -------- Semantic Checks --------- //
+                        // Need to check to make sure that ID is an Int
+                        if (strcmp(getVariableType($1, currentScope), "int") != 0) {
+                            printf("Error: Variable %s not found", $1);
+                            semanticChecks = 0;
+                        } 
 
                         //update our value after addition is performed
                         updateValue($1, currentScope, $3->nodeType);
                         if($3->isNumber == 1) {
-                            printf("%s", $3->nodeType);
-                            loadAddition($1, currentScope);
+                            
+                            //put value into IR code file
+                            emitConstantIntAssignment($1, $3->nodeType, currentScope);
 
+                            //puts this into our mips file
+                            loadAddition($1, currentScope);
                         }
                 }
                         
@@ -199,7 +198,7 @@ Expr:   MathExpr {printf("\nRECOGNIZED RULE: Primary Statement\n");
                 }
 ;
 
-MathExpr: MathExpr OP MathExpr {printf("\nReconiged Rule: Math Expression\n");
+Addition: Addition OP Addition {printf("\nReconiged Rule: Addition Expression\n");
                                 int num1 = atoi($1->nodeType);
                                 int num2 = atoi($3->nodeType);
 
@@ -217,23 +216,36 @@ MathExpr: MathExpr OP MathExpr {printf("\nReconiged Rule: Math Expression\n");
                                     //create a new subtree
                                     struct AST *n = newTree($1->nodeType, NULL, NULL);
                                     n->isNumber = 1;
-                                    $$ = n; // push that subtree so Biso takes care of it.
+                                    $$ = n; // push that subtree so Bison takes care of it.
+
+
+                                    //Generate IR code
+                                   // emitBinaryOperation("+", $1->nodeType, $3->nodeType);
+
                                 }   
+                                    //If only the first number is a 1
                                     else if($1->isNumber == 1) {
+                                        
+                                        //get the number values of the two values
                                         int num1 = atoi($1->nodeType);
                                         char *val1 = getValue($3->nodeType, currentScope);
-
                                         int num2 = atoi(val1);
 
+                                        //add the numbers together
                                         int number = num1 + num2; 
 
+                                        //transform our number into a character
                                         char str[50];
                                         sprintf(str, "%d", number);
                                         strcpy($1->nodeType, str);
 
+                                        //put that back into our AST.
                                         struct AST *n = newTree($1->nodeType, NULL, NULL);
                                         n->isNumber = 1;
                                         $$ = n; 
+
+                                    //Generate IR code
+                                    //emitBinaryOperation("+", $1->nodeType, $3->nodeType);
 
                                     } 
                                         else if($3->isNumber == 1) {
@@ -252,34 +264,50 @@ MathExpr: MathExpr OP MathExpr {printf("\nReconiged Rule: Math Expression\n");
                                         n->isNumber = 1;
                                         $$ = n; 
 
+                                        //Generate IR code
+                                    //emitBinaryOperation("+", $1->nodeType, $3->nodeType);
+
                                     }
 
                                     else {
-                                        char *val1 = getValue($1->nodeType, currentScope);
-                                        char *val2 = getValue($3->nodeType, currentScope);
+                                        //IF the values are variables instead of numbers
+                                        char *val1 = getValue($1->nodeType, currentScope); //get what the values are
+                                        char *val2 = getValue($3->nodeType, currentScope); //get the values
 
+                                        //Change them into numbers and add them
                                         int num1 = atoi(val1);
                                         int num2 = atoi(val2);
                                         int number = num1 + num2;
 
+                                        //Change it back into a string
                                         char str[50];
                                         sprintf(str, "%d", number);
                                         strcpy($1->nodeType, str);
 
+                                        //add it back into our AST
                                         struct AST *n = newTree($1->nodeType, NULL, NULL);
                                         n->isNumber = 1;
                                         $$ = n; 
+
+                                    //Generate IR code
+                                    //emitBinaryOperation("+", $1->nodeType, $3->nodeType);
                                 }
                                
                             }
         | ID {printf("\n ID\n");
-            // Checks to make sure the ID is
+            // Checks to make sure the ID is has already been declared
             if(found($1, currentScope) == 0) {
                 printf("SemanticError: %s is not found\n", $1);
             }
 
-            struct AST *n = newTree($1, NULL, NULL);
-            $$ = n;
+            if (strcmp(getVariableType($1, currentScope), "int") != 0) {
+                    printf("Error: Variable %s is not of Type of int", $1);
+                    semanticChecks = 0;
+                        } 
+            
+            //Puts our id in the AST
+            struct AST *num = newTree($1, NULL, NULL);
+            $$ = num;
         }
 
        
@@ -290,7 +318,7 @@ MathExpr: MathExpr OP MathExpr {printf("\nReconiged Rule: Math Expression\n");
 
         num->isNumber = 1; // keeps track of when something becomes a number
 
-        $$ = num; //Adds this num back into the tree
+        $$ = num; //constructs our subtree back into the main tree
     }
 
 ;
@@ -305,6 +333,7 @@ int main(int argc, char**argv)
 	// #endif
 
 	printf("\n\n##### COMPILER STARTED #####\n\n");
+    initIRcodeFile();
     initMipsFile();
 	
 	if (argc > 1){

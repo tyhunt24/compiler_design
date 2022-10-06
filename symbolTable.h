@@ -22,6 +22,7 @@ void symTabAccess(void){
 	printf("::::> Symbol table accessed.\n");
 }
 
+//Add items to the Symbol table
 void addItem(char itemName[50], char itemKind[8], char itemType[8], int arrayLength, char scope[50]){
 	// what about scope? should you add scope to this function?
 		symTabItems[symTabIndex].itemID = symTabIndex;
@@ -34,6 +35,7 @@ void addItem(char itemName[50], char itemKind[8], char itemType[8], int arrayLen
 	
 }
 
+//shows the symbol table
 void showSymTable(){
 	printf("itemID    itemName    itemKind    itemType     Value    itemSCope\n");
 	printf("-----------------------------------------------------------------------\n");
@@ -45,6 +47,7 @@ void showSymTable(){
 	printf("-----------------------------------------------------------------------\n");
 }
 
+//tells us when the item has been found
 int found(char itemName[50], char scope[50]){
 	// Lookup an identifier in the symbol table
 	// what about scope?
@@ -54,7 +57,7 @@ int found(char itemName[50], char scope[50]){
 		int str1 = strcmp(symTabItems[i].itemName, itemName);
 		int str2 = strcmp(symTabItems[i].scope,scope);
 		if( str1 == 0 && str2 == 0){
-			return i; // found the ID in the table
+			return i; // found the ID in the table // also returns the ID
 		}
 	}
 	return 0;
@@ -64,6 +67,7 @@ int found(char itemName[50], char scope[50]){
 int compareTypes(int itemIndex1, int itemIndex2) {
 	int check = strcmp(symTabItems[itemIndex1].itemType, symTabItems[itemIndex2].itemType);
 
+	//If they match return 1
 	if (check == 0) {
 		return 1;
 	}
@@ -95,6 +99,8 @@ char *getValue(char itemName[50], char scope[50]) {
 }
 
 //returns what the type of the variable is
+//Right now we only have integers but this will come in handy later
+//when we have something like Strings and Floats
 char *getVariableType(char itemName[50], char scope[50]) {
 		for (int i = 1; i<symTabIndex; i++) {
 		int str1 = strcmp(symTabItems[i].itemName, itemName);

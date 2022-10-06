@@ -1,5 +1,6 @@
 FILE *assemblyFile;
 
+//load what we first get in the our Mips file
 void initMipsFile() {
     assemblyFile = fopen("compiler.asm", "w");
 

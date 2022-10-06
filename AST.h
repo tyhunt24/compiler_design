@@ -7,15 +7,20 @@ struct AST{
 	char RHS[50];
 	char value[50];
 
-	int isNumber;
+	//since C doesn't have booleans
+	//I used ints if a value isNumber = 1
+	//If the value is not a number it gets a 0
+	int isNumber; 
 	
-	struct AST * left;
+	//gives us left and right side of a tree
+	struct AST * left; 
 	struct AST * right;
 
 	// review pointers to structs in C 
 	// complete the tree struct with pointers
 };
 
+//Something like ID = ID
 struct AST * AST_assignment(char nodeType[50], char LHS[50], char RHS[50]){
 	
 
@@ -34,36 +39,6 @@ struct AST * AST_assignment(char nodeType[50], char LHS[50], char RHS[50]){
 	return ASTassign;
 	
 }
-struct AST * AST_BinaryExpression(char nodeType[50], char LHS[50], char RHS[50]){
-
-	struct AST* ASTBinExp = malloc(sizeof(struct AST));
-	strcpy(ASTBinExp->nodeType, nodeType);
-	strcpy(ASTBinExp->LHS, LHS);
-	strcpy(ASTBinExp->RHS, RHS);
-	return ASTBinExp;
-	
-}
-struct AST * AST_Type(char nodeType[50], char LHS[50], char RHS[50]){
-
-	struct AST* ASTtype = malloc(sizeof(struct AST));
-	strcpy(ASTtype->nodeType, nodeType);
-	strcpy(ASTtype->LHS, LHS);
-	strcpy(ASTtype->RHS, RHS);
-		
-	return ASTtype;
-	
-}
-
-struct AST * AST_Func(char nodeType[50], char LHS[50], char RHS[50]){
-	
-	struct AST* ASTtype = malloc(sizeof(struct AST));
-	strcpy(ASTtype->nodeType, nodeType);
-	strcpy(ASTtype->LHS, LHS);
-	strcpy(ASTtype->RHS, RHS);
-		
-	return ASTtype;
-	
-}
 
 struct AST * AST_Write(char nodeType[50], char LHS[50], char RHS[50]){
 	
@@ -76,22 +51,34 @@ struct AST * AST_Write(char nodeType[50], char LHS[50], char RHS[50]){
 	
 }
 
+//function for expressions
+//also used this at the bottom of for Numbers and IDS
 struct AST * newTree(char nodeType[50], struct AST *l, struct AST *r) {
 	struct AST* astTree = malloc(sizeof(struct AST));
 	strcpy(astTree->nodeType, nodeType);
-	astTree->left = l;
-	astTree->right = r;
+	astTree->left = l; //points us to the left side expression
+	astTree->right = r; // points us to the right side expression
+
+/*
+       +
+	 /   \
+MathExpr MathExpr
+
+*/	
 }
 
+//gives us that id = mathExpr
 struct AST * idMathexp(char nodeType[50], char lhs[50], struct AST *r) {
-		struct AST* astTree = malloc(sizeof(struct AST));
-	strcpy(astTree->nodeType, nodeType);
-	strcpy(astTree->LHS, lhs);
+	struct AST* astTree = malloc(sizeof(struct AST));
+	strcpy(astTree->nodeType, nodeType); //gives us the node type which would be +
+	strcpy(astTree->LHS, lhs); // gives us the ID on the left hand side
 	astTree->right = r;
+
+	/*
+       =
+	 /   \
+	id   mathExpr
+
+*/	
 }
 
-struct AST * leaf(char nodeType[50], char value[50]) {
-	struct AST* ASTtype = malloc(sizeof(struct AST));
-	strcpy(ASTtype->nodeType, nodeType);
-	strcpy(ASTtype->value, value);
-}
