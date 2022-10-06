@@ -63,7 +63,7 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 21 "parser.y"
+#line 46 "parser.y"
 
     int number;
     char character;

@@ -1,6 +1,7 @@
 State 10 conflicts: 3 shift/reduce
-State 15 conflicts: 1 shift/reduce
-State 24 conflicts: 1 shift/reduce
+State 22 conflicts: 1 reduce/reduce
+State 23 conflicts: 1 reduce/reduce
+State 26 conflicts: 1 shift/reduce
 
 
 Grammar
@@ -22,14 +23,15 @@ Grammar
 
     9 Stmt: Expr SEMICOLON
 
-   10 Expr: Primary
+   10 Expr: MathExpr
    11     | ID EQ ID
    12     | ID EQ NUMBER
-   13     | Expr OP Expr
-   14     | WRITE Expr
+   13     | ID EQ MathExpr
+   14     | WRITE ID
 
-   15 Primary: ID
-   16        | NUMBER
+   15 MathExpr: MathExpr OP MathExpr
+   16         | ID
+   17         | NUMBER
 
 
 Terminals, with rules where they appear
@@ -37,11 +39,11 @@ Terminals, with rules where they appear
     $end (0) 0
     error (256)
     TYPE <string> (258) 6
-    ID <string> (259) 6 11 12 15
+    ID <string> (259) 6 11 12 13 14 16
     SEMICOLON <char> (260) 6 9
-    EQ <char> (261) 11 12
-    OP <char> (262) 13
-    NUMBER <number> (263) 12 16
+    EQ <char> (261) 11 12 13
+    OP <char> (262) 15
+    NUMBER <number> (263) 12 17
     WRITE (264) 14
 
 
@@ -69,10 +71,10 @@ Nonterminals, with rules where they appear
         on right: 7 8
     Expr <ast> (17)
         on left: 10 11 12 13 14
-        on right: 9 13 14
-    Primary <ast> (18)
-        on left: 15 16
-        on right: 10
+        on right: 9
+    MathExpr <ast> (18)
+        on left: 15 16 17
+        on right: 10 13 15
 
 
 State 0
@@ -91,7 +93,7 @@ State 0
     StmtList  go to state 9
     Stmt      go to state 10
     Expr      go to state 11
-    Primary   go to state 12
+    MathExpr  go to state 12
 
 
 State 1
@@ -105,30 +107,26 @@ State 2
 
    11 Expr: ID . EQ ID
    12     | ID . EQ NUMBER
-   15 Primary: ID .
+   13     | ID . EQ MathExpr
+   16 MathExpr: ID .
 
     EQ  shift, and go to state 14
 
-    $default  reduce using rule 15 (Primary)
+    $default  reduce using rule 16 (MathExpr)
 
 
 State 3
 
-   16 Primary: NUMBER .
+   17 MathExpr: NUMBER .
 
-    $default  reduce using rule 16 (Primary)
+    $default  reduce using rule 17 (MathExpr)
 
 
 State 4
 
-   14 Expr: WRITE . Expr
+   14 Expr: WRITE . ID
 
-    ID      shift, and go to state 2
-    NUMBER  shift, and go to state 3
-    WRITE   shift, and go to state 4
-
-    Expr     go to state 15
-    Primary  go to state 12
+    ID  shift, and go to state 15
 
 
 State 5
@@ -163,7 +161,7 @@ State 7
     StmtList  go to state 9
     Stmt      go to state 10
     Expr      go to state 11
-    Primary   go to state 12
+    MathExpr  go to state 12
 
 
 State 8
@@ -197,21 +195,22 @@ State 10
     StmtList  go to state 18
     Stmt      go to state 10
     Expr      go to state 11
-    Primary   go to state 12
+    MathExpr  go to state 12
 
 
 State 11
 
     9 Stmt: Expr . SEMICOLON
-   13 Expr: Expr . OP Expr
 
     SEMICOLON  shift, and go to state 19
-    OP         shift, and go to state 20
 
 
 State 12
 
-   10 Expr: Primary .
+   10 Expr: MathExpr .
+   15 MathExpr: MathExpr . OP MathExpr
+
+    OP  shift, and go to state 20
 
     $default  reduce using rule 10 (Expr)
 
@@ -227,19 +226,18 @@ State 14
 
    11 Expr: ID EQ . ID
    12     | ID EQ . NUMBER
+   13     | ID EQ . MathExpr
 
     ID      shift, and go to state 22
     NUMBER  shift, and go to state 23
 
+    MathExpr  go to state 24
+
 
 State 15
 
-   13 Expr: Expr . OP Expr
-   14     | WRITE Expr .
+   14 Expr: WRITE ID .
 
-    OP  shift, and go to state 20
-
-    OP        [reduce using rule 14 (Expr)]
     $default  reduce using rule 14 (Expr)
 
 
@@ -273,14 +271,12 @@ State 19
 
 State 20
 
-   13 Expr: Expr OP . Expr
+   15 MathExpr: MathExpr OP . MathExpr
 
-    ID      shift, and go to state 2
+    ID      shift, and go to state 25
     NUMBER  shift, and go to state 3
-    WRITE   shift, and go to state 4
 
-    Expr     go to state 24
-    Primary  go to state 12
+    MathExpr  go to state 26
 
 
 State 21
@@ -293,23 +289,48 @@ State 21
 State 22
 
    11 Expr: ID EQ ID .
+   16 MathExpr: ID .
 
-    $default  reduce using rule 11 (Expr)
+    SEMICOLON  reduce using rule 11 (Expr)
+    SEMICOLON  [reduce using rule 16 (MathExpr)]
+    OP         reduce using rule 16 (MathExpr)
+    $default   reduce using rule 11 (Expr)
 
 
 State 23
 
    12 Expr: ID EQ NUMBER .
+   17 MathExpr: NUMBER .
 
-    $default  reduce using rule 12 (Expr)
+    SEMICOLON  reduce using rule 12 (Expr)
+    SEMICOLON  [reduce using rule 17 (MathExpr)]
+    OP         reduce using rule 17 (MathExpr)
+    $default   reduce using rule 12 (Expr)
 
 
 State 24
 
-   13 Expr: Expr . OP Expr
-   13     | Expr OP Expr .
+   13 Expr: ID EQ MathExpr .
+   15 MathExpr: MathExpr . OP MathExpr
 
     OP  shift, and go to state 20
 
-    OP        [reduce using rule 13 (Expr)]
     $default  reduce using rule 13 (Expr)
+
+
+State 25
+
+   16 MathExpr: ID .
+
+    $default  reduce using rule 16 (MathExpr)
+
+
+State 26
+
+   15 MathExpr: MathExpr . OP MathExpr
+   15         | MathExpr OP MathExpr .
+
+    OP  shift, and go to state 20
+
+    OP        [reduce using rule 15 (MathExpr)]
+    $default  reduce using rule 15 (MathExpr)

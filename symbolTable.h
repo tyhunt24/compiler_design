@@ -35,10 +35,10 @@ void addItem(char itemName[50], char itemKind[8], char itemType[8], int arrayLen
 }
 
 void showSymTable(){
-	printf("itemID    itemName    itemKind    itemType     ArrayLength    itemSCope\n");
+	printf("itemID    itemName    itemKind    itemType     Value    itemSCope\n");
 	printf("-----------------------------------------------------------------------\n");
 	for (int i=1; i<symTabIndex; i++){
-		printf("%5d %15s  %7s  %7s %6d %15s \n",symTabItems[i].itemID, symTabItems[i].itemName, symTabItems[i].itemKind, symTabItems[i].itemType, symTabItems[i].arrayLength, symTabItems[i].scope);
+		printf("%5d %15s  %7s  %7s %6s %15s \n",symTabItems[i].itemID, symTabItems[i].itemName, symTabItems[i].itemKind, symTabItems[i].itemType, symTabItems[i].value, symTabItems[i].scope);
 	}
 	
 
@@ -74,8 +74,36 @@ int compareTypes(int itemIndex1, int itemIndex2) {
 //update the value to the symbol table
 void updateValue(char itemName[50], char scope[50], char value[50]) {
 	for(int i = 1; i<symTabIndex; i++) {
-		if (strcmp(symTabItems[i].itemName, itemName) && strcmp(symTabItems[i].itemName, itemName) == 0) {
+		if (strcmp(symTabItems[i].itemName, itemName) && strcmp(symTabItems[i].scope, scope) == 0) {
 			strcpy(symTabItems[i].value, value);
 		}
 	}
 }
+
+//returns the value that we put into the symbol table
+char *getValue(char itemName[50], char scope[50]) {
+	for (int i = 1; i<symTabIndex; i++) {
+		int str1 = strcmp(symTabItems[i].itemName, itemName);
+		int str2 = strcmp(symTabItems[i].scope,scope);
+
+		if(str1 && str2 == 0) {
+			return symTabItems[i].value;
+		}
+	}
+
+	return NULL;
+}
+
+//returns what the type of the variable is
+char *getVariableType(char itemName[50], char scope[50]) {
+		for (int i = 1; i<symTabIndex; i++) {
+		int str1 = strcmp(symTabItems[i].itemName, itemName);
+		int str2 = strcmp(symTabItems[i].scope,scope);
+
+		if(str1 && str2 == 0) {
+			return symTabItems[i].itemType;
+		}
+	}
+
+	return NULL;
+} 
