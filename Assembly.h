@@ -10,6 +10,7 @@ void initMipsFile() {
     fclose(assemblyFile);
 }
 
+// Load what the value of each integer is into mips
 void loadValueInts(char *id, char currentScope[50]) {
     assemblyFile = fopen("compiler.asm", "a");
 
@@ -24,6 +25,7 @@ void loadValueInts(char *id, char currentScope[50]) {
 }
 
 
+// Put the value of our addition into the compiler
 void loadAddition(char *id, char currentScope[50]) {
     assemblyFile = fopen("compiler.asm", "a");
 

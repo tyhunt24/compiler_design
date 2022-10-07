@@ -75,9 +75,12 @@ Where I am at:
 Things I need to add:
    - In mips I need to have two write statements
    - I need to figure out how to produce the correct IR code
-        - Once I figure that out we can start optimizations
-   - I need to figure out how to plan with Memory Allocation
-
+    - Perform Optimizations
+        - 1. Peephole Optimziation
+        - 2. Constant Folding
+        - 3. Dead-Code Elimination
+        - 4. Redundant Expressions
+        - 5. Copy Propagation
 */
 #include <stdio.h>
 #include <stdlib.h>
@@ -99,7 +102,7 @@ char currentScope[50];
 int semanticChecks = 1;
 
 
-#line 103 "parser.tab.c"
+#line 106 "parser.tab.c"
 
 # ifndef YY_CAST
 #  ifdef __cplusplus
@@ -161,14 +164,14 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 34 "parser.y"
+#line 37 "parser.y"
 
     int number;
     char character;
     char* string;
     struct AST* ast;
 
-#line 172 "parser.tab.c"
+#line 175 "parser.tab.c"
 
 };
 typedef union YYSTYPE YYSTYPE;
@@ -544,8 +547,8 @@ static const yytype_int8 yytranslate[] =
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_int16 yyrline[] =
 {
-       0,    57,    57,    63,    66,    69,    70,    73,    91,    92,
-      95,    98,   102,   135,   171,   194,   201,   297,   314
+       0,    60,    60,    66,    69,    72,    73,    76,    92,    93,
+      96,    99,   103,   133,   169,   198,   205,   305,   320
 };
 #endif
 
@@ -737,15 +740,15 @@ yy_symbol_value_print (FILE *yyo, int yytype, YYSTYPE const * const yyvaluep)
   switch (yytype)
     {
     case 4: /* ID  */
-#line 49 "parser.y"
+#line 52 "parser.y"
          { fprintf(yyoutput, "%s", ((*yyvaluep).string)); }
-#line 743 "parser.tab.c"
+#line 746 "parser.tab.c"
         break;
 
     case 8: /* NUMBER  */
-#line 50 "parser.y"
+#line 53 "parser.y"
          { fprintf(yyoutput, "%d", ((*yyvaluep).number)); }
-#line 749 "parser.tab.c"
+#line 752 "parser.tab.c"
         break;
 
       default:
@@ -1359,29 +1362,29 @@ yyreduce:
   switch (yyn)
     {
   case 2:
-#line 57 "parser.y"
+#line 60 "parser.y"
                     {(yyval.ast) = (yyvsp[0].ast);
                         endMipsFile();
                     }
-#line 1367 "parser.tab.c"
+#line 1370 "parser.tab.c"
     break;
 
   case 3:
-#line 63 "parser.y"
+#line 66 "parser.y"
                             {(yyvsp[-1].ast)->left = (yyvsp[0].ast);
                              (yyval.ast) = (yyvsp[-1].ast);
                             }
-#line 1375 "parser.tab.c"
+#line 1378 "parser.tab.c"
     break;
 
   case 4:
-#line 66 "parser.y"
+#line 69 "parser.y"
             { (yyval.ast) = (yyvsp[0].ast); }
-#line 1381 "parser.tab.c"
+#line 1384 "parser.tab.c"
     break;
 
   case 7:
-#line 73 "parser.y"
+#line 76 "parser.y"
                               {printf("\n RECOGNIZED RULE: VARIABLE DECLERATION\n");
                              (yyval.ast) = AST_assignment("Type", (yyvsp[-2].string), (yyvsp[-1].string));
                              //Show that we have access to symbol table
@@ -1393,25 +1396,23 @@ yyreduce:
                                 
                             else
                                 printf("Semantic Error: Var %s is already in the symbol table", (yyvsp[-1].string));
-                            
-                            // print what the symbol table looks like
-                            showSymTable();
 
-                        }
-#line 1402 "parser.tab.c"
+                            showSymTable();        
+                            }
+#line 1403 "parser.tab.c"
     break;
 
   case 11:
-#line 98 "parser.y"
+#line 99 "parser.y"
                  {printf("\nRECOGNIZED RULE: Primary Statement\n");
                     (yyval.ast) = (yyvsp[0].ast);
 
                 }
-#line 1411 "parser.tab.c"
+#line 1412 "parser.tab.c"
     break;
 
   case 12:
-#line 102 "parser.y"
+#line 103 "parser.y"
                  {printf("\nRECONGINZED RULE: Assignment statement\n");
                     (yyval.ast) = AST_assignment("=", (yyvsp[-2].string), (yyvsp[0].string));
 
@@ -1439,16 +1440,13 @@ yyreduce:
                     if(semanticChecks == 1) {
                         //printf("\nAll Semantics Check passed");
                         emitAssignment((yyvsp[-2].string), (yyvsp[0].string), currentScope);  //Send IR code to seperate file
-
-
-
                     }
                  }
-#line 1448 "parser.tab.c"
+#line 1446 "parser.tab.c"
     break;
 
   case 13:
-#line 135 "parser.y"
+#line 133 "parser.y"
                      {printf("\n RECONGIZED RULE: Number Decleration\n");
                         char str[50];
                         sprintf(str, "%d", (yyvsp[0].number));
@@ -1484,71 +1482,80 @@ yyreduce:
                             loadValueInts((yyvsp[-2].string), currentScope);
                        }
                     }
-#line 1488 "parser.tab.c"
+#line 1486 "parser.tab.c"
     break;
 
   case 14:
-#line 171 "parser.y"
+#line 169 "parser.y"
                      {printf("\nRecongized Rule: Math Expression\n");
                         //AST Tree: =: head, $1: left, $3: right
                         (yyval.ast) = idMathexp("=", (yyvsp[-2].string), (yyvsp[0].ast));
 
                         // -------- Semantic Checks --------- //
-                        // Need to check to make sure that ID is an Int
+                        // Need to check to make sure that ID is in the symbol table
+                        if(found((yyvsp[-2].string), currentScope) == 0) {
+                            printf("Error: Variable %s not found", (yyvsp[-2].string));
+                            semanticChecks = 0;
+                        }
+
+                        // Need to make sure it has been declared as a variable
                         if (strcmp(getVariableType((yyvsp[-2].string), currentScope), "int") != 0) {
                             printf("Error: Variable %s not found", (yyvsp[-2].string));
                             semanticChecks = 0;
                         } 
-
-                        //update our value after addition is performed
+                        
+                        //updates what our value to what the additon is
                         updateValue((yyvsp[-2].string), currentScope, (yyvsp[0].ast)->nodeType);
-                        if((yyvsp[0].ast)->isNumber == 1) {
+
+                        //printf("%s", $3->nodeType);
                             
                             //put value into IR code file
                             emitConstantIntAssignment((yyvsp[-2].string), (yyvsp[0].ast)->nodeType, currentScope);
 
                             //puts this into our mips file
                             loadAddition((yyvsp[-2].string), currentScope);
-                        }
                 }
-#line 1515 "parser.tab.c"
+#line 1519 "parser.tab.c"
     break;
 
   case 15:
-#line 194 "parser.y"
+#line 198 "parser.y"
                  {printf("\nRECONGIZED RULE: Print Statement\n");
-                    (yyval.ast) = AST_Write("Write", (yyvsp[0].string), "");
-                    emitWriteId((yyvsp[0].string), currentScope);
-                    writeValue((yyvsp[0].string), currentScope);
+                    (yyval.ast) = AST_Write("Write", (yyvsp[0].string), ""); // place the write statement in AST
+                    emitWriteId((yyvsp[0].string), currentScope); //write the value to the IR code
+                    writeValue((yyvsp[0].string), currentScope);//Write the value to mips
                 }
-#line 1525 "parser.tab.c"
+#line 1529 "parser.tab.c"
     break;
 
   case 16:
-#line 201 "parser.y"
+#line 205 "parser.y"
                                {printf("\nReconiged Rule: Addition Expression\n");
+                                
+                                //check to see if both expressions are numbers
+                                if ((yyvsp[-2].ast)->isNumber && (yyvsp[0].ast)->isNumber == 1) {
+                               
+                                //convert the characters nums to ints
                                 int num1 = atoi((yyvsp[-2].ast)->nodeType);
                                 int num2 = atoi((yyvsp[0].ast)->nodeType);
+                                int number = num1 + num2; // add the numbers
 
-                                //check to make sure both expressions are numbers
-                                if ((yyvsp[-2].ast)->isNumber && (yyvsp[0].ast)->isNumber == 1) {
-                                    int number = num1 + num2; // add the two numbers together
-
-                                    //convert our int back into a number
+                                    //convert int back to string
                                     char str[50];
                                     sprintf(str, "%d", number);
 
-                                    //copy them into first node
+                                    //put the values back into the the first expression
+                                    // IE ----- 5 + 4 ---> 9
                                     strcpy((yyvsp[-2].ast)->nodeType, str);
 
                                     //create a new subtree
-                                    struct AST *n = newTree((yyvsp[-2].ast)->nodeType, NULL, NULL);
+                                    struct AST *n = addValue((yyvsp[-2].ast)->nodeType);
                                     n->isNumber = 1;
                                     (yyval.ast) = n; // push that subtree so Bison takes care of it.
 
 
                                     //Generate IR code
-                                   // emitBinaryOperation("+", $1->nodeType, $3->nodeType);
+                                    //emitConstantIntAssignment($1->nodeType, $3->nodeType);
 
                                 }   
                                     //If only the first number is a 1
@@ -1568,14 +1575,15 @@ yyreduce:
                                         strcpy((yyvsp[-2].ast)->nodeType, str);
 
                                         //put that back into our AST.
-                                        struct AST *n = newTree((yyvsp[-2].ast)->nodeType, NULL, NULL);
+                                        struct AST *n = addValue((yyvsp[-2].ast)->nodeType);
                                         n->isNumber = 1;
                                         (yyval.ast) = n; 
 
                                     //Generate IR code
                                     //emitBinaryOperation("+", $1->nodeType, $3->nodeType);
 
-                                    } 
+                                    }   
+                                        //If the left side is a number but right side is a variable
                                         else if((yyvsp[0].ast)->isNumber == 1) {
                                         int num1 = atoi((yyvsp[0].ast)->nodeType);
                                         char *val1 = getValue((yyvsp[-2].ast)->nodeType, currentScope);
@@ -1588,7 +1596,7 @@ yyreduce:
                                         sprintf(str, "%d", number);
                                         strcpy((yyvsp[-2].ast)->nodeType, str);
 
-                                        struct AST *n = newTree((yyvsp[-2].ast)->nodeType, NULL, NULL);
+                                        struct AST *n = addValue((yyvsp[-2].ast)->nodeType);
                                         n->isNumber = 1;
                                         (yyval.ast) = n; 
 
@@ -1596,7 +1604,7 @@ yyreduce:
                                     //emitBinaryOperation("+", $1->nodeType, $3->nodeType);
 
                                     }
-
+                                    // If they are both variables
                                     else {
                                         //IF the values are variables instead of numbers
                                         char *val1 = getValue((yyvsp[-2].ast)->nodeType, currentScope); //get what the values are
@@ -1613,7 +1621,7 @@ yyreduce:
                                         strcpy((yyvsp[-2].ast)->nodeType, str);
 
                                         //add it back into our AST
-                                        struct AST *n = newTree((yyvsp[-2].ast)->nodeType, NULL, NULL);
+                                        struct AST *n = addValue((yyvsp[-2].ast)->nodeType);
                                         n->isNumber = 1;
                                         (yyval.ast) = n; 
 
@@ -1622,11 +1630,11 @@ yyreduce:
                                 }
                                
                             }
-#line 1626 "parser.tab.c"
+#line 1634 "parser.tab.c"
     break;
 
   case 17:
-#line 297 "parser.y"
+#line 305 "parser.y"
              {printf("\n ID\n");
             // Checks to make sure the ID is has already been declared
             if(found((yyvsp[0].string), currentScope) == 0) {
@@ -1637,30 +1645,29 @@ yyreduce:
                     printf("Error: Variable %s is not of Type of int", (yyvsp[0].string));
                     semanticChecks = 0;
                         } 
-            
             //Puts our id in the AST
-            struct AST *num = newTree((yyvsp[0].string), NULL, NULL);
-            (yyval.ast) = num;
+            (yyval.ast) = addValue((yyvsp[0].string));
+            
         }
-#line 1646 "parser.tab.c"
+#line 1653 "parser.tab.c"
     break;
 
   case 18:
-#line 314 "parser.y"
-             {printf("\n In Number\n");
+#line 320 "parser.y"
+                 {printf("\n In Number\n");
         char str[50];
         sprintf(str, "%d", (yyvsp[0].number));
-       struct AST * num = newTree(str, NULL, NULL); // put the number into the bottom of the tree
+       struct AST * num = addValue(str); // put the number into the bottom of the tree
 
         num->isNumber = 1; // keeps track of when something becomes a number
-
+        
         (yyval.ast) = num; //constructs our subtree back into the main tree
     }
-#line 1660 "parser.tab.c"
+#line 1667 "parser.tab.c"
     break;
 
 
-#line 1664 "parser.tab.c"
+#line 1671 "parser.tab.c"
 
       default: break;
     }
@@ -1892,7 +1899,7 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 326 "parser.y"
+#line 332 "parser.y"
 
 
 
@@ -1914,6 +1921,7 @@ int main(int argc, char**argv)
 	  }
 	}
 	yyparse();
+
 }
 
 void yyerror(const char* s) {

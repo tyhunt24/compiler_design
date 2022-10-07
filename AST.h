@@ -82,3 +82,8 @@ struct AST * idMathexp(char nodeType[50], char lhs[50], struct AST *r) {
 */	
 }
 
+struct AST * addValue(char nodeType[50]) {
+	struct AST* astTree = malloc(sizeof(struct AST));
+	strcpy(astTree->nodeType, nodeType); //gives us the node type which would be +
+}
+

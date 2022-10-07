@@ -12,6 +12,7 @@ void initIRcodeFile() {
     fclose(IRcode);
 }
 
+//write the assignment 
 void emitAssignment(char id1[50], char id2[50], char currentscope[50]) {
 
    IRcode = fopen("IRcode.ir", "a");

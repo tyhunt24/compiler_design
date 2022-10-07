@@ -6,9 +6,12 @@ Where I am at:
 Things I need to add:
    - In mips I need to have two write statements
    - I need to figure out how to produce the correct IR code
-        - Once I figure that out we can start optimizations
-   - I need to figure out how to plan with Memory Allocation
-
+    - Perform Optimizations
+        - 1. Peephole Optimziation
+        - 2. Constant Folding
+        - 3. Dead-Code Elimination
+        - 4. Redundant Expressions
+        - 5. Copy Propagation
 */
 #include <stdio.h>
 #include <stdlib.h>
@@ -81,11 +84,9 @@ VarDecl:    TYPE ID SEMICOLON {printf("\n RECOGNIZED RULE: VARIABLE DECLERATION\
                                 
                             else
                                 printf("Semantic Error: Var %s is already in the symbol table", $2);
-                            
-                            // print what the symbol table looks like
-                            showSymTable();
 
-                        }
+                            showSymTable();        
+                            }
 ;
 
 StmtList: Stmt  
@@ -126,9 +127,6 @@ Expr:   Addition {printf("\nRECOGNIZED RULE: Primary Statement\n");
                     if(semanticChecks == 1) {
                         //printf("\nAll Semantics Check passed");
                         emitAssignment($1, $3, currentScope);  //Send IR code to seperate file
-
-
-
                     }
                  }
 
@@ -173,54 +171,63 @@ Expr:   Addition {printf("\nRECOGNIZED RULE: Primary Statement\n");
                         $$ = idMathexp("=", $1, $3);
 
                         // -------- Semantic Checks --------- //
-                        // Need to check to make sure that ID is an Int
+                        // Need to check to make sure that ID is in the symbol table
+                        if(found($1, currentScope) == 0) {
+                            printf("Error: Variable %s not found", $1);
+                            semanticChecks = 0;
+                        }
+
+                        // Need to make sure it has been declared as a variable
                         if (strcmp(getVariableType($1, currentScope), "int") != 0) {
                             printf("Error: Variable %s not found", $1);
                             semanticChecks = 0;
                         } 
-
-                        //update our value after addition is performed
+                        
+                        //updates what our value to what the additon is
                         updateValue($1, currentScope, $3->nodeType);
-                        if($3->isNumber == 1) {
+
+                        //printf("%s", $3->nodeType);
                             
                             //put value into IR code file
                             emitConstantIntAssignment($1, $3->nodeType, currentScope);
 
                             //puts this into our mips file
                             loadAddition($1, currentScope);
-                        }
                 }
-                        
+              
     |   WRITE ID {printf("\nRECONGIZED RULE: Print Statement\n");
-                    $$ = AST_Write("Write", $2, "");
-                    emitWriteId($2, currentScope);
-                    writeValue($2, currentScope);
+                    $$ = AST_Write("Write", $2, ""); // place the write statement in AST
+                    emitWriteId($2, currentScope); //write the value to the IR code
+                    writeValue($2, currentScope);//Write the value to mips
                 }
 ;
 
 Addition: Addition OP Addition {printf("\nReconiged Rule: Addition Expression\n");
+                                
+                                //check to see if both expressions are numbers
+                                if ($1->isNumber && $3->isNumber == 1) {
+                               
+                                //convert the characters nums to ints
                                 int num1 = atoi($1->nodeType);
                                 int num2 = atoi($3->nodeType);
+                                int number = num1 + num2; // add the numbers
 
-                                //check to make sure both expressions are numbers
-                                if ($1->isNumber && $3->isNumber == 1) {
-                                    int number = num1 + num2; // add the two numbers together
-
-                                    //convert our int back into a number
+                                    //convert int back to string
                                     char str[50];
                                     sprintf(str, "%d", number);
 
-                                    //copy them into first node
+                                    //put the values back into the the first expression
+                                    // IE ----- 5 + 4 ---> 9
                                     strcpy($1->nodeType, str);
 
                                     //create a new subtree
-                                    struct AST *n = newTree($1->nodeType, NULL, NULL);
+                                    struct AST *n = addValue($1->nodeType);
                                     n->isNumber = 1;
                                     $$ = n; // push that subtree so Bison takes care of it.
 
 
                                     //Generate IR code
-                                   // emitBinaryOperation("+", $1->nodeType, $3->nodeType);
+                                    //emitConstantIntAssignment($1->nodeType, $3->nodeType);
 
                                 }   
                                     //If only the first number is a 1
@@ -240,14 +247,15 @@ Addition: Addition OP Addition {printf("\nReconiged Rule: Addition Expression\n"
                                         strcpy($1->nodeType, str);
 
                                         //put that back into our AST.
-                                        struct AST *n = newTree($1->nodeType, NULL, NULL);
+                                        struct AST *n = addValue($1->nodeType);
                                         n->isNumber = 1;
                                         $$ = n; 
 
                                     //Generate IR code
                                     //emitBinaryOperation("+", $1->nodeType, $3->nodeType);
 
-                                    } 
+                                    }   
+                                        //If the left side is a number but right side is a variable
                                         else if($3->isNumber == 1) {
                                         int num1 = atoi($3->nodeType);
                                         char *val1 = getValue($1->nodeType, currentScope);
@@ -260,7 +268,7 @@ Addition: Addition OP Addition {printf("\nReconiged Rule: Addition Expression\n"
                                         sprintf(str, "%d", number);
                                         strcpy($1->nodeType, str);
 
-                                        struct AST *n = newTree($1->nodeType, NULL, NULL);
+                                        struct AST *n = addValue($1->nodeType);
                                         n->isNumber = 1;
                                         $$ = n; 
 
@@ -268,7 +276,7 @@ Addition: Addition OP Addition {printf("\nReconiged Rule: Addition Expression\n"
                                     //emitBinaryOperation("+", $1->nodeType, $3->nodeType);
 
                                     }
-
+                                    // If they are both variables
                                     else {
                                         //IF the values are variables instead of numbers
                                         char *val1 = getValue($1->nodeType, currentScope); //get what the values are
@@ -285,7 +293,7 @@ Addition: Addition OP Addition {printf("\nReconiged Rule: Addition Expression\n"
                                         strcpy($1->nodeType, str);
 
                                         //add it back into our AST
-                                        struct AST *n = newTree($1->nodeType, NULL, NULL);
+                                        struct AST *n = addValue($1->nodeType);
                                         n->isNumber = 1;
                                         $$ = n; 
 
@@ -304,20 +312,18 @@ Addition: Addition OP Addition {printf("\nReconiged Rule: Addition Expression\n"
                     printf("Error: Variable %s is not of Type of int", $1);
                     semanticChecks = 0;
                         } 
-            
             //Puts our id in the AST
-            struct AST *num = newTree($1, NULL, NULL);
-            $$ = num;
+            $$ = addValue($1);
+            
         }
 
-       
-    | NUMBER {printf("\n In Number\n");
+        | NUMBER {printf("\n In Number\n");
         char str[50];
         sprintf(str, "%d", $1);
-       struct AST * num = newTree(str, NULL, NULL); // put the number into the bottom of the tree
+       struct AST * num = addValue(str); // put the number into the bottom of the tree
 
         num->isNumber = 1; // keeps track of when something becomes a number
-
+        
         $$ = num; //constructs our subtree back into the main tree
     }
 
@@ -344,6 +350,7 @@ int main(int argc, char**argv)
 	  }
 	}
 	yyparse();
+
 }
 
 void yyerror(const char* s) {
