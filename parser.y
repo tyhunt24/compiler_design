@@ -4,11 +4,10 @@ Where I am at:
     - I am able to print the correct assembly code to a file for addition
 
 Things I need to add:
-   - In mips I need to have two write statements
    - I need to figure out how to produce the correct IR code
     - Perform Optimizations
         - 1. Peephole Optimziation
-        - 2. Constant Folding
+      //  - 2. Constant Folding 
         - 3. Dead-Code Elimination
         - 4. Redundant Expressions
         - 5. Copy Propagation
@@ -127,6 +126,8 @@ Expr:   Addition {printf("\nRECOGNIZED RULE: Primary Statement\n");
                     if(semanticChecks == 1) {
                         //printf("\nAll Semantics Check passed");
                         emitAssignment($1, $3, currentScope);  //Send IR code to seperate file
+
+                        loadValueIds($1, $3, currentScope); //load the
                     }
                  }
 
@@ -220,10 +221,7 @@ Addition: Addition OP Addition {printf("\nReconiged Rule: Addition Expression\n"
                                     // IE ----- 5 + 4 ---> 9
                                     strcpy($1->nodeType, str);
 
-                                    //create a new subtree
-                                    struct AST *n = addValue($1->nodeType);
-                                    n->isNumber = 1;
-                                    $$ = n; // push that subtree so Bison takes care of it.
+                                    $$ = addValue($1->nodeType, 1);
 
 
                                     //Generate IR code
@@ -247,15 +245,13 @@ Addition: Addition OP Addition {printf("\nReconiged Rule: Addition Expression\n"
                                         strcpy($1->nodeType, str);
 
                                         //put that back into our AST.
-                                        struct AST *n = addValue($1->nodeType);
-                                        n->isNumber = 1;
-                                        $$ = n; 
+                                        $$ = addValue($1->nodeType, 1);
 
                                     //Generate IR code
                                     //emitBinaryOperation("+", $1->nodeType, $3->nodeType);
 
                                     }   
-                                        //If the left side is a number but right side is a variable
+                                        //If the right side is a number but left side is a variable
                                         else if($3->isNumber == 1) {
                                         int num1 = atoi($3->nodeType);
                                         char *val1 = getValue($1->nodeType, currentScope);
@@ -268,9 +264,7 @@ Addition: Addition OP Addition {printf("\nReconiged Rule: Addition Expression\n"
                                         sprintf(str, "%d", number);
                                         strcpy($1->nodeType, str);
 
-                                        struct AST *n = addValue($1->nodeType);
-                                        n->isNumber = 1;
-                                        $$ = n; 
+                                        $$ = addValue($1->nodeType, 1);
 
                                         //Generate IR code
                                     //emitBinaryOperation("+", $1->nodeType, $3->nodeType);
@@ -279,23 +273,22 @@ Addition: Addition OP Addition {printf("\nReconiged Rule: Addition Expression\n"
                                     // If they are both variables
                                     else {
                                         //IF the values are variables instead of numbers
+                                        // We are able to get what there value is
                                         char *val1 = getValue($1->nodeType, currentScope); //get what the values are
                                         char *val2 = getValue($3->nodeType, currentScope); //get the values
 
-                                        //Change them into numbers and add them
+                                        //Change them from chars into ints and add them
                                         int num1 = atoi(val1);
                                         int num2 = atoi(val2);
                                         int number = num1 + num2;
 
-                                        //Change it back into a string
+                                        //Change it back into a string so we can add it to the AST
                                         char str[50];
                                         sprintf(str, "%d", number);
                                         strcpy($1->nodeType, str);
 
                                         //add it back into our AST
-                                        struct AST *n = addValue($1->nodeType);
-                                        n->isNumber = 1;
-                                        $$ = n; 
+                                        $$ = addValue($1->nodeType, 1);
 
                                     //Generate IR code
                                     //emitBinaryOperation("+", $1->nodeType, $3->nodeType);
@@ -313,18 +306,14 @@ Addition: Addition OP Addition {printf("\nReconiged Rule: Addition Expression\n"
                     semanticChecks = 0;
                         } 
             //Puts our id in the AST
-            $$ = addValue($1);
+            $$ = addValue($1, 0);
             
         }
 
         | NUMBER {printf("\n In Number\n");
         char str[50];
         sprintf(str, "%d", $1);
-       struct AST * num = addValue(str); // put the number into the bottom of the tree
-
-        num->isNumber = 1; // keeps track of when something becomes a number
-        
-        $$ = num; //constructs our subtree back into the main tree
+        $$ = addValue(str,1); // put the number into the bottom of the tree
     }
 
 ;

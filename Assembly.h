@@ -24,6 +24,17 @@ void loadValueInts(char *id, char currentScope[50]) {
     fclose(assemblyFile);
 }
 
+void loadValueIds(char *id1, char *id2, char currentScope[50]) {
+    assemblyFile = fopen("compiler.asm", "a");
+    
+    int var1 = found(id1, currentScope);
+    char *value1 = getValue(id2, currentScope);
+
+    fprintf(assemblyFile, "li $t%d, %s\n", var1, value1);
+
+    fclose(assemblyFile);
+}
+
 
 // Put the value of our addition into the compiler
 void loadAddition(char *id, char currentScope[50]) {
