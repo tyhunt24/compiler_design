@@ -204,7 +204,9 @@ Expr:   Addition {printf("\nRECOGNIZED RULE: Primary Statement\n");
 ;
 
 Addition: Addition OP Addition {printf("\nReconiged Rule: Addition Expression\n");
-                                
+                            //intialize a number to 0
+                            int num = 0;
+
                             //IF $1 and $3 are both numbers
                             if($1->isNumber && $3->isNumber == 1) {
                                 
@@ -212,12 +214,12 @@ Addition: Addition OP Addition {printf("\nReconiged Rule: Addition Expression\n"
                                 //And Add them
                                 int num1 = atoi($1->nodeType);
                                 int num3 = atoi($3->nodeType);
+                                
+                                //add the numbers and add it to first variable
                                 int number = num1 + num3;
+                                num += number;
 
-                                //convert out addition back into the first expression
-                                //Ex: 5 + 4 -----> 9: $1->nodetype now becomes 9
-                                sprintf($1->nodeType, "%d", number);
-                                $$ = addTree($1->nodeType, 1);
+                                //printf("%d\n\n\n", num);
                             }
 
                             //If the $1 is a number but the $3 is a variable
@@ -230,11 +232,11 @@ Addition: Addition OP Addition {printf("\nReconiged Rule: Addition Expression\n"
                                 char *val1 = getValue($3->nodeType, currentScope);
                                 int num3 = atoi(val1);
 
+                                //add the numbers and add it to first variable
                                 int number = num1 + num3;
+                                num += number;
 
-                                //Ex 5 + x(x = 4) -----> 9 = $1->nodeType
-                                sprintf($1->nodeType, "%d", number);
-                                $$ = addTree($1->nodeType, 1);
+                                //printf("%d\n\n\n", num);
                             } 
 
                             //Now $1 is variable and $3 is number
@@ -245,11 +247,11 @@ Addition: Addition OP Addition {printf("\nReconiged Rule: Addition Expression\n"
                                 int num1 = atoi(val1);
                                 int num3 = atoi($3->nodeType);
 
+                                //add the numbers and add it to first variable
                                 int number = num1 + num3;
+                                num += number;
 
-                                // Ex: x(x=4) + 5 ----> 9 = $1->nodetype
-                                sprintf($1->nodeType, "%d", number);
-                                $$ = addTree($1->nodeType, 1);
+                                //printf("%d\n\n\n", num);
                             }
 
                             //if we are adding both variables and no numbers
@@ -262,12 +264,19 @@ Addition: Addition OP Addition {printf("\nReconiged Rule: Addition Expression\n"
                                 int num1 = atoi(val1);
                                 int num3 = atoi(val2);
 
+                                //add the numbers and add it to first variable
                                 int number = num1 + num3;
+                                num += number;
 
-                                //Ex: x(x=4) + y(y=5) ------> 9 = $1->nodetype
-                                sprintf($1->nodeType, "%d", number);
-                                $$ = addTree($1->nodeType, 1);
+                                //printf("%d\n\n\n", num);
                             }
+
+                            //change first nodeType to the added numbers
+                            //Ex: x(x=4) + y(y=5) = 9 = $1->nodeType
+                            //then if we have multiple expressions it will become:
+                                // 9 + Addition
+                            sprintf($1->nodeType, "%d", num);
+                            $$ = addTree($1->nodeType, 1);
    
                             }
         | ID {printf("\n ID\n");
