@@ -5,6 +5,7 @@ int z;
 x = 4;
 y = 5;
 
-z = x + y + 1 + 4;
+
+z = x + y + 1 + 2 + 3;
 
 write z;

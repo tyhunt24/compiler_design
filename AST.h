@@ -83,7 +83,7 @@ struct AST * idMathexp(char nodeType[50], char lhs[50], struct AST *r) {
 }
 
 //allows something like ids and numbers to be put in the tree
-struct AST * addValue(char nodeType[50], int isNum) {
+struct AST * addTree(char nodeType[50], int isNum) {
 	struct AST* astTree = malloc(sizeof(struct AST));
 	strcpy(astTree->nodeType, nodeType); //gives us whatever value either variable or int
 	astTree->isNumber = isNum;

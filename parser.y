@@ -205,95 +205,68 @@ Expr:   Addition {printf("\nRECOGNIZED RULE: Primary Statement\n");
 
 Addition: Addition OP Addition {printf("\nReconiged Rule: Addition Expression\n");
                                 
-                                //check to see if both expressions are numbers
-                                if ($1->isNumber && $3->isNumber == 1) {
-                               
-                                //convert the characters nums to ints
+                            //IF $1 and $3 are both numbers
+                            if($1->isNumber && $3->isNumber == 1) {
+                                
+                                //change from characters to numbers
+                                //And Add them
                                 int num1 = atoi($1->nodeType);
-                                int num2 = atoi($3->nodeType);
-                                int number = num1 + num2; // add the numbers
+                                int num3 = atoi($3->nodeType);
+                                int number = num1 + num3;
 
-                                    //convert int back to string
-                                    char str[50];
-                                    sprintf(str, "%d", number);
+                                //convert out addition back into the first expression
+                                //Ex: 5 + 4 -----> 9: $1->nodetype now becomes 9
+                                sprintf($1->nodeType, "%d", number);
+                                $$ = addTree($1->nodeType, 1);
+                            }
 
-                                    //put the values back into the the first expression
-                                    // IE ----- 5 + 4 ---> 9
-                                    strcpy($1->nodeType, str);
+                            //If the $1 is a number but the $3 is a variable
+                            else if($1->isNumber == 1) {
+                                
+                                //convert the number from Char to Num
+                                //Get the value of the variable from the symbol table
+                                //convert it from Char to num
+                                int num1 = atoi($1->nodeType);
+                                char *val1 = getValue($3->nodeType, currentScope);
+                                int num3 = atoi(val1);
 
-                                    $$ = addValue($1->nodeType, 1);
+                                int number = num1 + num3;
 
+                                //Ex 5 + x(x = 4) -----> 9
+                                sprintf($1->nodeType, "%d", number);
+                                $$ = addTree($1->nodeType, 1);
+                            } 
 
-                                    //Generate IR code
-                                    //emitConstantIntAssignment($1->nodeType, $3->nodeType);
+                            //Now $1 is variable and $3 is number
+                            else if($3->isNumber == 1) {
+                                //do the same as the steps before
+                                char *val1 = getValue($1->nodeType, currentScope);
+                                int num1 = atoi(val1);
+                                int num3 = atoi($3->nodeType);
 
-                                }   
-                                    //If only the first number is a 1
-                                    else if($1->isNumber == 1) {
-                                        
-                                        //get the number values of the two values
-                                        int num1 = atoi($1->nodeType);
-                                        char *val1 = getValue($3->nodeType, currentScope);
-                                        int num2 = atoi(val1);
+                                int number = num1 + num3;
 
-                                        //add the numbers together
-                                        int number = num1 + num2; 
+                                // Ex: x(x=4) + 5 ----> 9 in $1->nodetype
+                                sprintf($1->nodeType, "%d", number);
+                                $$ = addTree($1->nodeType, 1);
+                            }
 
-                                        //transform our number into a character
-                                        char str[50];
-                                        sprintf(str, "%d", number);
-                                        strcpy($1->nodeType, str);
+                            //if we are adding both variables and no numbers
+                            else { 
+                                //Get value from Symbol Table
+                                //Convert them into numbers
+                                char *val1 = getValue($1->nodeType, currentScope);
+                                char *val2 = getValue($3->nodeType, currentScope);
+                                int num1 = atoi(val1);
+                                int num3 = atoi(val2);
 
-                                        //put that back into our AST.
-                                        $$ = addValue($1->nodeType, 1);
+                                int number = num1 + num3;
 
-                                    //Generate IR code
-                                    //emitBinaryOperation("+", $1->nodeType, $3->nodeType);
-
-                                    }   
-                                        //If the right side is a number but left side is a variable
-                                        else if($3->isNumber == 1) {
-                                        int num1 = atoi($3->nodeType);
-                                        char *val1 = getValue($1->nodeType, currentScope);
-
-                                        int num2 = atoi(val1);
-
-                                        int number = num1 + num2; 
-
-                                        char str[50];
-                                        sprintf(str, "%d", number);
-                                        strcpy($1->nodeType, str);
-
-                                        $$ = addValue($1->nodeType, 1);
-
-                                        //Generate IR code
-                                    //emitBinaryOperation("+", $1->nodeType, $3->nodeType);
-
-                                    }
-                                    // If they are both variables
-                                    else {
-                                        //IF the values are variables instead of numbers
-                                        // We are able to get what there value is
-                                        char *val1 = getValue($1->nodeType, currentScope); //get what the values are
-                                        char *val2 = getValue($3->nodeType, currentScope); //get the values
-
-                                        //Change them from chars into ints and add them
-                                        int num1 = atoi(val1);
-                                        int num2 = atoi(val2);
-                                        int number = num1 + num2;
-
-                                        //Change it back into a string so we can add it to the AST
-                                        char str[50];
-                                        sprintf(str, "%d", number);
-                                        strcpy($1->nodeType, str);
-
-                                        //add it back into our AST
-                                        $$ = addValue($1->nodeType, 1);
-
-                                    //Generate IR code
-                                    //emitBinaryOperation("+", $1->nodeType, $3->nodeType);
-                                }
-                               
+                                //Ex: x(x=4) + y(y=5) ------> 9 in $1->nodetype
+                                sprintf($1->nodeType, "%d", number);
+                                $$ = addTree($1->nodeType, 1);
+                            }
+   
                             }
         | ID {printf("\n ID\n");
             // Checks to make sure the ID is has already been declared
@@ -306,14 +279,14 @@ Addition: Addition OP Addition {printf("\nReconiged Rule: Addition Expression\n"
                     semanticChecks = 0;
                         } 
             //Puts our id in the AST
-            $$ = addValue($1, 0);
+            $$ = addTree($1, 0);
             
         }
 
         | NUMBER {printf("\n In Number\n");
         char str[50];
         sprintf(str, "%d", $1);
-        $$ = addValue(str,1); // put the number into the bottom of the tree
+        $$ = addTree(str,1); // put the number into the bottom of the tree
     }
 
 ;
