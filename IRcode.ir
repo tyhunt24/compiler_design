@@ -2,3 +2,27 @@ T1 = 4
 T2 = 5
 T3 = 15
 output T3
+T1 = 4
+T2 = 5
+T3 = 1
+output T3
+T1 = 4
+T2 = 5
+T3 = 1
+output T3
+T1 = 4
+T2 = 5
+T3 = 1
+output T3
+T1 = 4
+T2 = 5
+T3 = 1
+output T3
+T1 = 4
+T2 = 5
+T3 = 3
+output T3
+T1 = 4
+T2 = 5
+T3 = 3
+output T3

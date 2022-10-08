@@ -5,7 +5,7 @@ struct AST{
 	char nodeType[50];
 	char LHS[50];
 	char RHS[50];
-	char value[50];
+	int value;
 
 	//since C doesn't have booleans
 	//I used ints if a value isNumber = 1

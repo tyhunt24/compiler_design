@@ -547,7 +547,7 @@ static const yytype_int8 yytranslate[] =
 static const yytype_int16 yyrline[] =
 {
        0,    59,    59,    65,    68,    71,    72,    75,    91,    92,
-      95,    98,   102,   134,   170,   199,   206,   271,   286
+      95,    98,   102,   134,   170,   199,   206,   273,   290
 };
 #endif
 
@@ -1560,13 +1560,14 @@ yyreduce:
 
                                 int number = num1 + num3;
 
-                                //Ex 5 + x(x = 4) -----> 9
+                                //Ex 5 + x(x = 4) -----> 9 = $1->nodeType
                                 sprintf((yyvsp[-2].ast)->nodeType, "%d", number);
                                 (yyval.ast) = addTree((yyvsp[-2].ast)->nodeType, 1);
                             } 
 
                             //Now $1 is variable and $3 is number
                             else if((yyvsp[0].ast)->isNumber == 1) {
+                                
                                 //do the same as the steps before
                                 char *val1 = getValue((yyvsp[-2].ast)->nodeType, currentScope);
                                 int num1 = atoi(val1);
@@ -1574,15 +1575,16 @@ yyreduce:
 
                                 int number = num1 + num3;
 
-                                // Ex: x(x=4) + 5 ----> 9 in $1->nodetype
+                                // Ex: x(x=4) + 5 ----> 9 = $1->nodetype
                                 sprintf((yyvsp[-2].ast)->nodeType, "%d", number);
                                 (yyval.ast) = addTree((yyvsp[-2].ast)->nodeType, 1);
                             }
 
                             //if we are adding both variables and no numbers
                             else { 
+                                
                                 //Get value from Symbol Table
-                                //Convert them into numbers
+                                //Convert them into integers
                                 char *val1 = getValue((yyvsp[-2].ast)->nodeType, currentScope);
                                 char *val2 = getValue((yyvsp[0].ast)->nodeType, currentScope);
                                 int num1 = atoi(val1);
@@ -1590,23 +1592,25 @@ yyreduce:
 
                                 int number = num1 + num3;
 
-                                //Ex: x(x=4) + y(y=5) ------> 9 in $1->nodetype
+                                //Ex: x(x=4) + y(y=5) ------> 9 = $1->nodetype
                                 sprintf((yyvsp[-2].ast)->nodeType, "%d", number);
                                 (yyval.ast) = addTree((yyvsp[-2].ast)->nodeType, 1);
                             }
    
                             }
-#line 1600 "parser.tab.c"
+#line 1602 "parser.tab.c"
     break;
 
   case 17:
-#line 271 "parser.y"
+#line 273 "parser.y"
              {printf("\n ID\n");
+            
             // Checks to make sure the ID is has already been declared
             if(found((yyvsp[0].string), currentScope) == 0) {
                 printf("SemanticError: %s is not found\n", (yyvsp[0].string));
             }
 
+            //if the variable type is wrong throw semantic error
             if (strcmp(getVariableType((yyvsp[0].string), currentScope), "int") != 0) {
                     printf("Error: Variable %s is not of Type of int", (yyvsp[0].string));
                     semanticChecks = 0;
@@ -1615,21 +1619,21 @@ yyreduce:
             (yyval.ast) = addTree((yyvsp[0].string), 0);
             
         }
-#line 1619 "parser.tab.c"
+#line 1623 "parser.tab.c"
     break;
 
   case 18:
-#line 286 "parser.y"
+#line 290 "parser.y"
                  {printf("\n In Number\n");
         char str[50];
         sprintf(str, "%d", (yyvsp[0].number));
         (yyval.ast) = addTree(str,1); // put the number into the bottom of the tree
     }
-#line 1629 "parser.tab.c"
+#line 1633 "parser.tab.c"
     break;
 
 
-#line 1633 "parser.tab.c"
+#line 1637 "parser.tab.c"
 
       default: break;
     }
@@ -1861,7 +1865,7 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 294 "parser.y"
+#line 298 "parser.y"
 
 
 

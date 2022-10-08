@@ -232,13 +232,14 @@ Addition: Addition OP Addition {printf("\nReconiged Rule: Addition Expression\n"
 
                                 int number = num1 + num3;
 
-                                //Ex 5 + x(x = 4) -----> 9
+                                //Ex 5 + x(x = 4) -----> 9 = $1->nodeType
                                 sprintf($1->nodeType, "%d", number);
                                 $$ = addTree($1->nodeType, 1);
                             } 
 
                             //Now $1 is variable and $3 is number
                             else if($3->isNumber == 1) {
+                                
                                 //do the same as the steps before
                                 char *val1 = getValue($1->nodeType, currentScope);
                                 int num1 = atoi(val1);
@@ -246,15 +247,16 @@ Addition: Addition OP Addition {printf("\nReconiged Rule: Addition Expression\n"
 
                                 int number = num1 + num3;
 
-                                // Ex: x(x=4) + 5 ----> 9 in $1->nodetype
+                                // Ex: x(x=4) + 5 ----> 9 = $1->nodetype
                                 sprintf($1->nodeType, "%d", number);
                                 $$ = addTree($1->nodeType, 1);
                             }
 
                             //if we are adding both variables and no numbers
                             else { 
+                                
                                 //Get value from Symbol Table
-                                //Convert them into numbers
+                                //Convert them into integers
                                 char *val1 = getValue($1->nodeType, currentScope);
                                 char *val2 = getValue($3->nodeType, currentScope);
                                 int num1 = atoi(val1);
@@ -262,23 +264,26 @@ Addition: Addition OP Addition {printf("\nReconiged Rule: Addition Expression\n"
 
                                 int number = num1 + num3;
 
-                                //Ex: x(x=4) + y(y=5) ------> 9 in $1->nodetype
+                                //Ex: x(x=4) + y(y=5) ------> 9 = $1->nodetype
                                 sprintf($1->nodeType, "%d", number);
                                 $$ = addTree($1->nodeType, 1);
                             }
    
                             }
         | ID {printf("\n ID\n");
+            
             // Checks to make sure the ID is has already been declared
             if(found($1, currentScope) == 0) {
                 printf("SemanticError: %s is not found\n", $1);
             }
 
+            //if the variable type is wrong throw semantic error
             if (strcmp(getVariableType($1, currentScope), "int") != 0) {
                     printf("Error: Variable %s is not of Type of int", $1);
                     semanticChecks = 0;
-                        } 
-            //Puts our id in the AST
+                } 
+           
+           //Puts our id in the AST
             $$ = addTree($1, 0);
             
         }
