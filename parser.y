@@ -290,11 +290,7 @@ Addition: Addition OP Addition {printf("\nReconiged Rule: Addition Expression\n"
             if (strcmp(getVariableType($1, currentScope), "int") != 0) {
                     printf("Error: Variable %s is not of Type of int", $1);
                     semanticChecks = 0;
-                } 
-           
-           //Puts our id in the AST
-            $$ = addTree($1, 0);
-            
+                }     
         }
 
         | NUMBER {printf("\n In Number\n");
@@ -306,7 +302,6 @@ Addition: Addition OP Addition {printf("\nReconiged Rule: Addition Expression\n"
 ;
 
 %%
-
 
 int main(int argc, char**argv)
 {

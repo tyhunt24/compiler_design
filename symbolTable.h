@@ -1,6 +1,9 @@
 //Symbol table header
 #include <string.h>
 
+//bison is a bottom up parser
+//dollars are the returned tokens
+
 // This is a very simplistic implementation of a symbol table
 // You will use this as reference and build a much more robust one
 
