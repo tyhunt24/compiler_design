@@ -263,10 +263,11 @@ Addition: Addition OP Addition {printf("\nReconiged Rule: Addition Expression\n"
                                 //printf("%d\n\n\n", num);
                             }
 
-                            //change first nodeType to the added numbers
-                            //Ex: x(x=4) + y(y=5) = 9 = $1->nodeType
-                            //then if we have multiple expressions it will become:
-                            // 9 + Addition
+                            /*change first nodeType to the added numbers
+                            Ex: x(x=4) + y(y=5) = 9 = $1->nodeType
+                            then if we have multiple expressions it will become:
+                                 9 + Addition
+                            */
                             sprintf($1->nodeType, "%d", num);
                             $$ = addTree($1->nodeType, 1);
    
@@ -277,14 +278,15 @@ Addition: Addition OP Addition {printf("\nReconiged Rule: Addition Expression\n"
             if(found($1, currentScope) == 0) {
                 printf("SemanticError: %s is not found\n", $1);
                 semanticChecks = 0;
-                exit(1);
             }
 
             //if the variable type is wrong throw semantic error
             if (strcmp(getVariableType($1, currentScope), "int") != 0) {
                     printf("Error: Variable %s is not of Type of int", $1);
                     semanticChecks = 0;
-                }     
+                }
+
+            $$ = addTree($1, 0);     
         }
 
         | NUMBER {printf("\n In Number\n");
