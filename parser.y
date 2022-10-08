@@ -1,17 +1,4 @@
 %{
-/*
-Where I am at:
-    - I am able to print the correct assembly code to a file for addition
-
-Things I need to add:
-   - I need to figure out how to produce the correct IR code
-    - Perform Optimizations
-        - 1. Peephole Optimziation
-      //  - 2. Constant Folding 
-        - 3. Dead-Code Elimination
-        - 4. Redundant Expressions
-        - 5. Copy Propagation
-*/
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -30,6 +17,11 @@ void yyerror(const char* s);
 char currentScope[50];
 
 int semanticChecks = 1;
+
+//$$ parses the tree back together
+//parser: reads right to left
+//find the first argument and second argument in this statement
+
 
 %}
 
@@ -274,7 +266,7 @@ Addition: Addition OP Addition {printf("\nReconiged Rule: Addition Expression\n"
                             //change first nodeType to the added numbers
                             //Ex: x(x=4) + y(y=5) = 9 = $1->nodeType
                             //then if we have multiple expressions it will become:
-                                // 9 + Addition
+                            // 9 + Addition
                             sprintf($1->nodeType, "%d", num);
                             $$ = addTree($1->nodeType, 1);
    
@@ -284,6 +276,8 @@ Addition: Addition OP Addition {printf("\nReconiged Rule: Addition Expression\n"
             // Checks to make sure the ID is has already been declared
             if(found($1, currentScope) == 0) {
                 printf("SemanticError: %s is not found\n", $1);
+                semanticChecks = 0;
+                exit(1);
             }
 
             //if the variable type is wrong throw semantic error
@@ -320,6 +314,7 @@ int main(int argc, char**argv)
 		return(1);
 	  }
 	}
+
 	yyparse();
 
 }

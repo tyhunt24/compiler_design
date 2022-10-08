@@ -23,7 +23,6 @@ struct AST{
 //Something like ID = ID
 struct AST * AST_assignment(char nodeType[50], char LHS[50], char RHS[50]){
 	
-
 	struct AST* ASTassign = malloc(sizeof(struct AST));
 	strcpy(ASTassign->nodeType, nodeType);
 	strcpy(ASTassign->LHS, LHS);
@@ -40,6 +39,7 @@ struct AST * AST_assignment(char nodeType[50], char LHS[50], char RHS[50]){
 	
 }
 
+//Kept the same file that Artzi helped me with
 struct AST * AST_Write(char nodeType[50], char LHS[50], char RHS[50]){
 	
 	struct AST* ASTtype = malloc(sizeof(struct AST));
@@ -51,28 +51,13 @@ struct AST * AST_Write(char nodeType[50], char LHS[50], char RHS[50]){
 	
 }
 
-//function for expressions
-//also used this at the bottom of for Numbers and IDS
-struct AST * newTree(char nodeType[50], struct AST *l, struct AST *r) {
-	struct AST* astTree = malloc(sizeof(struct AST));
-	strcpy(astTree->nodeType, nodeType);
-	astTree->left = l; //points us to the left side expression
-	astTree->right = r; // points us to the right side expression
-
-/*
-       +
-	 /   \
-MathExpr MathExpr
-
-*/	
-}
 
 //gives us that id = mathExpr
 struct AST * idMathexp(char nodeType[50], char lhs[50], struct AST *r) {
 	struct AST* astTree = malloc(sizeof(struct AST));
 	strcpy(astTree->nodeType, nodeType); //gives us the node type which would be +
 	strcpy(astTree->LHS, lhs); // gives us the ID on the left hand side
-	astTree->right = r;
+	astTree->right = r; // Points the a Struct on the right side
 
 	/*
        =

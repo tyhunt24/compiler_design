@@ -26,6 +26,7 @@ void emitAssignment(char id1[50], char id2[50], char currentscope[50]) {
    fclose(IRcode);
 }
 
+//assign a value to the Integer
  void emitConstantIntAssignment(char id1[50], char num[50], char currentScope[50]) {
    FILE *IRcode;
    IRcode = fopen("IRcode.ir", "a");
@@ -37,15 +38,7 @@ void emitAssignment(char id1[50], char id2[50], char currentscope[50]) {
      fclose(IRcode);
  }
 
-// ! We dont need this because I do constant folding within the parser
-// This elimnates the need to add these values here
-//  void emitBinaryOperation(char op[1], char id1[50], char id2[50]) {
-
-//        FILE *IRcode;
-//        IRcode = fopen("IRcode.ir", "a");
-//     fprintf(IRcode, "T1 = %s %s %s\n", id1, op, id2); // We need to figure out a way on how to mange the Temporary registers
-//  }
-
+//Write the Id to the IR code
 void emitWriteId(char id[50], char currentScope[50]) {
         FILE *IRcode;
        IRcode = fopen("IRcode.ir", "a");
