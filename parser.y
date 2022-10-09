@@ -84,7 +84,7 @@ StmtList: Stmt
         | Stmt StmtList
 ;
 
-Stmt: Expr SEMICOLON
+Stmt: Expr SEMICOLON {$$ = $1;}
 ;
 
 Expr:   Addition {printf("\nRECOGNIZED RULE: Primary Statement\n");

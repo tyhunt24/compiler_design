@@ -539,7 +539,7 @@ static const yytype_int8 yytranslate[] =
 static const yytype_int16 yyrline[] =
 {
        0,    51,    51,    57,    60,    63,    64,    67,    83,    84,
-      87,    90,    94,   126,   162,   191,   198,   274,   290
+      87,    90,    94,   126,   162,   191,   198,   275,   292
 };
 #endif
 
@@ -1393,13 +1393,19 @@ yyreduce:
 #line 1394 "parser.tab.c"
     break;
 
+  case 10:
+#line 87 "parser.y"
+                     {(yyval.ast) = (yyvsp[-1].ast);}
+#line 1400 "parser.tab.c"
+    break;
+
   case 11:
 #line 90 "parser.y"
                  {printf("\nRECOGNIZED RULE: Primary Statement\n");
                     (yyval.ast) = (yyvsp[0].ast);
 
                 }
-#line 1403 "parser.tab.c"
+#line 1409 "parser.tab.c"
     break;
 
   case 12:
@@ -1435,7 +1441,7 @@ yyreduce:
                         loadValueIds((yyvsp[-2].string), (yyvsp[0].string), currentScope); //load the
                     }
                  }
-#line 1439 "parser.tab.c"
+#line 1445 "parser.tab.c"
     break;
 
   case 13:
@@ -1475,7 +1481,7 @@ yyreduce:
                             loadValueInts((yyvsp[-2].string), currentScope);
                        }
                     }
-#line 1479 "parser.tab.c"
+#line 1485 "parser.tab.c"
     break;
 
   case 14:
@@ -1508,7 +1514,7 @@ yyreduce:
                             //puts this into our mips file
                             loadAddition((yyvsp[-2].string), currentScope);
                 }
-#line 1512 "parser.tab.c"
+#line 1518 "parser.tab.c"
     break;
 
   case 15:
@@ -1518,7 +1524,7 @@ yyreduce:
                     emitWriteId((yyvsp[0].string), currentScope); //write the value to the IR code
                     writeValue((yyvsp[0].string), currentScope);//Write the value to mips
                 }
-#line 1522 "parser.tab.c"
+#line 1528 "parser.tab.c"
     break;
 
   case 16:
@@ -1591,49 +1597,51 @@ yyreduce:
                                 //printf("%d\n\n\n", num);
                             }
 
-                            //change first nodeType to the added numbers
-                            //Ex: x(x=4) + y(y=5) = 9 = $1->nodeType
-                            //then if we have multiple expressions it will become:
-                            // 9 + Addition
+                            /*change first nodeType to the added numbers
+                            Ex: x(x=4) + y(y=5) = 9 = $1->nodeType
+                            then if we have multiple expressions it will become:
+                                 9 + Addition
+                            */
                             sprintf((yyvsp[-2].ast)->nodeType, "%d", num);
                             (yyval.ast) = addTree((yyvsp[-2].ast)->nodeType, 1);
    
                             }
-#line 1603 "parser.tab.c"
+#line 1610 "parser.tab.c"
     break;
 
   case 17:
-#line 274 "parser.y"
+#line 275 "parser.y"
              {printf("\n ID\n");
             
             // Checks to make sure the ID is has already been declared
             if(found((yyvsp[0].string), currentScope) == 0) {
                 printf("SemanticError: %s is not found\n", (yyvsp[0].string));
                 semanticChecks = 0;
-                exit(1);
             }
 
             //if the variable type is wrong throw semantic error
             if (strcmp(getVariableType((yyvsp[0].string), currentScope), "int") != 0) {
                     printf("Error: Variable %s is not of Type of int", (yyvsp[0].string));
                     semanticChecks = 0;
-                }     
+                }
+
+            (yyval.ast) = addTree((yyvsp[0].string), 0);     
         }
-#line 1623 "parser.tab.c"
+#line 1631 "parser.tab.c"
     break;
 
   case 18:
-#line 290 "parser.y"
+#line 292 "parser.y"
                  {printf("\n In Number\n");
         char str[50];
         sprintf(str, "%d", (yyvsp[0].number));
         (yyval.ast) = addTree(str,1); // put the number into the bottom of the tree
     }
-#line 1633 "parser.tab.c"
+#line 1641 "parser.tab.c"
     break;
 
 
-#line 1637 "parser.tab.c"
+#line 1645 "parser.tab.c"
 
       default: break;
     }
@@ -1865,7 +1873,7 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 298 "parser.y"
+#line 300 "parser.y"
 
 
 int main(int argc, char**argv)
