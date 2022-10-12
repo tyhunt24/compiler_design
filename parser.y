@@ -23,6 +23,31 @@ int semanticChecks = 1;
 //find the first argument and second argument in this statement
 
 
+/*
+Need to add in the function part of the language
+    - Type ID ( ParamDecList ) Block
+    - ParamDeclList
+        - ParamDeclListTail
+            - ParamDecl 
+            - ParamDecl, ParamDecListTail
+    -ParamDecl: Type id
+                Type id[]
+    -Block { VarDeclList, StmtList }
+
+Need to add in use for Arrays in the language
+    - Type id[]
+    -id [Expr] = Expr
+
+Math:
+    - Needs to have use for all Math Expressions
+    - ( Expr )
+
+Scope Management:
+    - Need to implement an Idea on how to deal with
+      Global and Local Scope 
+
+ */
+
 %}
 
 %union {
@@ -119,7 +144,7 @@ Expr:   Addition {printf("\nRECOGNIZED RULE: Primary Statement\n");
                         //printf("\nAll Semantics Check passed");
                         emitAssignment($1, $3, currentScope);  //Send IR code to seperate file
 
-                        loadValueIds($1, $3, currentScope); //load the
+                        loadValueIds($1, $3, currentScope); //load the values into mips
                     }
                  }
 

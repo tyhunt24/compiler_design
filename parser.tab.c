@@ -92,8 +92,33 @@ int semanticChecks = 1;
 //find the first argument and second argument in this statement
 
 
+/*
+Need to add in the function part of the language
+    - Type ID ( ParamDecList ) Block
+    - ParamDeclList
+        - ParamDeclListTail
+            - ParamDecl 
+            - ParamDecl, ParamDecListTail
+    -ParamDecl: Type id
+                Type id[]
+    -Block { VarDeclList, StmtList }
 
-#line 97 "parser.tab.c"
+Need to add in use for Arrays in the language
+    - Type id[]
+    -id [Expr] = Expr
+
+Math:
+    - Needs to have use for all Math Expressions
+    - ( Expr )
+
+Scope Management:
+    - Need to implement an Idea on how to deal with
+      Global and Local Scope 
+
+ */
+
+
+#line 122 "parser.tab.c"
 
 # ifndef YY_CAST
 #  ifdef __cplusplus
@@ -155,14 +180,14 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 28 "parser.y"
+#line 53 "parser.y"
 
     int number;
     char character;
     char* string;
     struct AST* ast;
 
-#line 166 "parser.tab.c"
+#line 191 "parser.tab.c"
 
 };
 typedef union YYSTYPE YYSTYPE;
@@ -538,8 +563,8 @@ static const yytype_int8 yytranslate[] =
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_int16 yyrline[] =
 {
-       0,    51,    51,    57,    60,    63,    64,    67,    83,    84,
-      87,    90,    94,   126,   162,   191,   198,   275,   292
+       0,    76,    76,    82,    85,    88,    89,    92,   108,   109,
+     112,   115,   119,   151,   187,   216,   223,   300,   317
 };
 #endif
 
@@ -731,15 +756,15 @@ yy_symbol_value_print (FILE *yyo, int yytype, YYSTYPE const * const yyvaluep)
   switch (yytype)
     {
     case 4: /* ID  */
-#line 43 "parser.y"
+#line 68 "parser.y"
          { fprintf(yyoutput, "%s", ((*yyvaluep).string)); }
-#line 737 "parser.tab.c"
+#line 762 "parser.tab.c"
         break;
 
     case 8: /* NUMBER  */
-#line 44 "parser.y"
+#line 69 "parser.y"
          { fprintf(yyoutput, "%d", ((*yyvaluep).number)); }
-#line 743 "parser.tab.c"
+#line 768 "parser.tab.c"
         break;
 
       default:
@@ -1353,29 +1378,29 @@ yyreduce:
   switch (yyn)
     {
   case 2:
-#line 51 "parser.y"
+#line 76 "parser.y"
                     {(yyval.ast) = (yyvsp[0].ast);
                         endMipsFile();
                     }
-#line 1361 "parser.tab.c"
+#line 1386 "parser.tab.c"
     break;
 
   case 3:
-#line 57 "parser.y"
+#line 82 "parser.y"
                             {(yyvsp[-1].ast)->left = (yyvsp[0].ast);
                              (yyval.ast) = (yyvsp[-1].ast);
                             }
-#line 1369 "parser.tab.c"
+#line 1394 "parser.tab.c"
     break;
 
   case 4:
-#line 60 "parser.y"
+#line 85 "parser.y"
             { (yyval.ast) = (yyvsp[0].ast); }
-#line 1375 "parser.tab.c"
+#line 1400 "parser.tab.c"
     break;
 
   case 7:
-#line 67 "parser.y"
+#line 92 "parser.y"
                               {printf("\n RECOGNIZED RULE: VARIABLE DECLERATION\n");
                              (yyval.ast) = AST_assignment("Type", (yyvsp[-2].string), (yyvsp[-1].string));
                              //Show that we have access to symbol table
@@ -1390,26 +1415,26 @@ yyreduce:
 
                             showSymTable();        
                             }
-#line 1394 "parser.tab.c"
+#line 1419 "parser.tab.c"
     break;
 
   case 10:
-#line 87 "parser.y"
+#line 112 "parser.y"
                      {(yyval.ast) = (yyvsp[-1].ast);}
-#line 1400 "parser.tab.c"
+#line 1425 "parser.tab.c"
     break;
 
   case 11:
-#line 90 "parser.y"
+#line 115 "parser.y"
                  {printf("\nRECOGNIZED RULE: Primary Statement\n");
                     (yyval.ast) = (yyvsp[0].ast);
 
                 }
-#line 1409 "parser.tab.c"
+#line 1434 "parser.tab.c"
     break;
 
   case 12:
-#line 94 "parser.y"
+#line 119 "parser.y"
                  {printf("\nRECONGINZED RULE: Assignment statement\n");
                     (yyval.ast) = AST_assignment("=", (yyvsp[-2].string), (yyvsp[0].string));
 
@@ -1438,14 +1463,14 @@ yyreduce:
                         //printf("\nAll Semantics Check passed");
                         emitAssignment((yyvsp[-2].string), (yyvsp[0].string), currentScope);  //Send IR code to seperate file
 
-                        loadValueIds((yyvsp[-2].string), (yyvsp[0].string), currentScope); //load the
+                        loadValueIds((yyvsp[-2].string), (yyvsp[0].string), currentScope); //load the values into mips
                     }
                  }
-#line 1445 "parser.tab.c"
+#line 1470 "parser.tab.c"
     break;
 
   case 13:
-#line 126 "parser.y"
+#line 151 "parser.y"
                      {printf("\n RECONGIZED RULE: Number Decleration\n");
                         char str[50];
                         sprintf(str, "%d", (yyvsp[0].number));
@@ -1481,11 +1506,11 @@ yyreduce:
                             loadValueInts((yyvsp[-2].string), currentScope);
                        }
                     }
-#line 1485 "parser.tab.c"
+#line 1510 "parser.tab.c"
     break;
 
   case 14:
-#line 162 "parser.y"
+#line 187 "parser.y"
                      {printf("\nRecongized Rule: Math Expression\n");
                         //AST Tree: =: head, $1: left, $3: right
                         (yyval.ast) = idMathexp("=", (yyvsp[-2].string), (yyvsp[0].ast));
@@ -1514,21 +1539,21 @@ yyreduce:
                             //puts this into our mips file
                             loadAddition((yyvsp[-2].string), currentScope);
                 }
-#line 1518 "parser.tab.c"
+#line 1543 "parser.tab.c"
     break;
 
   case 15:
-#line 191 "parser.y"
+#line 216 "parser.y"
                  {printf("\nRECONGIZED RULE: Print Statement\n");
                     (yyval.ast) = AST_Write("Write", (yyvsp[0].string), ""); // place the write statement in AST
                     emitWriteId((yyvsp[0].string), currentScope); //write the value to the IR code
                     writeValue((yyvsp[0].string), currentScope);//Write the value to mips
                 }
-#line 1528 "parser.tab.c"
+#line 1553 "parser.tab.c"
     break;
 
   case 16:
-#line 198 "parser.y"
+#line 223 "parser.y"
                                {printf("\nReconiged Rule: Addition Expression\n");
                             //intialize a number to 0
                             int num = 0;
@@ -1606,11 +1631,11 @@ yyreduce:
                             (yyval.ast) = addTree((yyvsp[-2].ast)->nodeType, 1);
    
                             }
-#line 1610 "parser.tab.c"
+#line 1635 "parser.tab.c"
     break;
 
   case 17:
-#line 275 "parser.y"
+#line 300 "parser.y"
              {printf("\n ID\n");
             
             // Checks to make sure the ID is has already been declared
@@ -1627,21 +1652,21 @@ yyreduce:
 
             (yyval.ast) = addTree((yyvsp[0].string), 0);     
         }
-#line 1631 "parser.tab.c"
+#line 1656 "parser.tab.c"
     break;
 
   case 18:
-#line 292 "parser.y"
+#line 317 "parser.y"
                  {printf("\n In Number\n");
         char str[50];
         sprintf(str, "%d", (yyvsp[0].number));
         (yyval.ast) = addTree(str,1); // put the number into the bottom of the tree
     }
-#line 1641 "parser.tab.c"
+#line 1666 "parser.tab.c"
     break;
 
 
-#line 1645 "parser.tab.c"
+#line 1670 "parser.tab.c"
 
       default: break;
     }
@@ -1873,7 +1898,7 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 300 "parser.y"
+#line 325 "parser.y"
 
 
 int main(int argc, char**argv)

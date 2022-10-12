@@ -11,6 +11,26 @@ int words = 0;
 int chars = 0;
 int lines = 0;
 int errors = 0;
+
+
+/*
+functions:
+	- {}, () Need to be added
+	- return
+Math: 
+	- need + | - | * | /
+
+Other: 
+	- chars
+	- floats
+	- read
+
+Arrays:
+	- [] Need brackets
+ */
+
+
+
 %}
 
 letter      [a-zA-Z]

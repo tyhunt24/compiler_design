@@ -1,3 +1,9 @@
+/*
+Need to add functionality to deal with functions
+Also need to add functionlity to deal with arrays
+*/
+
+
 FILE *assemblyFile;
 
 //load what we first get in the our Mips file
@@ -24,6 +30,7 @@ void loadValueInts(char *id, char currentScope[50]) {
     fclose(assemblyFile);
 }
 
+//load in the ids into mips
 void loadValueIds(char *id1, char *id2, char currentScope[50]) {
     assemblyFile = fopen("compiler.asm", "a");
     
@@ -37,6 +44,7 @@ void loadValueIds(char *id1, char *id2, char currentScope[50]) {
 
 
 // Put the value of our addition into the compiler
+// Call this in the id = expression so it gives us the correct expression
 void loadAddition(char *id, char currentScope[50]) {
     assemblyFile = fopen("compiler.asm", "a");
 
@@ -50,7 +58,7 @@ void loadAddition(char *id, char currentScope[50]) {
 }
 
 
-//I need to figure out how to get this to turn the right way.
+//Code to print the value to the screen
 void writeValue(char *id, char currentScope[50]) {
     assemblyFile = fopen("compiler.asm", "a");
 

@@ -474,8 +474,28 @@ int words = 0;
 int chars = 0;
 int lines = 0;
 int errors = 0;
-#line 478 "lex.yy.c"
-#line 479 "lex.yy.c"
+
+
+/*
+functions:
+	- {}, () Need to be added
+	- return
+Math: 
+	- need + | - | * | /
+
+Other: 
+	- chars
+	- floats
+	- read
+
+Arrays:
+	- [] Need brackets
+ */
+
+
+
+#line 498 "lex.yy.c"
+#line 499 "lex.yy.c"
 
 #define INITIAL 0
 
@@ -692,9 +712,9 @@ YY_DECL
 		}
 
 	{
-#line 21 "lexer.l"
+#line 41 "lexer.l"
 
-#line 698 "lex.yy.c"
+#line 718 "lex.yy.c"
 
 	while ( /*CONSTCOND*/1 )		/* loops until end-of-file is reached */
 		{
@@ -753,7 +773,7 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 22 "lexer.l"
+#line 42 "lexer.l"
 {
 							int c;
 							while((c = input()) != 0) {
@@ -768,7 +788,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 34 "lexer.l"
+#line 54 "lexer.l"
 {words++; chars += strlen(yytext); 
 		 printf("%s : TYPE\n", yytext);
          yylval.string = strdup(yytext);
@@ -777,7 +797,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 40 "lexer.l"
+#line 60 "lexer.l"
 {words++; 
 		 chars += strlen(yytext);
 		 printf("%s : KEYWORD\n", yytext);
@@ -787,7 +807,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 47 "lexer.l"
+#line 67 "lexer.l"
 {words++; chars += strlen(yytext);
 		 printf("%s : IDENTIFIER\n",yytext);
          yylval.string = strdup(yytext);
@@ -796,7 +816,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 53 "lexer.l"
+#line 73 "lexer.l"
 {words++; chars += strlen(yytext);
 			  printf("%s : NUMBER\n",yytext);
               yylval.number = atoi(strdup(yytext));
@@ -805,7 +825,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 59 "lexer.l"
+#line 79 "lexer.l"
 {chars++;
 		 printf("%s : SEMICOLON \n", yytext);
          yylval.string = strdup(yytext);
@@ -814,7 +834,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 65 "lexer.l"
+#line 85 "lexer.l"
 {chars++;
 		 printf("%s : EQ\n", yytext);
          yylval.string = strdup(yytext);
@@ -823,7 +843,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 71 "lexer.l"
+#line 91 "lexer.l"
 {chars++;
      printf("%s : OPERATOR\n", yytext);
      yylval.string = strdup(yytext);
@@ -833,27 +853,27 @@ YY_RULE_SETUP
 case 9:
 /* rule 9 can match eol */
 YY_RULE_SETUP
-#line 77 "lexer.l"
+#line 97 "lexer.l"
 {lines++; chars=0;}
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 78 "lexer.l"
+#line 98 "lexer.l"
 {chars++;}
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 79 "lexer.l"
+#line 99 "lexer.l"
 {chars++;
          printf("%s : Unrecognized symbol at line %d char %d\n", yytext,lines,chars);
 		}
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 82 "lexer.l"
+#line 102 "lexer.l"
 ECHO;
 	YY_BREAK
-#line 857 "lex.yy.c"
+#line 877 "lex.yy.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -1858,6 +1878,6 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 82 "lexer.l"
+#line 102 "lexer.l"
 
 

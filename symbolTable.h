@@ -7,6 +7,16 @@
 // This is a very simplistic implementation of a symbol table
 // You will use this as reference and build a much more robust one
 
+/*
+Need to figure out a way to go from variables and functions
+Need an Idea On how to deal with Global and Local Scope
+Read the book on the Symbol Table
+ -Need to implement hashing and Linkedlists Maybe
+Might need to add mutliple Symbol Tables
+
+*/
+
+
 struct Entry
 {
 	int itemID;

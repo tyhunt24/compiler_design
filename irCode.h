@@ -4,7 +4,6 @@
 FILE *IRcode;
 
 // ! Also I need to figure out how to just clean the IR code up.
-
 void initIRcodeFile() {
     IRcode = fopen("IRcode.ir", "a");
 
@@ -17,6 +16,7 @@ void emitAssignment(char id1[50], char id2[50], char currentscope[50]) {
   // Open the value to be used in IR code
    IRcode = fopen("IRcode.ir", "a");
     int var1 = found(id1, currentscope);
+  
   //This returns the the Var ID I actually think
   //I want it to return the ids value
    char* var2 = getValue(id2, currentscope);
