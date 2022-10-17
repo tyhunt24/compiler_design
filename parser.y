@@ -24,27 +24,7 @@ int semanticChecks = 1;
 
 
 /*
-Need to add in the function part of the language
-    - Type ID ( ParamDecList ) Block
-    - ParamDeclList
-        - ParamDeclListTail
-            - ParamDecl 
-            - ParamDecl, ParamDecListTail
-    -ParamDecl: Type id
-                Type id[]
-    -Block { VarDeclList, StmtList }
-
-Need to add in use for Arrays in the language
-    - Type id[]
-    -id [Expr] = Expr
-
-Math:
-    - Needs to have use for all Math Expressions
-    - ( Expr )
-
-Scope Management:
-    - Need to implement an Idea on how to deal with
-      Global and Local Scope 
+ ! 1. Get All of the Math Operations working
 
  */
 
@@ -61,14 +41,21 @@ Scope Management:
 %token <string> ID
 %token <char> SEMICOLON
 %token <char> EQ
-%token <char> OP
+%token <char> OPAREN
+%token <char> CPAREN
+%token <char> PLUS
+%token <char> MINUS
+%token <char> MULTIPLY
+%token <char> DIVIDE
 %token <number> NUMBER
 %token WRITE
 
 %printer { fprintf(yyoutput, "%s", $$); } ID;
 %printer { fprintf(yyoutput, "%d", $$); } NUMBER;
 
-%type <ast> Program DeclList Decl VarDecl StmtList Stmt Expr Addition
+%type <ast> Program DeclList Decl VarDecl StmtList Stmt Expr Math
+%left PLUS MINUS
+%left MULTIPLY DIVIDE
 
 %start Program
 
@@ -112,7 +99,7 @@ StmtList: Stmt
 Stmt: Expr SEMICOLON {$$ = $1;}
 ;
 
-Expr:   Addition {printf("\nRECOGNIZED RULE: Primary Statement\n");
+Expr:   Math {printf("\nRECOGNIZED RULE: Primary Statement\n");
                     $$ = $1;
 
                 }
@@ -184,7 +171,7 @@ Expr:   Addition {printf("\nRECOGNIZED RULE: Primary Statement\n");
                        }
                     }
 
-    | ID EQ Addition {printf("\nRecongized Rule: Math Expression\n");
+    | ID EQ Math {printf("\nRecongized Rule: Math Expression\n");
                         //AST Tree: =: head, $1: left, $3: right
                         $$ = idMathexp("=", $1, $3);
 
@@ -220,7 +207,7 @@ Expr:   Addition {printf("\nRECOGNIZED RULE: Primary Statement\n");
                 }
 ;
 
-Addition: Addition OP Addition {printf("\nReconiged Rule: Addition Expression\n");
+Math: Math PLUS Math {printf("\nReconiged Rule: Addition Expression\n");
                             //intialize a number to 0
                             int num = 0;
 
@@ -297,6 +284,237 @@ Addition: Addition OP Addition {printf("\nReconiged Rule: Addition Expression\n"
                             $$ = addTree($1->nodeType, 1);
    
                             }
+        | Math MINUS Math {printf("\nReconiged Rule: Addition Expression\n");
+                            //intialize a number to 0
+                            int num = 0;
+
+                            //IF $1 and $3 are both numbers
+                            if($1->isNumber && $3->isNumber == 1) {
+                                
+                                //change from characters to numbers
+                                //And Add them
+                                int num1 = atoi($1->nodeType);
+                                int num3 = atoi($3->nodeType);
+                                
+                                //add the numbers and add it to first variable
+                                int number = num1 - num3;
+                                num += number;
+
+                                //printf("%d\n\n\n", num);
+                            }
+
+                            //If the $1 is a number but the $3 is a variable
+                            else if($1->isNumber == 1) {
+                                
+                                //convert the number from Char to Num
+                                //Get the value of the variable from the symbol table
+                                //convert it from Char to num
+                                int num1 = atoi($1->nodeType);
+                                char *val1 = getValue($3->nodeType, currentScope);
+                                int num3 = atoi(val1);
+
+                                //add the numbers and add it to first variable
+                                int number = num1 - num3;
+                                num += number;
+
+                                //printf("%d\n\n\n", num);
+                            } 
+
+                            //Now $1 is variable and $3 is number
+                            else if($3->isNumber == 1) {
+                                
+                                //do the same as the steps before
+                                char *val1 = getValue($1->nodeType, currentScope);
+                                int num1 = atoi(val1);
+                                int num3 = atoi($3->nodeType);
+
+                                //add the numbers and add it to first variable
+                                int number = num1 - num3;
+                                num += number;
+
+                                //printf("%d\n\n\n", num);
+                            }
+
+                            //if we are adding both variables and no numbers
+                            else { 
+                                
+                                //Get value from Symbol Table
+                                //Convert them into integers
+                                char *val1 = getValue($1->nodeType, currentScope);
+                                char *val2 = getValue($3->nodeType, currentScope);
+                                int num1 = atoi(val1);
+                                int num3 = atoi(val2);
+
+                                //add the numbers and add it to first variable
+                                int number = num1 - num3;
+                                num += number;
+
+                                //printf("%d\n\n\n", num);
+                            }
+                            /*change first nodeType to the added numbers
+                            Ex: x(x=4) + y(y=5) = 9 = $1->nodeType
+                            then if we have multiple expressions it will become:
+                                 9 + Addition
+                            */
+                            sprintf($1->nodeType, "%d", num);
+                            $$ = addTree($1->nodeType, 1);
+                            }
+
+        | Math MULTIPLY Math {printf("\nReconiged Rule: Addition Expression\n");
+                            //intialize a number to 0
+                            int num = 0;
+
+                            //IF $1 and $3 are both numbers
+                            if($1->isNumber && $3->isNumber == 1) {
+                                
+                                //change from characters to numbers
+                                //And Add them
+                                int num1 = atoi($1->nodeType);
+                                int num3 = atoi($3->nodeType);
+                                
+                                //add the numbers and add it to first variable
+                                int number = num1 * num3;
+                                num += number;
+
+                                //printf("%d\n\n\n", num);
+                            }
+
+                            //If the $1 is a number but the $3 is a variable
+                            else if($1->isNumber == 1) {
+                                
+                                //convert the number from Char to Num
+                                //Get the value of the variable from the symbol table
+                                //convert it from Char to num
+                                int num1 = atoi($1->nodeType);
+                                char *val1 = getValue($3->nodeType, currentScope);
+                                int num3 = atoi(val1);
+
+                                //add the numbers and add it to first variable
+                                int number = num1 * num3;
+                                num += number;
+
+                                //printf("%d\n\n\n", num);
+                            } 
+
+                            //Now $1 is variable and $3 is number
+                            else if($3->isNumber == 1) {
+                                
+                                //do the same as the steps before
+                                char *val1 = getValue($1->nodeType, currentScope);
+                                int num1 = atoi(val1);
+                                int num3 = atoi($3->nodeType);
+
+                                //add the numbers and add it to first variable
+                                int number = num1 * num3;
+                                num += number;
+
+                                //printf("%d\n\n\n", num);
+                            }
+
+                            //if we are adding both variables and no numbers
+                            else { 
+                                
+                                //Get value from Symbol Table
+                                //Convert them into integers
+                                char *val1 = getValue($1->nodeType, currentScope);
+                                char *val2 = getValue($3->nodeType, currentScope);
+                                int num1 = atoi(val1);
+                                int num3 = atoi(val2);
+
+                                //add the numbers and add it to first variable
+                                int number = num1 * num3;
+                                num += number;
+
+                                //printf("%d\n\n\n", num);
+                            }
+                            /*change first nodeType to the added numbers
+                            Ex: x(x=4) + y(y=5) = 9 = $1->nodeType
+                            then if we have multiple expressions it will become:
+                                 9 + Addition
+                            */
+                            sprintf($1->nodeType, "%d", num);
+                            $$ = addTree($1->nodeType, 1);
+                            }
+
+        | Math DIVIDE Math {printf("\nReconiged Rule: Addition Expression\n");
+                            //intialize a number to 0
+                            int num = 0;
+
+                            //IF $1 and $3 are both numbers
+                            if($1->isNumber && $3->isNumber == 1) {
+                                
+                                //change from characters to numbers
+                                //And Add them
+                                int num1 = atoi($1->nodeType);
+                                int num3 = atoi($3->nodeType);
+                                
+                                //add the numbers and add it to first variable
+                                int number = num1 / num3;
+                                num += number;
+
+                                //printf("%d\n\n\n", num);
+                            }
+
+                            //If the $1 is a number but the $3 is a variable
+                            else if($1->isNumber == 1) {
+                                
+                                //convert the number from Char to Num
+                                //Get the value of the variable from the symbol table
+                                //convert it from Char to num
+                                int num1 = atoi($1->nodeType);
+                                char *val1 = getValue($3->nodeType, currentScope);
+                                int num3 = atoi(val1);
+
+                                //add the numbers and add it to first variable
+                                int number = num1 / num3;
+                                num += number;
+
+                                //printf("%d\n\n\n", num);
+                            } 
+
+                            //Now $1 is variable and $3 is number
+                            else if($3->isNumber == 1) {
+                                
+                                //do the same as the steps before
+                                char *val1 = getValue($1->nodeType, currentScope);
+                                int num1 = atoi(val1);
+                                int num3 = atoi($3->nodeType);
+
+                                //add the numbers and add it to first variable
+                                int number = num1 / num3;
+                                num += number;
+
+                                //printf("%d\n\n\n", num);
+                            }
+
+                            //if we are adding both variables and no numbers
+                            else { 
+                                
+                                //Get value from Symbol Table
+                                //Convert them into integers
+                                char *val1 = getValue($1->nodeType, currentScope);
+                                char *val2 = getValue($3->nodeType, currentScope);
+                                int num1 = atoi(val1);
+                                int num3 = atoi(val2);
+
+                                //add the numbers and add it to first variable
+                                int number = num1 / num3;
+                                num += number;
+
+                                //printf("%d\n\n\n", num);
+                            }
+                            /*change first nodeType to the added numbers
+                            Ex: x(x=4) + y(y=5) = 9 = $1->nodeType
+                            then if we have multiple expressions it will become:
+                                 9 + Addition
+                            */
+                            sprintf($1->nodeType, "%d", num);
+                            $$ = addTree($1->nodeType, 1);
+                            }
+
+        | OPAREN Math CPAREN {
+            $$ = $2;
+        } 
         | ID {printf("\n ID\n");
             
             // Checks to make sure the ID is has already been declared

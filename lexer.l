@@ -88,10 +88,40 @@ NUMBER      {digit}+(\.{digit}+)?(E[+\-]?(digit)+)?
          return EQ;
 		}
 
+"("		{chars++;
+		 printf("%s : EQ\n", yytext);
+         yylval.string = strdup(yytext);
+         return OPAREN;
+		}
+
+")"		{chars++;
+		 printf("%s : EQ\n", yytext);
+         yylval.string = strdup(yytext);
+         return CPAREN;
+		}
+
 "+" {chars++;
      printf("%s : OPERATOR\n", yytext);
      yylval.string = strdup(yytext);
-     return OP;
+     return PLUS;
+    }
+
+"-" {chars++;
+     printf("%s : OPERATOR\n", yytext);
+     yylval.string = strdup(yytext);
+     return MINUS;
+    }
+
+"*" {chars++;
+     printf("%s : OPERATOR\n", yytext);
+     yylval.string = strdup(yytext);
+     return MULTIPLY;
+    }
+
+"/" {chars++;
+     printf("%s : OPERATOR\n", yytext);
+     yylval.string = strdup(yytext);
+     return DIVIDE;
     }
 
 [\n]	{lines++; chars=0;}

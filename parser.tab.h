@@ -53,9 +53,14 @@ extern int yydebug;
     ID = 259,
     SEMICOLON = 260,
     EQ = 261,
-    OP = 262,
-    NUMBER = 263,
-    WRITE = 264
+    OPAREN = 262,
+    CPAREN = 263,
+    PLUS = 264,
+    MINUS = 265,
+    MULTIPLY = 266,
+    DIVIDE = 267,
+    NUMBER = 268,
+    WRITE = 269
   };
 #endif
 
@@ -63,14 +68,14 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 53 "parser.y"
+#line 33 "parser.y"
 
     int number;
     char character;
     char* string;
     struct AST* ast;
 
-#line 74 "parser.tab.h"
+#line 79 "parser.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;
