@@ -24,7 +24,8 @@ int semanticChecks = 1;
 
 
 /*
- ! 1. Get All of the Math Operations working
+  1. Get All of the Math Operations working
+ ! 2. Put the Language for the array in the Compiler
 
  */
 
@@ -43,6 +44,10 @@ int semanticChecks = 1;
 %token <char> EQ
 %token <char> OPAREN
 %token <char> CPAREN
+%token <char> OBRACK
+%token <char> CBRACK
+%token <char> OCBRACE
+%token <char> CCBRACE
 %token <char> PLUS
 %token <char> MINUS
 %token <char> MULTIPLY
@@ -76,6 +81,7 @@ Decl: VarDecl
     | StmtList
 ;
 
+
 VarDecl:    TYPE ID SEMICOLON {printf("\n RECOGNIZED RULE: VARIABLE DECLERATION\n");
                              $$ = AST_assignment("Type", $1, $2);
                              //Show that we have access to symbol table
@@ -90,6 +96,15 @@ VarDecl:    TYPE ID SEMICOLON {printf("\n RECOGNIZED RULE: VARIABLE DECLERATION\
 
                             showSymTable();        
                             }
+    |       TYPE ID OBRACK NUMBER CBRACK SEMICOLON {printf("\n Array Decleration\n");
+                                                    // ? Semantic Checks
+
+                                                    // ? Symbol Table
+
+                                                    // ? AST Actions
+                                                    
+                                                    }
+
 ;
 
 StmtList: Stmt  
@@ -171,6 +186,14 @@ Expr:   Math {printf("\nRECOGNIZED RULE: Primary Statement\n");
                        }
                     }
 
+    | ID OBRACK Expr CBRACK EQ Expr {printf("\n Recongized Rule: Array Expression\n"); 
+                                        // ? Semantic Checks
+                                        
+                                        // ? Symbol Table
+
+                                        // ? AST Actions
+                                    }
+
     | ID EQ Math {printf("\nRecongized Rule: Math Expression\n");
                         //AST Tree: =: head, $1: left, $3: right
                         $$ = idMathexp("=", $1, $3);
@@ -199,6 +222,7 @@ Expr:   Math {printf("\nRECOGNIZED RULE: Primary Statement\n");
                             //puts this into our mips file
                             loadAddition($1, currentScope);
                 }
+
               
     |   WRITE ID {printf("\nRECONGIZED RULE: Print Statement\n");
                     $$ = AST_Write("Write", $2, ""); // place the write statement in AST

@@ -1,11 +1,6 @@
-int x;
 int y;
 int z;
-
-x = 4;
-y = 5;
+int x[10];
 
 
-z = 10 + 10 / 2;
-
-write z;
+x[2] = 1;

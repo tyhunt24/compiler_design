@@ -93,12 +93,13 @@ int semanticChecks = 1;
 
 
 /*
- ! 1. Get All of the Math Operations working
+  1. Get All of the Math Operations working
+ ! 2. Put the Language for the array in the Compiler
 
  */
 
 
-#line 102 "parser.tab.c"
+#line 103 "parser.tab.c"
 
 # ifndef YY_CAST
 #  ifdef __cplusplus
@@ -152,12 +153,16 @@ extern int yydebug;
     EQ = 261,
     OPAREN = 262,
     CPAREN = 263,
-    PLUS = 264,
-    MINUS = 265,
-    MULTIPLY = 266,
-    DIVIDE = 267,
-    NUMBER = 268,
-    WRITE = 269
+    OBRACK = 264,
+    CBRACK = 265,
+    OCBRACE = 266,
+    CCBRACE = 267,
+    PLUS = 268,
+    MINUS = 269,
+    MULTIPLY = 270,
+    DIVIDE = 271,
+    NUMBER = 272,
+    WRITE = 273
   };
 #endif
 
@@ -165,14 +170,14 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 33 "parser.y"
+#line 34 "parser.y"
 
     int number;
     char character;
     char* string;
     struct AST* ast;
 
-#line 176 "parser.tab.c"
+#line 181 "parser.tab.c"
 
 };
 typedef union YYSTYPE YYSTYPE;
@@ -489,21 +494,21 @@ union yyalloc
 #endif /* !YYCOPY_NEEDED */
 
 /* YYFINAL -- State number of the termination state.  */
-#define YYFINAL  19
+#define YYFINAL  20
 /* YYLAST -- Last index in YYTABLE.  */
-#define YYLAST   41
+#define YYLAST   52
 
 /* YYNTOKENS -- Number of terminals.  */
-#define YYNTOKENS  15
+#define YYNTOKENS  19
 /* YYNNTS -- Number of nonterminals.  */
 #define YYNNTS  9
 /* YYNRULES -- Number of rules.  */
-#define YYNRULES  22
+#define YYNRULES  24
 /* YYNSTATES -- Number of states.  */
-#define YYNSTATES  36
+#define YYNSTATES  45
 
 #define YYUNDEFTOK  2
-#define YYMAXUTOK   269
+#define YYMAXUTOK   273
 
 
 /* YYTRANSLATE(TOKEN-NUM) -- Symbol number corresponding to TOKEN-NUM
@@ -541,16 +546,17 @@ static const yytype_int8 yytranslate[] =
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     1,     2,     3,     4,
-       5,     6,     7,     8,     9,    10,    11,    12,    13,    14
+       5,     6,     7,     8,     9,    10,    11,    12,    13,    14,
+      15,    16,    17,    18
 };
 
 #if YYDEBUG
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_int16 yyrline[] =
 {
-       0,    63,    63,    69,    72,    75,    76,    79,    95,    96,
-      99,   102,   106,   138,   174,   203,   210,   287,   363,   439,
-     515,   518,   535
+       0,    68,    68,    74,    77,    80,    81,    85,    99,   110,
+     111,   114,   117,   121,   153,   189,   191,   221,   228,   305,
+     381,   457,   533,   536,   553
 };
 #endif
 
@@ -560,9 +566,9 @@ static const yytype_int16 yyrline[] =
 static const char *const yytname[] =
 {
   "$end", "error", "$undefined", "TYPE", "ID", "SEMICOLON", "EQ",
-  "OPAREN", "CPAREN", "PLUS", "MINUS", "MULTIPLY", "DIVIDE", "NUMBER",
-  "WRITE", "$accept", "Program", "DeclList", "Decl", "VarDecl", "StmtList",
-  "Stmt", "Expr", "Math", YY_NULLPTR
+  "OPAREN", "CPAREN", "OBRACK", "CBRACK", "OCBRACE", "CCBRACE", "PLUS",
+  "MINUS", "MULTIPLY", "DIVIDE", "NUMBER", "WRITE", "$accept", "Program",
+  "DeclList", "Decl", "VarDecl", "StmtList", "Stmt", "Expr", "Math", YY_NULLPTR
 };
 #endif
 
@@ -572,16 +578,16 @@ static const char *const yytname[] =
 static const yytype_int16 yytoknum[] =
 {
        0,   256,   257,   258,   259,   260,   261,   262,   263,   264,
-     265,   266,   267,   268,   269
+     265,   266,   267,   268,   269,   270,   271,   272,   273
 };
 # endif
 
-#define YYPACT_NINF (-6)
+#define YYPACT_NINF (-17)
 
 #define yypact_value_is_default(Yyn) \
   ((Yyn) == YYPACT_NINF)
 
-#define YYTABLE_NINF (-14)
+#define YYTABLE_NINF (-15)
 
 #define yytable_value_is_error(Yyn) \
   0
@@ -590,10 +596,11 @@ static const yytype_int16 yytoknum[] =
      STATE-NUM.  */
 static const yytype_int8 yypact[] =
 {
-       0,     4,    -5,    -2,    -6,    15,    10,    -6,     0,    -6,
-      -6,     2,    21,    19,    27,    20,    -6,    26,    -6,    -6,
-      -6,    -6,    -6,    -2,    -2,    -2,    -2,    -6,    34,    35,
-      19,    -6,     6,     6,    -6,    -6
+      -1,     0,    39,     3,   -17,     8,    21,   -17,    -1,   -17,
+     -17,     1,    24,    28,     6,    23,     1,   -17,    20,   -17,
+     -17,   -17,   -17,   -17,     3,     3,     3,     3,   -17,    14,
+       4,    27,    28,    29,   -17,    31,    31,   -17,   -17,    40,
+      32,    44,     1,   -17,   -17
 };
 
   /* YYDEFACT[STATE-NUM] -- Default reduction number in state STATE-NUM.
@@ -601,16 +608,17 @@ static const yytype_int8 yypact[] =
      means the default is an error.  */
 static const yytype_int8 yydefact[] =
 {
-       0,     0,    21,     0,    22,     0,     0,     2,     4,     5,
-       6,     8,     0,    11,     0,     0,    21,     0,    15,     1,
-       3,     9,    10,     0,     0,     0,     0,     7,    21,    22,
-      14,    20,    16,    17,    18,    19
+       0,     0,    23,     0,    24,     0,     0,     2,     4,     5,
+       6,     9,     0,    12,     0,     0,     0,    23,     0,    17,
+       1,     3,    10,    11,     0,     0,     0,     0,     7,     0,
+      23,    24,    16,     0,    22,    18,    19,    20,    21,     0,
+       0,     0,     0,     8,    15
 };
 
   /* YYPGOTO[NTERM-NUM].  */
 static const yytype_int8 yypgoto[] =
 {
-      -6,    -6,    17,    -6,    -6,    30,    -6,    -6,    -3
+     -17,   -17,    43,   -17,   -17,    41,   -17,   -16,    -2
 };
 
   /* YYDEFGOTO[NTERM-NUM].  */
@@ -624,46 +632,49 @@ static const yytype_int8 yydefgoto[] =
      number is the opposite.  If YYTABLE_NINF, syntax error.  */
 static const yytype_int8 yytable[] =
 {
-      17,    15,    16,     1,     2,     3,     2,     3,    14,     3,
-      19,     4,    30,     4,     5,     4,     5,    25,    26,    18,
-      32,    33,    34,    35,    28,    20,    22,     3,    23,    24,
-      25,    26,    27,    29,    31,    23,    24,    25,    26,   -12,
-     -13,    21
+      33,    18,     1,     2,    14,     2,     3,    17,     3,   -13,
+       3,    28,    19,    32,   -13,    29,     4,     5,     4,     5,
+       4,    20,    35,    36,    37,    38,    44,    30,    34,    23,
+       3,    39,   -14,    24,    25,    26,    27,   -14,    42,    40,
+      31,    24,    25,    26,    27,    15,    26,    27,    16,    43,
+      41,    21,    22
 };
 
 static const yytype_int8 yycheck[] =
 {
-       3,     6,     4,     3,     4,     7,     4,     7,     4,     7,
-       0,    13,    15,    13,    14,    13,    14,    11,    12,     4,
-      23,    24,    25,    26,     4,     8,     5,     7,     9,    10,
-      11,    12,     5,    13,     8,     9,    10,    11,    12,     5,
-       5,    11
+      16,     3,     3,     4,     4,     4,     7,     4,     7,     5,
+       7,     5,     4,    15,    10,     9,    17,    18,    17,    18,
+      17,     0,    24,    25,    26,    27,    42,     4,     8,     5,
+       7,    17,     5,    13,    14,    15,    16,    10,     6,    10,
+      17,    13,    14,    15,    16,     6,    15,    16,     9,     5,
+      10,     8,    11
 };
 
   /* YYSTOS[STATE-NUM] -- The (internal number of the) accessing
      symbol of state STATE-NUM.  */
 static const yytype_int8 yystos[] =
 {
-       0,     3,     4,     7,    13,    14,    16,    17,    18,    19,
-      20,    21,    22,    23,     4,     6,     4,    23,     4,     0,
-      17,    20,     5,     9,    10,    11,    12,     5,     4,    13,
-      23,     8,    23,    23,    23,    23
+       0,     3,     4,     7,    17,    18,    20,    21,    22,    23,
+      24,    25,    26,    27,     4,     6,     9,     4,    27,     4,
+       0,    21,    24,     5,    13,    14,    15,    16,     5,     9,
+       4,    17,    27,    26,     8,    27,    27,    27,    27,    17,
+      10,    10,     6,     5,    26
 };
 
   /* YYR1[YYN] -- Symbol number of symbol that rule YYN derives.  */
 static const yytype_int8 yyr1[] =
 {
-       0,    15,    16,    17,    17,    18,    18,    19,    20,    20,
-      21,    22,    22,    22,    22,    22,    23,    23,    23,    23,
-      23,    23,    23
+       0,    19,    20,    21,    21,    22,    22,    23,    23,    24,
+      24,    25,    26,    26,    26,    26,    26,    26,    27,    27,
+      27,    27,    27,    27,    27
 };
 
   /* YYR2[YYN] -- Number of symbols on the right hand side of rule YYN.  */
 static const yytype_int8 yyr2[] =
 {
-       0,     2,     1,     2,     1,     1,     1,     3,     1,     2,
-       2,     1,     3,     3,     3,     2,     3,     3,     3,     3,
-       3,     1,     1
+       0,     2,     1,     2,     1,     1,     1,     3,     6,     1,
+       2,     2,     1,     3,     3,     6,     3,     2,     3,     3,
+       3,     3,     3,     1,     1
 };
 
 
@@ -753,15 +764,15 @@ yy_symbol_value_print (FILE *yyo, int yytype, YYSTYPE const * const yyvaluep)
   switch (yytype)
     {
     case 4: /* ID  */
-#line 53 "parser.y"
+#line 58 "parser.y"
          { fprintf(yyoutput, "%s", ((*yyvaluep).string)); }
-#line 759 "parser.tab.c"
+#line 770 "parser.tab.c"
         break;
 
-    case 13: /* NUMBER  */
-#line 54 "parser.y"
+    case 17: /* NUMBER  */
+#line 59 "parser.y"
          { fprintf(yyoutput, "%d", ((*yyvaluep).number)); }
-#line 765 "parser.tab.c"
+#line 776 "parser.tab.c"
         break;
 
       default:
@@ -1375,29 +1386,29 @@ yyreduce:
   switch (yyn)
     {
   case 2:
-#line 63 "parser.y"
+#line 68 "parser.y"
                     {(yyval.ast) = (yyvsp[0].ast);
                         endMipsFile();
                     }
-#line 1383 "parser.tab.c"
+#line 1394 "parser.tab.c"
     break;
 
   case 3:
-#line 69 "parser.y"
+#line 74 "parser.y"
                             {(yyvsp[-1].ast)->left = (yyvsp[0].ast);
                              (yyval.ast) = (yyvsp[-1].ast);
                             }
-#line 1391 "parser.tab.c"
+#line 1402 "parser.tab.c"
     break;
 
   case 4:
-#line 72 "parser.y"
+#line 77 "parser.y"
             { (yyval.ast) = (yyvsp[0].ast); }
-#line 1397 "parser.tab.c"
+#line 1408 "parser.tab.c"
     break;
 
   case 7:
-#line 79 "parser.y"
+#line 85 "parser.y"
                               {printf("\n RECOGNIZED RULE: VARIABLE DECLERATION\n");
                              (yyval.ast) = AST_assignment("Type", (yyvsp[-2].string), (yyvsp[-1].string));
                              //Show that we have access to symbol table
@@ -1412,26 +1423,39 @@ yyreduce:
 
                             showSymTable();        
                             }
-#line 1416 "parser.tab.c"
+#line 1427 "parser.tab.c"
     break;
 
-  case 10:
+  case 8:
 #line 99 "parser.y"
-                     {(yyval.ast) = (yyvsp[-1].ast);}
-#line 1422 "parser.tab.c"
+                                                   {printf("\n Array Decleration\n");
+                                                    // ? Semantic Checks
+
+                                                    // ? Symbol Table
+
+                                                    // ? AST Actions
+                                                    
+                                                    }
+#line 1440 "parser.tab.c"
     break;
 
   case 11:
-#line 102 "parser.y"
+#line 114 "parser.y"
+                     {(yyval.ast) = (yyvsp[-1].ast);}
+#line 1446 "parser.tab.c"
+    break;
+
+  case 12:
+#line 117 "parser.y"
              {printf("\nRECOGNIZED RULE: Primary Statement\n");
                     (yyval.ast) = (yyvsp[0].ast);
 
                 }
-#line 1431 "parser.tab.c"
+#line 1455 "parser.tab.c"
     break;
 
-  case 12:
-#line 106 "parser.y"
+  case 13:
+#line 121 "parser.y"
                  {printf("\nRECONGINZED RULE: Assignment statement\n");
                     (yyval.ast) = AST_assignment("=", (yyvsp[-2].string), (yyvsp[0].string));
 
@@ -1463,11 +1487,11 @@ yyreduce:
                         loadValueIds((yyvsp[-2].string), (yyvsp[0].string), currentScope); //load the values into mips
                     }
                  }
-#line 1467 "parser.tab.c"
+#line 1491 "parser.tab.c"
     break;
 
-  case 13:
-#line 138 "parser.y"
+  case 14:
+#line 153 "parser.y"
                      {printf("\n RECONGIZED RULE: Number Decleration\n");
                         char str[50];
                         sprintf(str, "%d", (yyvsp[0].number));
@@ -1503,11 +1527,17 @@ yyreduce:
                             loadValueInts((yyvsp[-2].string), currentScope);
                        }
                     }
-#line 1507 "parser.tab.c"
+#line 1531 "parser.tab.c"
     break;
 
-  case 14:
-#line 174 "parser.y"
+  case 15:
+#line 189 "parser.y"
+                                    {printf("\n Recongized Rule: Array Expression");}
+#line 1537 "parser.tab.c"
+    break;
+
+  case 16:
+#line 191 "parser.y"
                  {printf("\nRecongized Rule: Math Expression\n");
                         //AST Tree: =: head, $1: left, $3: right
                         (yyval.ast) = idMathexp("=", (yyvsp[-2].string), (yyvsp[0].ast));
@@ -1536,21 +1566,21 @@ yyreduce:
                             //puts this into our mips file
                             loadAddition((yyvsp[-2].string), currentScope);
                 }
-#line 1540 "parser.tab.c"
+#line 1570 "parser.tab.c"
     break;
 
-  case 15:
-#line 203 "parser.y"
+  case 17:
+#line 221 "parser.y"
                  {printf("\nRECONGIZED RULE: Print Statement\n");
                     (yyval.ast) = AST_Write("Write", (yyvsp[0].string), ""); // place the write statement in AST
                     emitWriteId((yyvsp[0].string), currentScope); //write the value to the IR code
                     writeValue((yyvsp[0].string), currentScope);//Write the value to mips
                 }
-#line 1550 "parser.tab.c"
+#line 1580 "parser.tab.c"
     break;
 
-  case 16:
-#line 210 "parser.y"
+  case 18:
+#line 228 "parser.y"
                      {printf("\nReconiged Rule: Addition Expression\n");
                             //intialize a number to 0
                             int num = 0;
@@ -1628,11 +1658,11 @@ yyreduce:
                             (yyval.ast) = addTree((yyvsp[-2].ast)->nodeType, 1);
    
                             }
-#line 1632 "parser.tab.c"
+#line 1662 "parser.tab.c"
     break;
 
-  case 17:
-#line 287 "parser.y"
+  case 19:
+#line 305 "parser.y"
                           {printf("\nReconiged Rule: Addition Expression\n");
                             //intialize a number to 0
                             int num = 0;
@@ -1708,11 +1738,11 @@ yyreduce:
                             sprintf((yyvsp[-2].ast)->nodeType, "%d", num);
                             (yyval.ast) = addTree((yyvsp[-2].ast)->nodeType, 1);
                             }
-#line 1712 "parser.tab.c"
+#line 1742 "parser.tab.c"
     break;
 
-  case 18:
-#line 363 "parser.y"
+  case 20:
+#line 381 "parser.y"
                              {printf("\nReconiged Rule: Addition Expression\n");
                             //intialize a number to 0
                             int num = 0;
@@ -1788,11 +1818,11 @@ yyreduce:
                             sprintf((yyvsp[-2].ast)->nodeType, "%d", num);
                             (yyval.ast) = addTree((yyvsp[-2].ast)->nodeType, 1);
                             }
-#line 1792 "parser.tab.c"
+#line 1822 "parser.tab.c"
     break;
 
-  case 19:
-#line 439 "parser.y"
+  case 21:
+#line 457 "parser.y"
                            {printf("\nReconiged Rule: Addition Expression\n");
                             //intialize a number to 0
                             int num = 0;
@@ -1868,19 +1898,19 @@ yyreduce:
                             sprintf((yyvsp[-2].ast)->nodeType, "%d", num);
                             (yyval.ast) = addTree((yyvsp[-2].ast)->nodeType, 1);
                             }
-#line 1872 "parser.tab.c"
+#line 1902 "parser.tab.c"
     break;
 
-  case 20:
-#line 515 "parser.y"
+  case 22:
+#line 533 "parser.y"
                              {
             (yyval.ast) = (yyvsp[-1].ast);
         }
-#line 1880 "parser.tab.c"
+#line 1910 "parser.tab.c"
     break;
 
-  case 21:
-#line 518 "parser.y"
+  case 23:
+#line 536 "parser.y"
              {printf("\n ID\n");
             
             // Checks to make sure the ID is has already been declared
@@ -1897,21 +1927,21 @@ yyreduce:
 
             (yyval.ast) = addTree((yyvsp[0].string), 0);     
         }
-#line 1901 "parser.tab.c"
+#line 1931 "parser.tab.c"
     break;
 
-  case 22:
-#line 535 "parser.y"
+  case 24:
+#line 553 "parser.y"
                  {printf("\n In Number\n");
         char str[50];
         sprintf(str, "%d", (yyvsp[0].number));
         (yyval.ast) = addTree(str,1); // put the number into the bottom of the tree
     }
-#line 1911 "parser.tab.c"
+#line 1941 "parser.tab.c"
     break;
 
 
-#line 1915 "parser.tab.c"
+#line 1945 "parser.tab.c"
 
       default: break;
     }
@@ -2143,7 +2173,7 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 543 "parser.y"
+#line 561 "parser.y"
 
 
 int main(int argc, char**argv)

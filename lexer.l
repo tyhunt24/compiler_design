@@ -12,25 +12,6 @@ int chars = 0;
 int lines = 0;
 int errors = 0;
 
-
-/*
-functions:
-	- {}, () Need to be added
-	- return
-Math: 
-	- need + | - | * | /
-
-Other: 
-	- chars
-	- floats
-	- read
-
-Arrays:
-	- [] Need brackets
- */
-
-
-
 %}
 
 letter      [a-zA-Z]
@@ -98,6 +79,30 @@ NUMBER      {digit}+(\.{digit}+)?(E[+\-]?(digit)+)?
 		 printf("%s : EQ\n", yytext);
          yylval.string = strdup(yytext);
          return CPAREN;
+		}
+
+"["		{chars++;
+		 printf("%s : EQ\n", yytext);
+         yylval.string = strdup(yytext);
+         return OBRACK;
+		}
+
+"]"		{chars++;
+		 printf("%s : EQ\n", yytext);
+         yylval.string = strdup(yytext);
+         return CBRACK;
+		}
+
+"{"		{chars++;
+		 printf("%s : EQ\n", yytext);
+         yylval.string = strdup(yytext);
+         return OCBRACE;
+		}
+
+"}"		{chars++;
+		 printf("%s : EQ\n", yytext);
+         yylval.string = strdup(yytext);
+         return CCBRACE;
 		}
 
 "+" {chars++;
