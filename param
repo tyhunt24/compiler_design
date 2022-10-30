@@ -1,0 +1,23 @@
+AST Tree with Params
+
+            add
+        int     paramList (values)
+                                Body
+                                    StmtList
+                                        =
+                                    x     math
+                                              +
+                                            2   y (param)
+                                                sub
+                                            int     paramList(values)
+                                                            Body
+                                                                StmtList
+                                                                    =
+                                                                   r math
+                                                                       -
+                                                                    4     y (param)      
+
+    paramList
+        |
+   param   param
+  int  y  int   y

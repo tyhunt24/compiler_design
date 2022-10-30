@@ -4,6 +4,7 @@
 #include <string.h>
 
 #include "symbolTable.h"
+#include "symtab.h"
 #include "AST.h"
 #include "IrCode.h"
 #include "Assembly.h"
@@ -14,7 +15,12 @@ extern int yyparse();
 extern FILE* yyin;
 
 void yyerror(const char* s);
-char currentScope[50];
+char currentScope[50] = "global";
+char label[50];
+char otherScope[50];
+char returnName[50];
+
+char *returnType;
 
 int semanticChecks = 1;
 
@@ -24,8 +30,7 @@ int semanticChecks = 1;
 
 
 /*
-  1. Get All of the Math Operations working
- ! 2. Put the Language for the array in the Compiler
+  1. Try to get a really simple function running in MIPS. 
 
  */
 
@@ -41,6 +46,7 @@ int semanticChecks = 1;
 %token <string> TYPE
 %token <string> ID
 %token <char> SEMICOLON
+%token <char> COMMA
 %token <char> EQ
 %token <char> OPAREN
 %token <char> CPAREN
@@ -54,47 +60,54 @@ int semanticChecks = 1;
 %token <char> DIVIDE
 %token <number> NUMBER
 %token WRITE
+%token RETURN
 
 %printer { fprintf(yyoutput, "%s", $$); } ID;
 %printer { fprintf(yyoutput, "%d", $$); } NUMBER;
 
-%type <ast> Program DeclList Decl VarDecl StmtList Stmt Expr Math
+%type <ast> Program DeclList Decl VarDeclList VarDecl FunDecl ParamDecl ParamDecList ParamDecListTail Block StmtList Stmt Expr Math
 %left PLUS MINUS
 %left MULTIPLY DIVIDE
 
 %start Program
 
 %%
-Program: DeclList   {$$ = $1;
+Program: DeclList  {$$ = $1;
                         endMipsFile();
                     }
-
+        
 ;
 
 DeclList:   Decl DeclList   {$1->left = $2;
                              $$ = $1;
                             }
-    | Decl  { $$ = $1; }  
+    | Decl  { $$ = $1; }
 ;
 
-Decl: VarDecl
+Decl: FunDecl
+    | VarDeclList
     | StmtList
 ;
 
+VarDeclList: {$$ = NULL;}
+|   VarDecl VarDeclList
+;
 
 VarDecl:    TYPE ID SEMICOLON {printf("\n RECOGNIZED RULE: VARIABLE DECLERATION\n");
-                             $$ = AST_assignment("Type", $1, $2);
-                             //Show that we have access to symbol table
-                             int insymTab = found($2, currentScope);
-                            
-                            //--------------- Semantic Checks ------------------
-                            if (insymTab == 0) 
-                                addItem($2, "Var", $1, 0, currentScope); //if not in the symbol table add it
-                                
-                            else
-                                printf("Semantic Error: Var %s is already in the symbol table", $2);
+                                // ----- Semantic Checks ----- //
+                                if (find($2, currentScope) == 1) {
+                                    printf("\n Semantic Checks: Variable already declared\n");
+                                    exit(0);
+                                    semanticChecks = 0;
+                                }
 
-                            showSymTable();        
+                                // ----- Symbol Table ----- //
+                                insert($2, "var", $1, currentScope);
+
+                                // ----- AST Actions ----- //
+                                $$ = AST_assignment("TYPE", $1, $2);
+
+                                printList();
                             }
     |       TYPE ID OBRACK NUMBER CBRACK SEMICOLON {printf("\n Array Decleration\n");
                                                     // ? Semantic Checks
@@ -105,6 +118,58 @@ VarDecl:    TYPE ID SEMICOLON {printf("\n RECOGNIZED RULE: VARIABLE DECLERATION\
                                                     
                                                     }
 
+;
+
+FunDecl: TYPE ID OPAREN ParamDecList 
+                        {
+
+                            // ----- Symbol Table ----- //
+                            insert($2, "func", $1, currentScope);
+
+                            //Get the Current Scope
+                            strcpy(currentScope, $2);
+                            strcpy(label, $2);
+                         } CPAREN Block {printf("\nFunction\n");
+
+                             //----- Semantic Checks ----- //
+                             // ? This should work but it does not work IDK why.
+                             if($1 != returnType) {
+                                printf("\nSemantic Error\n");
+                             }
+                            printf("\n%s: %s\n\n\n", $1, returnType);
+                            
+                            // ----- AST Tree ----- //
+                            struct AST* rightHand = malloc(sizeof(struct AST));
+                            rightHand = add_tree($2, NULL, $7);
+                            //printf("\n\n%s\n\n", $7->right);
+                            $$ = ast_func("func", $1, rightHand); 
+
+                            // ----- IR code ----- //
+                            labelFunction(label);
+                            MipsCreateFunction(label);
+
+                         }
+;
+
+ParamDecList: {$$ = NULL;}
+    |   ParamDecListTail   
+;
+
+ParamDecListTail: ParamDecl
+    |   ParamDecl COMMA ParamDecListTail
+;
+
+ParamDecl: TYPE ID {printf("\nEncountered Parameter\n");}
+|   TYPE ID OBRACK CBRACK {printf("\nParameter Array\n");}
+;
+
+Block:  OCBRACE VarDeclList StmtList CCBRACE {printf("\nBlock Statement\n");
+                                                
+                                                //----- AST Actions ----- //
+                                                $$ = add_tree("block", $2, $3);
+
+                                                strcpy(currentScope, "global");
+                                            }
 ;
 
 StmtList: Stmt  
@@ -119,12 +184,10 @@ Expr:   Math {printf("\nRECOGNIZED RULE: Primary Statement\n");
 
                 }
     |   ID EQ ID {printf("\nRECONGINZED RULE: Assignment statement\n");
-                    $$ = AST_assignment("=", $1, $3);
+                // ----- AST Actions ----- //
+                $$ = AST_assignment("=", $1, $3);
 
-                    //updates our value in the Symbol Table
-                    updateValue($1, currentScope, getValue($3, currentScope));
-
-                    //------------- Semantic Checks ----------------//
+                //----- Semantic Checks -----//
                     int semanticChecks = 1;
                     if(found($1, currentScope)  == 0) {
                         printf("Semantic Error: %s is not intialized\n", $1);
@@ -136,56 +199,68 @@ Expr:   Math {printf("\nRECOGNIZED RULE: Primary Statement\n");
                         semanticChecks = 0;
                     }
 
-                    //checks to make sure they are the correct type
-                    if (compareTypes(found($1, currentScope), found($3, currentScope) == 0)) {
-                        printf("Semantic Error: Variables %s and %s type mismatch\n", $1, $3);
+                    // Checks Variable Types
+                    char *varType1 = getVarType($1, currentScope);
+                    char *varType2 = getVarType($1, currentScope);
+
+                    if(strcmp(varType1, varType2) != 0) {
+                        printf("\nSemantic Error: variables Type mistmatch\n");
                         semanticChecks = 0;
                     }
 
-                    if(semanticChecks == 1) {
-                        //printf("\nAll Semantics Check passed");
-                        emitAssignment($1, $3, currentScope);  //Send IR code to seperate file
 
-                        loadValueIds($1, $3, currentScope); //load the values into mips
+                    // Update the Value in $1
+                    updateVal($1, currentScope, getValue($3, currentScope));
+                    
+                    // Perform Semantic Actions
+                    if(semanticChecks = 1) {
+                        printf("\n Passed Semantic Checks\n");
+
+                        //emit IR code
+
+                        // emit Mips Code 
                     }
                  }
 
     |   ID EQ NUMBER {printf("\n RECONGIZED RULE: Number Decleration\n");
+                        // ----- Semantic Checks ----- //
+                            if (find($1, currentScope) == 1) {
+                                printf("\n Semantic Checks: Variable already declared\n");
+                                semanticChecks = 0;
+                                exit(0);
+                            }
+
+                            // IF the variables type do not work
+                            if(strcmp(getVarType($1, currentScope), "int") != 0) {
+                                printf("\n Variable is not of Type Int\n");
+                                semanticChecks = 0;
+                                exit(0);
+                            }
+
+                        // ----- Symbol Table ----- //
                         char str[50];
                         sprintf(str, "%d", $3);
+                        updateVal($1, currentScope, str);
+
+                        // ----- AST Actions ----- //
                         $$ = AST_assignment("=", $1, str);
-                        
 
-                        // ------------- Semantic Checks ----------------//
-                        if(found($1, currentScope) == 0) {
-                            printf("Error: Variable %s not found", $1);
-                            semanticChecks = 0;
-                        }
-
-                        //checks to make sure that ID is an Integer.
-                        if (strcmp(getVariableType($1, currentScope), "int") != 0) {
-                            printf("Error: Variable %s not found", $1);
-                            semanticChecks = 0;
-                        } 
-
-                        //check if the statement is redundant
-                            // ! Make sure it does not print as IR code
-                        //change number to str
-
-                       //updates value to the symbol table
-                       updateValue($1, currentScope, str);
-
-                            if (semanticChecks == 1) {
-                            printf("All Semantic Checks passed\n");
-
-                            // ! works for now need to make some changes
-                            emitConstantIntAssignment($1, str, currentScope);
-
-                            //put what our value is into mips
-                            loadValueInts($1, currentScope);
-                       }
                     }
+    
+    | ID EQ ID OPAREN CPAREN {printf("\nCall Function: In ID\n");
+                                // ----- Semantic Checks ----- //
 
+                                // ----- AST Actions ----- //
+
+                                //Generate IR code
+                                IRFunctionCall($3);
+                                mipsJumpFunction(label);
+                                
+                                //Generate Mips Assembly Code
+
+                            }   
+
+        
     | ID OBRACK Expr CBRACK EQ Expr {printf("\n Recongized Rule: Array Expression\n"); 
                                         // ? Semantic Checks
                                         
@@ -195,42 +270,61 @@ Expr:   Math {printf("\nRECOGNIZED RULE: Primary Statement\n");
                                     }
 
     | ID EQ Math {printf("\nRecongized Rule: Math Expression\n");
-                        //AST Tree: =: head, $1: left, $3: right
-                        $$ = idMathexp("=", $1, $3);
+                    // ----- AST Actions ----- //
+                    $$ = idMathexp("=", $1, $3);
 
-                        // -------- Semantic Checks --------- //
-                        // Need to check to make sure that ID is in the symbol table
-                        if(found($1, currentScope) == 0) {
-                            printf("Error: Variable %s not found", $1);
-                            semanticChecks = 0;
-                        }
+                    // ----- Semantic Checks ----- // 
+                    if(find($1, currentScope) == 0) {
+                        printf("\nError: Variable not found\n");
+                        semanticChecks = 0;
+                    }
 
-                        // Need to make sure it has been declared as a variable
-                        if (strcmp(getVariableType($1, currentScope), "int") != 0) {
-                            printf("Error: Variable %s not found", $1);
-                            semanticChecks = 0;
-                        } 
-                        
-                        //updates what our value to what the additon is
-                        updateValue($1, currentScope, $3->nodeType);
+                    //updates value to 2 + 2 = 4
+                    updateVal($1, currentScope, $3->nodeType);
 
-                        //printf("%s", $3->nodeType);
-                            
-                            //put value into IR code file
-                            emitConstantIntAssignment($1, $3->nodeType, currentScope);
+                    //----- IR Code----- //
+                    emitConstantIntAssignment($1, $3->nodeType, currentScope);
+                    mipsInside();
+                    loadAddition($1, currentScope);
+                    
+                    //Gets the Other Scope
+                    
 
-                            //puts this into our mips file
-                            loadAddition($1, currentScope);
+                    printList();
                 }
 
               
     |   WRITE ID {printf("\nRECONGIZED RULE: Print Statement\n");
                     $$ = AST_Write("Write", $2, ""); // place the write statement in AST
-                    emitWriteId($2, currentScope); //write the value to the IR code
-                    writeValue($2, currentScope);//Write the value to mips
+
+                    if(semanticChecks == 1) {
+                       
+                        //IR code
+                        emitWriteId(returnName, otherScope);
+                        
+                        //Mips Code
+                        writeValue(returnName, otherScope);
+                    }
                 }
+
+    |   RETURN ID {printf("\nFunction Found: Return ID\n"); 
+                    // AST actions
+                    $$ = AST_Write("Return", $2, "");
+                    
+                    // Semantic Checks
+                    char *returnID = getVarType($2, currentScope);
+                    //strcpy(returnType, returnID);
+
+                    strcpy(returnName, $2);
+                    strcpy(otherScope, currentScope);
+                    // Mips Code
+                  
+                } 
 ;
 
+
+
+//Everything below here should be fine.
 Math: Math PLUS Math {printf("\nReconiged Rule: Addition Expression\n");
                             //intialize a number to 0
                             int num = 0;

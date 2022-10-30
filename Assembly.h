@@ -48,13 +48,13 @@ void loadValueIds(char *id1, char *id2, char currentScope[50]) {
 void loadAddition(char *id, char currentScope[50]) {
     assemblyFile = fopen("compiler.asm", "a");
 
-    int var1 = found(id, currentScope);
+    int var1 = find(id, currentScope);
 
-    char *value1 = getValue(id, currentScope);
+    char *value1 = getVal(id, currentScope);
 
-    fprintf(assemblyFile, "li $t%d, %s\n", var1, value1);
+    fprintf(assemblyFile, "\tli $t%d, %s\n", var1, value1);
 
-    fclose(assemblyFile);
+    
 }
 
 
@@ -62,7 +62,7 @@ void loadAddition(char *id, char currentScope[50]) {
 void writeValue(char *id, char currentScope[50]) {
     assemblyFile = fopen("compiler.asm", "a");
 
-    int var1 = found(id, currentScope);
+    int var1 = find(id, currentScope);
 
     fprintf(assemblyFile, "li $v0, 1\n");
     fprintf(assemblyFile, "move $a0 $t%d\n", var1);
@@ -80,6 +80,32 @@ void endMipsFile() {
     fprintf(assemblyFile, ".end main\n");
 
     fclose(assemblyFile);
+}
+
+
+void MipsCreateFunction(char label[50]) {
+    assemblyFile = fopen("compiler.asm", "a");
+    
+ 
+    fprintf(assemblyFile, "%s:\n", label);
+}
+
+void mipsJumpFunction(char label[50]) {
+    assemblyFile = fopen("compiler.asm", "a");
+    
+ 
+    fprintf(assemblyFile, "jal %s\n", label);
+
+    fclose(assemblyFile);
+}
+
+void mipsInside() {
+    assemblyFile = fopen("compiler.asm", "a");
+    
+ 
+    fprintf(assemblyFile, "\tjr $ra\n");
+
+
 }
 
 

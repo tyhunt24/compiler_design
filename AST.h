@@ -74,3 +74,21 @@ struct AST * addTree(char nodeType[50], int isNum) {
 	astTree->isNumber = isNum;
 }
 
+struct AST * add_tree(char nodeType[50], struct AST *l, struct AST * r) {
+	struct AST* astTree = malloc(sizeof(struct AST));
+	strcpy(astTree->nodeType, nodeType);
+	astTree->left = l;
+	astTree->right = r;
+
+	return astTree;
+}
+
+struct AST * ast_func(char nodeType[50], char lhs[50], struct AST *r) {
+	struct AST* astTree = malloc(sizeof(struct AST));
+	strcpy(astTree->nodeType, nodeType);
+	strcpy(astTree->LHS, lhs);
+	astTree->right = r;
+
+	return astTree;
+}
+

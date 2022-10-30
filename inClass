@@ -1,0 +1,41 @@
+Symbol Table
+
+IR code for functions
+
+int x;
+
+// I am going to try to get this to work today.
+// No functions in assembly
+//Where to store values returned by functions in mips
+float addNumbers(float a, float b) {
+    float x;
+
+    x = a + b;
+
+    return x; //place return in a special register
+}
+
+x = addNumbers(3, 7);
+write x; 
+x = addNumbers(100, 200);
+write x;
+------------------------------
+            TPar1 = 3
+            Tpar2 = 7
+            goto addNumbers
+continue1   t3 = TreturnVal
+            write T3
+            stop
+            TPar1 = 100
+            Tpar2 = 200
+
+addNumbers: T1 = a + b
+            T2 = T1
+            TreturnVal = T2
+            goto continue1
+
+// Generate block of code
+// Then we have to play with the gotos
+// add a label and goto to the labels
+// Manage the Special registers
+// What are the requirements for those languages 

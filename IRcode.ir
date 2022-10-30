@@ -1,43 +1,73 @@
-T1 = 4
-T2 = 5
-T3 = 16
+goto add
+
+T3 = Treturn
 output T3
-T1 = 4
-T2 = 5
-T3 = 16
+
+add:
+    T2 = 4
+    Treturn = T2
+    goto T3add:
+goto add
 output T3
-T1 = 4
-T2 = 5
-T3 = 12
+T2 = 4
+add:
+goto add
 output T3
-T1 = 4
-T2 = 5
-T3 = 19
+T2 = 4
+add:
+goto add
 output T3
-T1 = 4
-T2 = 5
-T3 = 19
+T2 = 4
+add:
+goto add
 output T3
-T1 = 4
-T2 = 5
-T3 = 27
+T2 = 4
+add:
+goto add
 output T3
-T1 = 4
-T2 = 5
-T3 = 15
+T2 = 4
+add:
+goto add
 output T3
-T1 = 4
-T2 = 5
-T3 = 10
+T2 = 4
+add:
+goto add
 output T3
-T1 = 4
-T2 = 5
-T3 = 15
+T2 = 4
+add:
+goto add
 output T3
-T1 = 
-T1 = 2
-T1 = 2
-T1 = 
-T1 = 2
-T1 = 2
-T1 = 2
+T2 = 4
+add:
+goto add
+output T3
+T2 = 4
+add:
+goto add
+output T3
+T2 = 4
+add:
+goto add
+output T3
+T2 = 4
+add:
+goto add
+output T3
+T2 = 4
+add:
+goto add
+T2 = 4
+add:
+goto add
+T2 = 4
+add:
+goto add
+T2 = 4
+add:
+goto add
+output T2
+T2 = 4
+add:
+goto add
+output T2
+T2 = 4

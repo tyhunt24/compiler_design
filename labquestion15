@@ -1,0 +1,19 @@
+------- AST TREE for Fucntions --------
+
+
+                  add
+             int    paramList (empty)
+                                  Body
+                                    StmtList
+                                        =
+                                      x  math
+                                              +
+                                             2  2 
+                                                 sub
+                                            int      paramList(emty)
+                                                            Body 
+                                                                StmtList
+                                                                    =
+                                                                   r Math
+                                                                        - 
+                                                                      4   2

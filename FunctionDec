@@ -1,0 +1,78 @@
+Function Decleration
+    - Parameters
+    - body
+    - return values
+Arrays
+    - bounds
+    - values
+
+Semantic actions by parser
+     - Symbol Table Management
+        - function name in Global Scope: global vs Function Scope
+        - One big Symbol Table Designate Identifer as a function, Will have a lot of columns with that function
+        - Seperate Table for each function
+            - Function Name returnType param0 ... Param9
+            - funcName ReturnType paramList
+                -                       - array of parameters
+                - For each paramter store name and type
+
+                struct paramEntry {
+                    string paramName;
+                    stringParamType;
+                }
+
+                struct funcEntry {
+                    string funcName;
+                    string returnType;
+                    int numOfParameters;
+                    paramEntry[10] paramList; 
+                }
+
+Building the AST
+    - for function
+                    funcName
+                 type       paramList
+                                    Body
+
+
+                    paramList
+
+                param1      paramList
+
+                    param2         
+                                    paramList
+                                param3        NULL
+
+        - Always ask what I want to do last   
+
+    - for arrays
+
+Semantic checks
+    -verify that function use matches declaration
+        result = average(a,b,c);
+
+        or 
+
+        void someFunction() {
+            float result;
+            result = average(a, b, c);
+        }
+        checks:
+            - RHS
+                - the function has been declared
+                - check return type of "average()" vs type of result
+                - check number of parameters vs declaration
+                - Check the type of each parameter vs deceleration
+            - LHS
+                - "result" has been declared in the appropriate scope
+                -Scope 
+                - two level of scopes
+                - How do we find the scope
+                    - list of pointers to symbol tables for each function
+                    - traverse the list
+
+Global as the first Node
+Then every function after that
+
+IR Code
+Assembly Code

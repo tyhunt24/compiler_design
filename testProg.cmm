@@ -1,6 +1,11 @@
-int y;
-int z;
-int x[10];
+int add() {
+    int x;
+    x = 2 + 2;
+    return x;
+}
 
+int d;
 
-x[2] = 1;
+d = add();
+
+write d;
