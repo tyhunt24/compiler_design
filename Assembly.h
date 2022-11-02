@@ -2,9 +2,9 @@
 Need to add functionality to deal with functions
 Also need to add functionlity to deal with arrays
 */
-
-
 FILE *assemblyFile;
+
+int numParams = 0;
 
 //load what we first get in the our Mips file
 void initMipsFile() {
@@ -48,9 +48,9 @@ void loadValueIds(char *id1, char *id2, char currentScope[50]) {
 void loadAddition(char *id, char currentScope[50]) {
     assemblyFile = fopen("compiler.asm", "a");
 
-    int var1 = find(id, currentScope);
+    int var1 = found(id, currentScope);
 
-    char *value1 = getVal(id, currentScope);
+    char *value1 = getValue(id, currentScope);
 
     fprintf(assemblyFile, "\tli $t%d, %s\n", var1, value1);
 
@@ -62,7 +62,7 @@ void loadAddition(char *id, char currentScope[50]) {
 void writeValue(char *id, char currentScope[50]) {
     assemblyFile = fopen("compiler.asm", "a");
 
-    int var1 = find(id, currentScope);
+    int var1 = found(id, currentScope);
 
     fprintf(assemblyFile, "li $v0, 1\n");
     fprintf(assemblyFile, "move $a0 $t%d\n", var1);
@@ -104,8 +104,22 @@ void mipsInside() {
     
  
     fprintf(assemblyFile, "\tjr $ra\n");
+}
 
+void addMips() {
+    assemblyFile = fopen("compiler.asm", "a");
+    
+ 
+    fprintf(assemblyFile, "\tadd $v1, $a1, $a2\n");
+}
 
+void paramMips() {
+    assemblyFile = fopen("compiler.asm", "a");
+    
+ 
+    fprintf(assemblyFile, "\taddi $a1, $zero, 2\n");
+
+    fclose(assemblyFile);
 }
 
 

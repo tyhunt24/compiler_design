@@ -36,20 +36,19 @@ void symTabAccess(void){
 }
 
 //Add items to the Symbol table
-void addItem(char itemName[50], char itemKind[8], char itemType[8], int arrayLength, char scope[50]){
+void addItem(char itemName[50], char itemKind[8], char itemType[8], char scope[50]){
 	// what about scope? should you add scope to this function?
 		symTabItems[symTabIndex].itemID = symTabIndex;
 		strcpy(symTabItems[symTabIndex].itemName, itemName);
 		strcpy(symTabItems[symTabIndex].itemKind, itemKind);
 		strcpy(symTabItems[symTabIndex].itemType, itemType);
-		symTabItems[symTabIndex].arrayLength = arrayLength;
 		strcpy(symTabItems[symTabIndex].scope, scope);
 		symTabIndex++;
 	
 }
 
 //shows the symbol table
-void showSymTable(){
+void printTable(){
 	printf("itemID    itemName    itemKind    itemType     Value    itemSCope\n");
 	printf("-----------------------------------------------------------------------\n");
 	for (int i=1; i<symTabIndex; i++){
@@ -91,7 +90,7 @@ int compareTypes(int itemIndex1, int itemIndex2) {
 //update the value to the symbol table
 void updateValue(char itemName[50], char scope[50], char value[50]) {
 	for(int i = 1; i<symTabIndex; i++) {
-		if (strcmp(symTabItems[i].itemName, itemName) && strcmp(symTabItems[i].scope, scope) == 0) {
+		if ((strcmp(symTabItems[i].itemName, itemName) == 0) && (strcmp(symTabItems[i].scope, scope) == 0)) {
 			strcpy(symTabItems[i].value, value);
 		}
 	}
@@ -103,7 +102,7 @@ char *getValue(char itemName[50], char scope[50]) {
 		int str1 = strcmp(symTabItems[i].itemName, itemName);
 		int str2 = strcmp(symTabItems[i].scope,scope);
 
-		if(str1 && str2 == 0) {
+		if(str1 == 0 && str2 == 0) {
 			return symTabItems[i].value;
 		}
 	}
@@ -119,7 +118,7 @@ char *getVariableType(char itemName[50], char scope[50]) {
 		int str1 = strcmp(symTabItems[i].itemName, itemName);
 		int str2 = strcmp(symTabItems[i].scope,scope);
 
-		if(str1 && str2 == 0) {
+		if(str1 == 0 && str2 == 0) {
 			return symTabItems[i].itemType;
 		}
 	}

@@ -71,3 +71,82 @@ add:
 goto add
 output T2
 T2 = 4
+add:
+goto add
+output T2
+T2 = 4
+add:
+goto add
+output T2
+T2 = 4
+add:
+goto add
+output T2
+T2 = 4
+add:
+goto add
+output T4
+T4 = 4
+add:
+goto add
+output T2
+T2 = 4
+add:
+goto add
+output T2
+T2 = 4
+add:
+goto add
+output T2
+T2 = 4
+add:
+goto add
+output T0
+add:
+goto add
+output T0
+add:
+goto add
+output T0
+add:
+goto add
+output T0
+T4 = 4
+add:
+goto add
+output T2
+T2 = 4
+add:
+goto add
+output T2
+T2 = 4
+add:
+goto add
+output T3
+T3 = 4
+add:
+goto add
+output T2
+T2 = 4
+add:
+goto add
+output T2
+T2 = 4
+add:
+goto add
+output T2
+T2 = 4
+add:
+add:
+add:
+add:
+add:
+add:
+add:
+add:
+add:
+add:
+add:
+add:
+add:
+add:

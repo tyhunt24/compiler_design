@@ -1,11 +1,13 @@
 int add() {
-    int x;
-    x = 2 + 2;
-    return x;
+    int z;
+
+    z = 2 + 2;
+
+    return z;
 }
 
-int d;
+int v;
 
-d = add();
+v = add();
 
-write d;
+write v;

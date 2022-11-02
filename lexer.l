@@ -32,7 +32,7 @@ NUMBER      {digit}+(\.{digit}+)?(E[+\-]?(digit)+)?
 							}
 						}
 
-"int"	{words++; chars += strlen(yytext); 
+"int"|"char"|"float"|"void"	{words++; chars += strlen(yytext); 
 		 printf("%s : TYPE\n", yytext);
          yylval.string = strdup(yytext);
          return TYPE;
