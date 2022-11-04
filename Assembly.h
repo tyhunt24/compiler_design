@@ -4,7 +4,9 @@ Also need to add functionlity to deal with arrays
 */
 FILE *assemblyFile;
 
-int numParams = 0;
+int numParams = 1;
+
+int randomRegister = 1; 
 
 //load what we first get in the our Mips file
 void initMipsFile() {
@@ -54,7 +56,7 @@ void loadAddition(char *id, char currentScope[50]) {
 
     fprintf(assemblyFile, "\tli $t%d, %s\n", var1, value1);
 
-    
+    fclose(assemblyFile);
 }
 
 
@@ -70,6 +72,17 @@ void writeValue(char *id, char currentScope[50]) {
 
     fclose(assemblyFile);
     }
+
+// The problem is Here
+void writeFunction() {
+    assemblyFile = fopen("compiler.asm", "a");
+
+    fprintf(assemblyFile, "li $v0, 1\n");
+    fprintf(assemblyFile, "move $a0 $v1\n");
+    fprintf(assemblyFile,"syscall\n");
+
+    fclose(assemblyFile);
+}
 
 //This prints what is at the end of the file.
 void endMipsFile() {
@@ -106,21 +119,21 @@ void mipsInside() {
     fprintf(assemblyFile, "\tjr $ra\n");
 }
 
+//add the MIPS function
 void addMips() {
     assemblyFile = fopen("compiler.asm", "a");
-    
- 
+
     fprintf(assemblyFile, "\tadd $v1, $a1, $a2\n");
 }
 
-void paramMips() {
+void paramMips(char *value) {
     assemblyFile = fopen("compiler.asm", "a");
-    
  
-    fprintf(assemblyFile, "\taddi $a1, $zero, 2\n");
-
-    fclose(assemblyFile);
+    fprintf(assemblyFile, "\taddi $a%d, $zero, %s\n", numParams, value);
+    numParams++;
+   fclose(assemblyFile);
 }
+
 
 
 

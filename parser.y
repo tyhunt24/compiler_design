@@ -256,13 +256,15 @@ Expr:   Math {printf("\nRECOGNIZED RULE: Primary Statement\n");
                     // put the value here
                     if($3->isNumber == 1) {
                         updateValue($1, currentScope, $3->nodeType);
+
+                        printf("\n\n\n\n%s\n\n\n\n", $3->nodeType);
                 
                         // ----- IR code ----- //
-                        mipsInside();
                         loadAddition($1, currentScope);
 
                     } else {
                         // ----- IR code ----- //
+                        printf("Not a number");
                     }
 
                     // ----- AST Tree ----- //
@@ -276,7 +278,8 @@ Expr:   Math {printf("\nRECOGNIZED RULE: Primary Statement\n");
                      $$ = AST_Write("Write", $2, "");
 
                      // ----- IR Code ----- //
-                     writeValue(returnName, otherScope);
+                     //writeValue($2, currentScope);
+                     writeFunction();
 
                 }
 
@@ -295,12 +298,14 @@ Expr:   Math {printf("\nRECOGNIZED RULE: Primary Statement\n");
 CallList: {$$ = NULL;}
         | Math {
             // ----- IR Code ----- //
+            paramMips($1->nodeType);
 
             // ----- AST Tree -----//
             $$ = add_tree("Call", $1, NULL);
         }
         | Math COMMA CallList {
             // ----- IR Code ----- //
+            paramMips($1->nodeType);
 
             // ----- AST Tree ----- //
             $$ = add_tree("Call", $1, $3);
@@ -309,26 +314,272 @@ CallList: {$$ = NULL;}
 //Everything below here should be fine.
 Math: Math PLUS Math {printf("\nReconiged Rule: Addition Expression\n");
                                 
-                                // ----- AST Actions ----- //
-                                if($1->isNumber == 1 && $3->isNumber == 1) {
-                                int num = 0;
+                            //intialize a number to 0
+                             int num = 0;
+
+                            //IF $1 and $3 are both numbers
+                            if($1->isNumber && $3->isNumber == 1) {
+                                
+                                //change from characters to numbers
+                                //And Add them
                                 int num1 = atoi($1->nodeType);
                                 int num3 = atoi($3->nodeType);
-                            
+                                
+                                //add the numbers and add it to first variable
+                                int number = num1 + num3;
+                                num += number;
+                                
+                                // ----- AST Tree ----- //
+                                char str[50];
+                                sprintf(str, "%d", num);
+                                $$ = addTree(str, 1);
+                            }
+
+                            //If the $1 is a number but the $3 is a variable
+                            else if($1->isNumber == 1) {
+                                
+                                //convert the number from Char to Num
+                                //Get the value of the variable from the symbol table
+                                //convert it from Char to num
+                                int num1 = atoi($1->nodeType);
+                                char *val1 = getValue($3->nodeType, currentScope);
+                                int num3 = atoi(val1);
+
+                                //add the numbers and add it to first variable
                                 int number = num1 + num3;
                                 num += number;
 
-                            sprintf($1->nodeType, "%d", num);
-                            $$ = addTree($1->nodeType, 1);
+                                // ----- AST Tree ----- //
+                                char str[50];
+                                sprintf(str, "%d", num);
+                                $$ = addTree(str, 1);
+                            } 
+
+                            //Now $1 is variable and $3 is number
+                            else if($3->isNumber == 1) {
+                                
+                                //do the same as the steps before
+                                char *val1 = getValue($1->nodeType, currentScope);
+                                int num1 = atoi(val1);
+                                int num3 = atoi($3->nodeType);
+
+                                //add the numbers and add it to first variable
+                                int number = num1 + num3;
+                                num += number;
+
+                                // ----- AST Tree ----- //
+                                char str[50];
+                                sprintf(str, "%d", num);
+                                $$ = addTree(str, 1);
+                            }
+                            
+                            else {
+                                    
+                                char *val1 = getValue($1->nodeType, currentScope);
+                                char *val2 = getValue($3->nodeType, currentScope);
+
+                                if(val1 != NULL && val2 != NULL) {
+                                 // ----- AST Tree ----- //
+                                int num1 = atoi(val1);
+                                int num2 = atoi(val2);
+
+                                int number;
+
+                                number = num1 + num2;
+                                num += number;
+                                char str[50];
+                                sprintf(str, "%d", num);
+                                $$ = addTree(str, 1);
+                                }
+                                mipsInside();
+                                addMips();
+                                $$ = add_tree("+", $1, $3);
+
                             }
                     }
         | Math MINUS Math {printf("\nReconiged Rule: Addition Expression\n");
+                            //intialize a number to 0
+                            int num = 0;
+
+                            //IF $1 and $3 are both numbers
+                            if($1->isNumber && $3->isNumber == 1) {
+                                
+                                //change from characters to numbers
+                                //And Add them
+                                int num1 = atoi($1->nodeType);
+                                int num3 = atoi($3->nodeType);
+                                
+                                //add the numbers and add it to first variable
+                                int number = num1 - num3;
+                                num += number;
+
+                                //printf("%d\n\n\n", num);
+                            }
+
+                            //If the $1 is a number but the $3 is a variable
+                            else if($1->isNumber == 1) {
+                                
+                                //convert the number from Char to Num
+                                //Get the value of the variable from the symbol table
+                                //convert it from Char to num
+                                int num1 = atoi($1->nodeType);
+                                char *val1 = getValue($3->nodeType, currentScope);
+                                int num3 = atoi(val1);
+
+                                //add the numbers and add it to first variable
+                                int number = num1 - num3;
+                                num += number;
+
+                                //printf("%d\n\n\n", num);
+                            } 
+
+                            //Now $1 is variable and $3 is number
+                            else if($3->isNumber == 1) {
+                                
+                                //do the same as the steps before
+                                char *val1 = getValue($1->nodeType, currentScope);
+                                int num1 = atoi(val1);
+                                int num3 = atoi($3->nodeType);
+
+                                //add the numbers and add it to first variable
+                                int number = num1 - num3;
+                                num += number;
+
+                                //printf("%d\n\n\n", num);
+                            }
+
+                            //if we are adding both variables and no numbers
+                            else { 
+                                mipsInside();
+                                addMips(returnName, otherScope);
+                                $$ = add_tree("+", $1, $3);
+                            }
+
                             }
 
         | Math MULTIPLY Math {printf("\nReconiged Rule: Addition Expression\n");
+                            //intialize a number to 0
+                            int num = 0;
+
+                            //IF $1 and $3 are both numbers
+                            if($1->isNumber && $3->isNumber == 1) {
+                                
+                                //change from characters to numbers
+                                //And Add them
+                                int num1 = atoi($1->nodeType);
+                                int num3 = atoi($3->nodeType);
+                                
+                                //add the numbers and add it to first variable
+                                int number = num1 * num3;
+                                num += number;
+
+                                //printf("%d\n\n\n", num);
+                            }
+
+                            //If the $1 is a number but the $3 is a variable
+                            else if($1->isNumber == 1) {
+                                
+                                //convert the number from Char to Num
+                                //Get the value of the variable from the symbol table
+                                //convert it from Char to num
+                                int num1 = atoi($1->nodeType);
+                                char *val1 = getValue($3->nodeType, currentScope);
+                                int num3 = atoi(val1);
+
+                                //add the numbers and add it to first variable
+                                int number = num1 * num3;
+                                num += number;
+
+                                //printf("%d\n\n\n", num);
+                            } 
+
+                            //Now $1 is variable and $3 is number
+                            else if($3->isNumber == 1) {
+                                
+                                //do the same as the steps before
+                                char *val1 = getValue($1->nodeType, currentScope);
+                                int num1 = atoi(val1);
+                                int num3 = atoi($3->nodeType);
+
+                                //add the numbers and add it to first variable
+                                int number = num1 * num3;
+                                num += number;
+
+                                //printf("%d\n\n\n", num);
+                            }
+
+                            //if we are adding both variables and no numbers
+                            else { 
+                                mipsInside();
+                                addMips(returnName, otherScope);
+                                $$ = add_tree("+", $1, $3);
+                            }
+                            /*change first nodeType to the added numbers
+                            Ex: x(x=4) + y(y=5) = 9 = $1->nodeType
+                            then if we have multiple expressions it will become:
+                                 9 + Addition
+                            */
+                            sprintf($1->nodeType, "%d", num);
+                            $$ = addTree($1->nodeType, 1);
                             }
 
         | Math DIVIDE Math {printf("\nReconiged Rule: Addition Expression\n");
+                            //intialize a number to 0
+                            int num = 0;
+
+                            //IF $1 and $3 are both numbers
+                            if($1->isNumber && $3->isNumber == 1) {
+                                
+                                //change from characters to numbers
+                                //And Add them
+                                int num1 = atoi($1->nodeType);
+                                int num3 = atoi($3->nodeType);
+                                
+                                //add the numbers and add it to first variable
+                                int number = num1 / num3;
+                                num += number;
+
+                                //printf("%d\n\n\n", num);
+                            }
+
+                            //If the $1 is a number but the $3 is a variable
+                            else if($1->isNumber == 1) {
+                                
+                                //convert the number from Char to Num
+                                //Get the value of the variable from the symbol table
+                                //convert it from Char to num
+                                int num1 = atoi($1->nodeType);
+                                char *val1 = getValue($3->nodeType, currentScope);
+                                int num3 = atoi(val1);
+
+                                //add the numbers and add it to first variable
+                                int number = num1 / num3;
+                                num += number;
+
+                                //printf("%d\n\n\n", num);
+                            } 
+
+                            //Now $1 is variable and $3 is number
+                            else if($3->isNumber == 1) {
+                                
+                                //do the same as the steps before
+                                char *val1 = getValue($1->nodeType, currentScope);
+                                int num1 = atoi(val1);
+                                int num3 = atoi($3->nodeType);
+
+                                //add the numbers and add it to first variable
+                                int number = num1 / num3;
+                                num += number;
+
+                                //printf("%d\n\n\n", num);
+                            }
+
+                            //if we are adding both variables and no numbers
+                            else { 
+                                mipsInside();
+                                addMips(returnName, otherScope);
+                                $$ = add_tree("+", $1, $3);
+                            }
                             }
 
         | OPAREN Math CPAREN {

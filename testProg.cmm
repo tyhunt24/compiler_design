@@ -1,13 +1,13 @@
-int add() {
+int add(int a, int b) {
     int z;
 
-    z = 2 + 2;
+    z = a + b;
 
     return z;
 }
 
 int v;
 
-v = add();
+v = add(300, 100);
 
 write v;
