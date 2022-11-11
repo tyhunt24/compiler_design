@@ -9,16 +9,3 @@ int x
             = 
           x   y  
 
-int add(int a, int b) {
-    int z;
-
-    z = a + b;
-
-    return z;
-}
-
-int v;
-
-v = add(300, 100);
-
-write v;

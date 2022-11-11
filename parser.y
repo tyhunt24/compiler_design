@@ -20,6 +20,8 @@ char label[50];
 char otherScope[50];
 char returnName[50];
 
+int inreturn = 0;
+
 char *returnType;
 
 int semanticChecks = 1;
@@ -278,8 +280,13 @@ Expr:   Math {printf("\nRECOGNIZED RULE: Primary Statement\n");
                      $$ = AST_Write("Write", $2, "");
 
                      // ----- IR Code ----- //
-                     //writeValue($2, currentScope);
-                     writeFunction();
+                     if (inreturn == 1) {
+                     moveFunction($2, currentScope);
+                     writeValue($2, currentScope);
+                     } else {
+                     writeValue($2, currentScope);
+                     }
+
 
                 }
 
@@ -291,6 +298,7 @@ Expr:   Math {printf("\nRECOGNIZED RULE: Primary Statement\n");
                     strcpy(returnName, $2);
                     strcpy(otherScope, currentScope);
 
+                    inreturn = 1;
                     } 
 ;
 
@@ -298,12 +306,13 @@ Expr:   Math {printf("\nRECOGNIZED RULE: Primary Statement\n");
 CallList: {$$ = NULL;}
         | Math {
             // ----- IR Code ----- //
-            paramMips($1->nodeType);
+            paramMips($1->nodeType); // Gives us the value in here
 
             // ----- AST Tree -----//
             $$ = add_tree("Call", $1, NULL);
         }
         | Math COMMA CallList {
+           
             // ----- IR Code ----- //
             paramMips($1->nodeType);
 
@@ -318,7 +327,7 @@ Math: Math PLUS Math {printf("\nReconiged Rule: Addition Expression\n");
                              int num = 0;
 
                             //IF $1 and $3 are both numbers
-                            if($1->isNumber && $3->isNumber == 1) {
+                            if($1->isNumber == 1 && $3->isNumber == 1) {
                                 
                                 //change from characters to numbers
                                 //And Add them
@@ -378,26 +387,37 @@ Math: Math PLUS Math {printf("\nReconiged Rule: Addition Expression\n");
                                 char *val1 = getValue($1->nodeType, currentScope);
                                 char *val2 = getValue($3->nodeType, currentScope);
 
-                                if(val1 != NULL && val2 != NULL) {
-                                 // ----- AST Tree ----- //
-                                int num1 = atoi(val1);
-                                int num2 = atoi(val2);
+                                if(strcmp(val1, "NULL") != 0 && strcmp(val2, "NULL") != 0) {
+                                    
+                                    //Gets the numbers from inside of the values
+                                    int num1 = atoi(val1);
+                                    int num2 = atoi(val2);
 
-                                int number;
+                                    int number;
+                                    
+                                    //add the numbers
+                                    number = num1 + num2;
+                                    num += number;
+                                    char str[50];
+                                    sprintf(str, "%d", num);
 
-                                number = num1 + num2;
-                                num += number;
-                                char str[50];
-                                sprintf(str, "%d", num);
-                                $$ = addTree(str, 1);
+                                    // ----- AST TREE ----- //
+                                    $$ = addTree(str, 1);
+                                } else {
+                                    mipsInside();
+
+                                    // ---- IR CODE -----//
+                                    addMips();
+
+                                    // ----- AST TREE -----//
+                                    $$ = add_tree("+", $1, $3);
                                 }
-                                mipsInside();
-                                addMips();
-                                $$ = add_tree("+", $1, $3);
+
+
 
                             }
                     }
-        | Math MINUS Math {printf("\nReconiged Rule: Addition Expression\n");
+        | Math MINUS Math {printf("\nReconiged Rule: Subtraction Expression Expression\n");
                             //intialize a number to 0
                             int num = 0;
 
@@ -450,9 +470,32 @@ Math: Math PLUS Math {printf("\nReconiged Rule: Addition Expression\n");
 
                             //if we are adding both variables and no numbers
                             else { 
-                                mipsInside();
-                                addMips(returnName, otherScope);
-                                $$ = add_tree("+", $1, $3);
+                                char *val1 = getValue($1->nodeType, currentScope); 
+                                char *val2 = getValue($3->nodeType, currentScope);
+
+                                // check in the Symbol tables are NULL or not.
+                                if(strcmp(val1, "NULL") != 0 && strcmp(val2, "NULL") != 0) {
+                                
+                                    // get the values
+                                    int num1 = atoi(val1);
+                                    int num2 = atoi(val2);
+
+                                    int number;
+
+                                    number = num1 - num2;
+                                    num += number;
+                                    char str[50];
+                                    sprintf(str, "%d", num);
+
+                                    // ----- AST Tree ----- //
+                                    $$ = addTree(str, 1);
+                                } else {
+                                    mipsInside();
+                                    subMips();
+
+                                    // ----- AST Tree ----- //
+                                    $$ = add_tree("+", $1, $3);
+                                }
                             }
 
                             }
@@ -510,17 +553,28 @@ Math: Math PLUS Math {printf("\nReconiged Rule: Addition Expression\n");
 
                             //if we are adding both variables and no numbers
                             else { 
-                                mipsInside();
-                                addMips(returnName, otherScope);
-                                $$ = add_tree("+", $1, $3);
+                                // 
+                                char *val1 = getValue($1->nodeType, currentScope); 
+                                char *val2 = getValue($3->nodeType, currentScope);
+
+                                if(strcmp(val1, "NULL") != 0 && strcmp(val2, "NULL") != 0) {
+                            
+                                    int num1 = atoi(val1);
+                                    int num2 = atoi(val2);
+
+                                    int number;
+
+                                    number = num1 * num2;
+                                    num += number;
+                                    char str[50];
+                                    sprintf(str, "%d", num);
+                                $$ = addTree(str, 1);
+                                } else {
+                                    mipsInside();
+                                    multiMips();
+                                    $$ = add_tree("+", $1, $3);
+                                }
                             }
-                            /*change first nodeType to the added numbers
-                            Ex: x(x=4) + y(y=5) = 9 = $1->nodeType
-                            then if we have multiple expressions it will become:
-                                 9 + Addition
-                            */
-                            sprintf($1->nodeType, "%d", num);
-                            $$ = addTree($1->nodeType, 1);
                             }
 
         | Math DIVIDE Math {printf("\nReconiged Rule: Addition Expression\n");
@@ -528,7 +582,7 @@ Math: Math PLUS Math {printf("\nReconiged Rule: Addition Expression\n");
                             int num = 0;
 
                             //IF $1 and $3 are both numbers
-                            if($1->isNumber && $3->isNumber == 1) {
+                            if($1->isNumber == 1 && $3->isNumber == 1) {
                                 
                                 //change from characters to numbers
                                 //And Add them
@@ -576,9 +630,32 @@ Math: Math PLUS Math {printf("\nReconiged Rule: Addition Expression\n");
 
                             //if we are adding both variables and no numbers
                             else { 
-                                mipsInside();
-                                addMips(returnName, otherScope);
-                                $$ = add_tree("+", $1, $3);
+                                char *val1 = getValue($1->nodeType, currentScope); 
+                                char *val2 = getValue($3->nodeType, currentScope);
+
+                                if(strcmp(val1, "NULL") != 0 && strcmp(val2, "NULL") != 0) {
+                                
+                                    int num1 = atoi(val1);
+                                    int num2 = atoi(val2);
+
+                                    int number;
+
+                                    number = num1 / num2;
+                                    num += number;
+                                    char str[50];
+                                    sprintf(str, "%d", num);
+
+                                 // ----- AST Tree ----- //
+                                $$ = addTree(str, 1);
+                                } else {
+                                    mipsInside();
+
+                                    // ----- IR Code -----//
+                                    divideMips();
+
+                                    // ----- AST Tree ----- //
+                                    $$ = add_tree("+", $1, $3);
+                                }
                             }
                             }
 

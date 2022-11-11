@@ -1,0 +1,5 @@
+TodoList
+
+1. See How Registers work in MIPS
+2. Right now we can add something like:
+    2 + 2 we want to be able to do something like -> a + 2

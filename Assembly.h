@@ -4,9 +4,9 @@ Also need to add functionlity to deal with arrays
 */
 FILE *assemblyFile;
 
-int numParams = 1;
+int numParams = 0;
 
-int randomRegister = 1; 
+int reg = 0; 
 
 //load what we first get in the our Mips file
 void initMipsFile() {
@@ -95,7 +95,7 @@ void endMipsFile() {
     fclose(assemblyFile);
 }
 
-
+// Use this to create a function in MIPS
 void MipsCreateFunction(char label[50]) {
     assemblyFile = fopen("compiler.asm", "a");
     
@@ -103,6 +103,7 @@ void MipsCreateFunction(char label[50]) {
     fprintf(assemblyFile, "%s:\n", label);
 }
 
+// Call a function in MIPS
 void mipsJumpFunction(char label[50]) {
     assemblyFile = fopen("compiler.asm", "a");
     
@@ -112,6 +113,7 @@ void mipsJumpFunction(char label[50]) {
     fclose(assemblyFile);
 }
 
+// A return Statement in MIPS
 void mipsInside() {
     assemblyFile = fopen("compiler.asm", "a");
     
@@ -123,15 +125,47 @@ void mipsInside() {
 void addMips() {
     assemblyFile = fopen("compiler.asm", "a");
 
-    fprintf(assemblyFile, "\tadd $v1, $a1, $a2\n");
+    fprintf(assemblyFile, "\tadd $v1, $a0, $a1\n");
 }
 
+// subtract in mips
+void subMips() {
+    assemblyFile = fopen("compiler.asm", "a");
+
+    fprintf(assemblyFile, "\tsub $v1, $a1, $a2\n");
+}
+
+//multiply in mips
+void multiMips() {
+    assemblyFile = fopen("compiler.asm", "a");
+
+    fprintf(assemblyFile, "\tmul $v1, $a1, $a2\n");
+}
+
+//divide in mips
+void divideMips() {
+    assemblyFile = fopen("compiler.asm", "a");
+
+    fprintf(assemblyFile, "\tdiv $v1, $a1, $a2\n");
+}
+
+//load parameters in mips
 void paramMips(char *value) {
     assemblyFile = fopen("compiler.asm", "a");
  
     fprintf(assemblyFile, "\taddi $a%d, $zero, %s\n", numParams, value);
     numParams++;
    fclose(assemblyFile);
+}
+
+void moveFunction(char *id, char *currentScope) {
+    assemblyFile = fopen("compiler.asm", "a");
+
+    int id1 = found(id, currentScope);
+
+    fprintf(assemblyFile, "move $t%d, $v1\n", id1);
+
+    fclose(assemblyFile);
 }
 
 

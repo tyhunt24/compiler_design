@@ -1,0 +1,921 @@
+State 0 conflicts: 6 shift/reduce
+State 9 conflicts: 6 shift/reduce, 1 reduce/reduce
+State 11 conflicts: 1 shift/reduce
+State 14 conflicts: 5 shift/reduce
+State 37 conflicts: 2 reduce/reduce
+State 38 conflicts: 2 reduce/reduce
+
+
+Grammar
+
+    0 $accept: Program $end
+
+    1 Program: DeclList
+
+    2 DeclList: Decl DeclList
+    3         | Decl
+
+    4 Decl: FunDecl
+    5     | VarDeclList
+    6     | StmtList
+
+    7 VarDeclList: %empty
+    8            | VarDecl VarDeclList
+
+    9 VarDecl: TYPE ID SEMICOLON
+   10        | TYPE ID OBRACK NUMBER CBRACK SEMICOLON
+
+   11 $@1: %empty
+
+   12 FunDecl: TYPE ID OPAREN $@1 ParamDecList CPAREN Block
+
+   13 ParamDecList: %empty
+   14             | ParamDecListTail
+
+   15 ParamDecListTail: ParamDecl
+   16                 | ParamDecl COMMA ParamDecListTail
+
+   17 ParamDecl: TYPE ID
+   18          | TYPE ID OBRACK CBRACK
+
+   19 Block: OCBRACE VarDeclList StmtList CCBRACE
+
+   20 StmtList: Stmt
+   21         | Stmt StmtList
+
+   22 Stmt: Expr SEMICOLON
+
+   23 Expr: Math
+   24     | ID EQ ID
+   25     | ID EQ NUMBER
+   26     | ID EQ ID OPAREN CallList CPAREN
+   27     | ID OBRACK Expr CBRACK EQ Expr
+   28     | ID EQ Math
+   29     | WRITE ID
+   30     | RETURN ID
+
+   31 CallList: %empty
+   32         | Math
+   33         | Math COMMA CallList
+
+   34 Math: Math PLUS Math
+   35     | Math MINUS Math
+   36     | Math MULTIPLY Math
+   37     | Math DIVIDE Math
+   38     | OPAREN Math CPAREN
+   39     | ID
+   40     | NUMBER
+
+
+Terminals, with rules where they appear
+
+    $end (0) 0
+    error (256)
+    TYPE <string> (258) 9 10 12 17 18
+    ID <string> (259) 9 10 12 17 18 24 25 26 27 28 29 30 39
+    SEMICOLON <char> (260) 9 10 22
+    COMMA <char> (261) 16 33
+    EQ <char> (262) 24 25 26 27 28
+    OPAREN <char> (263) 12 26 38
+    CPAREN <char> (264) 12 26 38
+    OBRACK <char> (265) 10 18 27
+    CBRACK <char> (266) 10 18 27
+    OCBRACE <char> (267) 19
+    CCBRACE <char> (268) 19
+    PLUS <char> (269) 34
+    MINUS <char> (270) 35
+    MULTIPLY <char> (271) 36
+    DIVIDE <char> (272) 37
+    NUMBER <number> (273) 10 25 40
+    WRITE (274) 29
+    RETURN (275) 30
+
+
+Nonterminals, with rules where they appear
+
+    $accept (21)
+        on left: 0
+    Program <ast> (22)
+        on left: 1
+        on right: 0
+    DeclList <ast> (23)
+        on left: 2 3
+        on right: 1 2
+    Decl <ast> (24)
+        on left: 4 5 6
+        on right: 2 3
+    VarDeclList <ast> (25)
+        on left: 7 8
+        on right: 5 8 19
+    VarDecl <ast> (26)
+        on left: 9 10
+        on right: 8
+    FunDecl <ast> (27)
+        on left: 12
+        on right: 4
+    $@1 (28)
+        on left: 11
+        on right: 12
+    ParamDecList <ast> (29)
+        on left: 13 14
+        on right: 12
+    ParamDecListTail <ast> (30)
+        on left: 15 16
+        on right: 14 16
+    ParamDecl <ast> (31)
+        on left: 17 18
+        on right: 15 16
+    Block <ast> (32)
+        on left: 19
+        on right: 12
+    StmtList <ast> (33)
+        on left: 20 21
+        on right: 6 19 21
+    Stmt <ast> (34)
+        on left: 22
+        on right: 20 21
+    Expr <ast> (35)
+        on left: 23 24 25 26 27 28 29 30
+        on right: 22 27
+    CallList <ast> (36)
+        on left: 31 32 33
+        on right: 26 33
+    Math <ast> (37)
+        on left: 34 35 36 37 38 39 40
+        on right: 23 28 32 33 34 35 36 37 38
+
+
+State 0
+
+    0 $accept: . Program $end
+
+    TYPE    shift, and go to state 1
+    ID      shift, and go to state 2
+    OPAREN  shift, and go to state 3
+    NUMBER  shift, and go to state 4
+    WRITE   shift, and go to state 5
+    RETURN  shift, and go to state 6
+
+    TYPE      [reduce using rule 7 (VarDeclList)]
+    ID        [reduce using rule 7 (VarDeclList)]
+    OPAREN    [reduce using rule 7 (VarDeclList)]
+    NUMBER    [reduce using rule 7 (VarDeclList)]
+    WRITE     [reduce using rule 7 (VarDeclList)]
+    RETURN    [reduce using rule 7 (VarDeclList)]
+    $default  reduce using rule 7 (VarDeclList)
+
+    Program      go to state 7
+    DeclList     go to state 8
+    Decl         go to state 9
+    VarDeclList  go to state 10
+    VarDecl      go to state 11
+    FunDecl      go to state 12
+    StmtList     go to state 13
+    Stmt         go to state 14
+    Expr         go to state 15
+    Math         go to state 16
+
+
+State 1
+
+    9 VarDecl: TYPE . ID SEMICOLON
+   10        | TYPE . ID OBRACK NUMBER CBRACK SEMICOLON
+   12 FunDecl: TYPE . ID OPAREN $@1 ParamDecList CPAREN Block
+
+    ID  shift, and go to state 17
+
+
+State 2
+
+   24 Expr: ID . EQ ID
+   25     | ID . EQ NUMBER
+   26     | ID . EQ ID OPAREN CallList CPAREN
+   27     | ID . OBRACK Expr CBRACK EQ Expr
+   28     | ID . EQ Math
+   39 Math: ID .
+
+    EQ      shift, and go to state 18
+    OBRACK  shift, and go to state 19
+
+    $default  reduce using rule 39 (Math)
+
+
+State 3
+
+   38 Math: OPAREN . Math CPAREN
+
+    ID      shift, and go to state 20
+    OPAREN  shift, and go to state 3
+    NUMBER  shift, and go to state 4
+
+    Math  go to state 21
+
+
+State 4
+
+   40 Math: NUMBER .
+
+    $default  reduce using rule 40 (Math)
+
+
+State 5
+
+   29 Expr: WRITE . ID
+
+    ID  shift, and go to state 22
+
+
+State 6
+
+   30 Expr: RETURN . ID
+
+    ID  shift, and go to state 23
+
+
+State 7
+
+    0 $accept: Program . $end
+
+    $end  shift, and go to state 24
+
+
+State 8
+
+    1 Program: DeclList .
+
+    $default  reduce using rule 1 (Program)
+
+
+State 9
+
+    2 DeclList: Decl . DeclList
+    3         | Decl .
+
+    TYPE    shift, and go to state 1
+    ID      shift, and go to state 2
+    OPAREN  shift, and go to state 3
+    NUMBER  shift, and go to state 4
+    WRITE   shift, and go to state 5
+    RETURN  shift, and go to state 6
+
+    $end      reduce using rule 3 (DeclList)
+    $end      [reduce using rule 7 (VarDeclList)]
+    TYPE      [reduce using rule 7 (VarDeclList)]
+    ID        [reduce using rule 7 (VarDeclList)]
+    OPAREN    [reduce using rule 7 (VarDeclList)]
+    NUMBER    [reduce using rule 7 (VarDeclList)]
+    WRITE     [reduce using rule 7 (VarDeclList)]
+    RETURN    [reduce using rule 7 (VarDeclList)]
+    $default  reduce using rule 3 (DeclList)
+
+    DeclList     go to state 25
+    Decl         go to state 9
+    VarDeclList  go to state 10
+    VarDecl      go to state 11
+    FunDecl      go to state 12
+    StmtList     go to state 13
+    Stmt         go to state 14
+    Expr         go to state 15
+    Math         go to state 16
+
+
+State 10
+
+    5 Decl: VarDeclList .
+
+    $default  reduce using rule 5 (Decl)
+
+
+State 11
+
+    8 VarDeclList: VarDecl . VarDeclList
+
+    TYPE  shift, and go to state 26
+
+    TYPE      [reduce using rule 7 (VarDeclList)]
+    $default  reduce using rule 7 (VarDeclList)
+
+    VarDeclList  go to state 27
+    VarDecl      go to state 11
+
+
+State 12
+
+    4 Decl: FunDecl .
+
+    $default  reduce using rule 4 (Decl)
+
+
+State 13
+
+    6 Decl: StmtList .
+
+    $default  reduce using rule 6 (Decl)
+
+
+State 14
+
+   20 StmtList: Stmt .
+   21         | Stmt . StmtList
+
+    ID      shift, and go to state 2
+    OPAREN  shift, and go to state 3
+    NUMBER  shift, and go to state 4
+    WRITE   shift, and go to state 5
+    RETURN  shift, and go to state 6
+
+    ID        [reduce using rule 20 (StmtList)]
+    OPAREN    [reduce using rule 20 (StmtList)]
+    NUMBER    [reduce using rule 20 (StmtList)]
+    WRITE     [reduce using rule 20 (StmtList)]
+    RETURN    [reduce using rule 20 (StmtList)]
+    $default  reduce using rule 20 (StmtList)
+
+    StmtList  go to state 28
+    Stmt      go to state 14
+    Expr      go to state 15
+    Math      go to state 16
+
+
+State 15
+
+   22 Stmt: Expr . SEMICOLON
+
+    SEMICOLON  shift, and go to state 29
+
+
+State 16
+
+   23 Expr: Math .
+   34 Math: Math . PLUS Math
+   35     | Math . MINUS Math
+   36     | Math . MULTIPLY Math
+   37     | Math . DIVIDE Math
+
+    PLUS      shift, and go to state 30
+    MINUS     shift, and go to state 31
+    MULTIPLY  shift, and go to state 32
+    DIVIDE    shift, and go to state 33
+
+    $default  reduce using rule 23 (Expr)
+
+
+State 17
+
+    9 VarDecl: TYPE ID . SEMICOLON
+   10        | TYPE ID . OBRACK NUMBER CBRACK SEMICOLON
+   12 FunDecl: TYPE ID . OPAREN $@1 ParamDecList CPAREN Block
+
+    SEMICOLON  shift, and go to state 34
+    OPAREN     shift, and go to state 35
+    OBRACK     shift, and go to state 36
+
+
+State 18
+
+   24 Expr: ID EQ . ID
+   25     | ID EQ . NUMBER
+   26     | ID EQ . ID OPAREN CallList CPAREN
+   28     | ID EQ . Math
+
+    ID      shift, and go to state 37
+    OPAREN  shift, and go to state 3
+    NUMBER  shift, and go to state 38
+
+    Math  go to state 39
+
+
+State 19
+
+   27 Expr: ID OBRACK . Expr CBRACK EQ Expr
+
+    ID      shift, and go to state 2
+    OPAREN  shift, and go to state 3
+    NUMBER  shift, and go to state 4
+    WRITE   shift, and go to state 5
+    RETURN  shift, and go to state 6
+
+    Expr  go to state 40
+    Math  go to state 16
+
+
+State 20
+
+   39 Math: ID .
+
+    $default  reduce using rule 39 (Math)
+
+
+State 21
+
+   34 Math: Math . PLUS Math
+   35     | Math . MINUS Math
+   36     | Math . MULTIPLY Math
+   37     | Math . DIVIDE Math
+   38     | OPAREN Math . CPAREN
+
+    CPAREN    shift, and go to state 41
+    PLUS      shift, and go to state 30
+    MINUS     shift, and go to state 31
+    MULTIPLY  shift, and go to state 32
+    DIVIDE    shift, and go to state 33
+
+
+State 22
+
+   29 Expr: WRITE ID .
+
+    $default  reduce using rule 29 (Expr)
+
+
+State 23
+
+   30 Expr: RETURN ID .
+
+    $default  reduce using rule 30 (Expr)
+
+
+State 24
+
+    0 $accept: Program $end .
+
+    $default  accept
+
+
+State 25
+
+    2 DeclList: Decl DeclList .
+
+    $default  reduce using rule 2 (DeclList)
+
+
+State 26
+
+    9 VarDecl: TYPE . ID SEMICOLON
+   10        | TYPE . ID OBRACK NUMBER CBRACK SEMICOLON
+
+    ID  shift, and go to state 42
+
+
+State 27
+
+    8 VarDeclList: VarDecl VarDeclList .
+
+    $default  reduce using rule 8 (VarDeclList)
+
+
+State 28
+
+   21 StmtList: Stmt StmtList .
+
+    $default  reduce using rule 21 (StmtList)
+
+
+State 29
+
+   22 Stmt: Expr SEMICOLON .
+
+    $default  reduce using rule 22 (Stmt)
+
+
+State 30
+
+   34 Math: Math PLUS . Math
+
+    ID      shift, and go to state 20
+    OPAREN  shift, and go to state 3
+    NUMBER  shift, and go to state 4
+
+    Math  go to state 43
+
+
+State 31
+
+   35 Math: Math MINUS . Math
+
+    ID      shift, and go to state 20
+    OPAREN  shift, and go to state 3
+    NUMBER  shift, and go to state 4
+
+    Math  go to state 44
+
+
+State 32
+
+   36 Math: Math MULTIPLY . Math
+
+    ID      shift, and go to state 20
+    OPAREN  shift, and go to state 3
+    NUMBER  shift, and go to state 4
+
+    Math  go to state 45
+
+
+State 33
+
+   37 Math: Math DIVIDE . Math
+
+    ID      shift, and go to state 20
+    OPAREN  shift, and go to state 3
+    NUMBER  shift, and go to state 4
+
+    Math  go to state 46
+
+
+State 34
+
+    9 VarDecl: TYPE ID SEMICOLON .
+
+    $default  reduce using rule 9 (VarDecl)
+
+
+State 35
+
+   12 FunDecl: TYPE ID OPAREN . $@1 ParamDecList CPAREN Block
+
+    $default  reduce using rule 11 ($@1)
+
+    $@1  go to state 47
+
+
+State 36
+
+   10 VarDecl: TYPE ID OBRACK . NUMBER CBRACK SEMICOLON
+
+    NUMBER  shift, and go to state 48
+
+
+State 37
+
+   24 Expr: ID EQ ID .
+   26     | ID EQ ID . OPAREN CallList CPAREN
+   39 Math: ID .
+
+    OPAREN  shift, and go to state 49
+
+    SEMICOLON  reduce using rule 24 (Expr)
+    SEMICOLON  [reduce using rule 39 (Math)]
+    CBRACK     reduce using rule 24 (Expr)
+    CBRACK     [reduce using rule 39 (Math)]
+    $default   reduce using rule 39 (Math)
+
+
+State 38
+
+   25 Expr: ID EQ NUMBER .
+   40 Math: NUMBER .
+
+    SEMICOLON  reduce using rule 25 (Expr)
+    SEMICOLON  [reduce using rule 40 (Math)]
+    CBRACK     reduce using rule 25 (Expr)
+    CBRACK     [reduce using rule 40 (Math)]
+    $default   reduce using rule 40 (Math)
+
+
+State 39
+
+   28 Expr: ID EQ Math .
+   34 Math: Math . PLUS Math
+   35     | Math . MINUS Math
+   36     | Math . MULTIPLY Math
+   37     | Math . DIVIDE Math
+
+    PLUS      shift, and go to state 30
+    MINUS     shift, and go to state 31
+    MULTIPLY  shift, and go to state 32
+    DIVIDE    shift, and go to state 33
+
+    $default  reduce using rule 28 (Expr)
+
+
+State 40
+
+   27 Expr: ID OBRACK Expr . CBRACK EQ Expr
+
+    CBRACK  shift, and go to state 50
+
+
+State 41
+
+   38 Math: OPAREN Math CPAREN .
+
+    $default  reduce using rule 38 (Math)
+
+
+State 42
+
+    9 VarDecl: TYPE ID . SEMICOLON
+   10        | TYPE ID . OBRACK NUMBER CBRACK SEMICOLON
+
+    SEMICOLON  shift, and go to state 34
+    OBRACK     shift, and go to state 36
+
+
+State 43
+
+   34 Math: Math . PLUS Math
+   34     | Math PLUS Math .
+   35     | Math . MINUS Math
+   36     | Math . MULTIPLY Math
+   37     | Math . DIVIDE Math
+
+    MULTIPLY  shift, and go to state 32
+    DIVIDE    shift, and go to state 33
+
+    $default  reduce using rule 34 (Math)
+
+
+State 44
+
+   34 Math: Math . PLUS Math
+   35     | Math . MINUS Math
+   35     | Math MINUS Math .
+   36     | Math . MULTIPLY Math
+   37     | Math . DIVIDE Math
+
+    MULTIPLY  shift, and go to state 32
+    DIVIDE    shift, and go to state 33
+
+    $default  reduce using rule 35 (Math)
+
+
+State 45
+
+   34 Math: Math . PLUS Math
+   35     | Math . MINUS Math
+   36     | Math . MULTIPLY Math
+   36     | Math MULTIPLY Math .
+   37     | Math . DIVIDE Math
+
+    $default  reduce using rule 36 (Math)
+
+
+State 46
+
+   34 Math: Math . PLUS Math
+   35     | Math . MINUS Math
+   36     | Math . MULTIPLY Math
+   37     | Math . DIVIDE Math
+   37     | Math DIVIDE Math .
+
+    $default  reduce using rule 37 (Math)
+
+
+State 47
+
+   12 FunDecl: TYPE ID OPAREN $@1 . ParamDecList CPAREN Block
+
+    TYPE  shift, and go to state 51
+
+    $default  reduce using rule 13 (ParamDecList)
+
+    ParamDecList      go to state 52
+    ParamDecListTail  go to state 53
+    ParamDecl         go to state 54
+
+
+State 48
+
+   10 VarDecl: TYPE ID OBRACK NUMBER . CBRACK SEMICOLON
+
+    CBRACK  shift, and go to state 55
+
+
+State 49
+
+   26 Expr: ID EQ ID OPAREN . CallList CPAREN
+
+    ID      shift, and go to state 20
+    OPAREN  shift, and go to state 3
+    NUMBER  shift, and go to state 4
+
+    $default  reduce using rule 31 (CallList)
+
+    CallList  go to state 56
+    Math      go to state 57
+
+
+State 50
+
+   27 Expr: ID OBRACK Expr CBRACK . EQ Expr
+
+    EQ  shift, and go to state 58
+
+
+State 51
+
+   17 ParamDecl: TYPE . ID
+   18          | TYPE . ID OBRACK CBRACK
+
+    ID  shift, and go to state 59
+
+
+State 52
+
+   12 FunDecl: TYPE ID OPAREN $@1 ParamDecList . CPAREN Block
+
+    CPAREN  shift, and go to state 60
+
+
+State 53
+
+   14 ParamDecList: ParamDecListTail .
+
+    $default  reduce using rule 14 (ParamDecList)
+
+
+State 54
+
+   15 ParamDecListTail: ParamDecl .
+   16                 | ParamDecl . COMMA ParamDecListTail
+
+    COMMA  shift, and go to state 61
+
+    $default  reduce using rule 15 (ParamDecListTail)
+
+
+State 55
+
+   10 VarDecl: TYPE ID OBRACK NUMBER CBRACK . SEMICOLON
+
+    SEMICOLON  shift, and go to state 62
+
+
+State 56
+
+   26 Expr: ID EQ ID OPAREN CallList . CPAREN
+
+    CPAREN  shift, and go to state 63
+
+
+State 57
+
+   32 CallList: Math .
+   33         | Math . COMMA CallList
+   34 Math: Math . PLUS Math
+   35     | Math . MINUS Math
+   36     | Math . MULTIPLY Math
+   37     | Math . DIVIDE Math
+
+    COMMA     shift, and go to state 64
+    PLUS      shift, and go to state 30
+    MINUS     shift, and go to state 31
+    MULTIPLY  shift, and go to state 32
+    DIVIDE    shift, and go to state 33
+
+    $default  reduce using rule 32 (CallList)
+
+
+State 58
+
+   27 Expr: ID OBRACK Expr CBRACK EQ . Expr
+
+    ID      shift, and go to state 2
+    OPAREN  shift, and go to state 3
+    NUMBER  shift, and go to state 4
+    WRITE   shift, and go to state 5
+    RETURN  shift, and go to state 6
+
+    Expr  go to state 65
+    Math  go to state 16
+
+
+State 59
+
+   17 ParamDecl: TYPE ID .
+   18          | TYPE ID . OBRACK CBRACK
+
+    OBRACK  shift, and go to state 66
+
+    $default  reduce using rule 17 (ParamDecl)
+
+
+State 60
+
+   12 FunDecl: TYPE ID OPAREN $@1 ParamDecList CPAREN . Block
+
+    OCBRACE  shift, and go to state 67
+
+    Block  go to state 68
+
+
+State 61
+
+   16 ParamDecListTail: ParamDecl COMMA . ParamDecListTail
+
+    TYPE  shift, and go to state 51
+
+    ParamDecListTail  go to state 69
+    ParamDecl         go to state 54
+
+
+State 62
+
+   10 VarDecl: TYPE ID OBRACK NUMBER CBRACK SEMICOLON .
+
+    $default  reduce using rule 10 (VarDecl)
+
+
+State 63
+
+   26 Expr: ID EQ ID OPAREN CallList CPAREN .
+
+    $default  reduce using rule 26 (Expr)
+
+
+State 64
+
+   33 CallList: Math COMMA . CallList
+
+    ID      shift, and go to state 20
+    OPAREN  shift, and go to state 3
+    NUMBER  shift, and go to state 4
+
+    $default  reduce using rule 31 (CallList)
+
+    CallList  go to state 70
+    Math      go to state 57
+
+
+State 65
+
+   27 Expr: ID OBRACK Expr CBRACK EQ Expr .
+
+    $default  reduce using rule 27 (Expr)
+
+
+State 66
+
+   18 ParamDecl: TYPE ID OBRACK . CBRACK
+
+    CBRACK  shift, and go to state 71
+
+
+State 67
+
+   19 Block: OCBRACE . VarDeclList StmtList CCBRACE
+
+    TYPE  shift, and go to state 26
+
+    $default  reduce using rule 7 (VarDeclList)
+
+    VarDeclList  go to state 72
+    VarDecl      go to state 11
+
+
+State 68
+
+   12 FunDecl: TYPE ID OPAREN $@1 ParamDecList CPAREN Block .
+
+    $default  reduce using rule 12 (FunDecl)
+
+
+State 69
+
+   16 ParamDecListTail: ParamDecl COMMA ParamDecListTail .
+
+    $default  reduce using rule 16 (ParamDecListTail)
+
+
+State 70
+
+   33 CallList: Math COMMA CallList .
+
+    $default  reduce using rule 33 (CallList)
+
+
+State 71
+
+   18 ParamDecl: TYPE ID OBRACK CBRACK .
+
+    $default  reduce using rule 18 (ParamDecl)
+
+
+State 72
+
+   19 Block: OCBRACE VarDeclList . StmtList CCBRACE
+
+    ID      shift, and go to state 2
+    OPAREN  shift, and go to state 3
+    NUMBER  shift, and go to state 4
+    WRITE   shift, and go to state 5
+    RETURN  shift, and go to state 6
+
+    StmtList  go to state 73
+    Stmt      go to state 14
+    Expr      go to state 15
+    Math      go to state 16
+
+
+State 73
+
+   19 Block: OCBRACE VarDeclList StmtList . CCBRACE
+
+    CCBRACE  shift, and go to state 74
+
+
+State 74
+
+   19 Block: OCBRACE VarDeclList StmtList CCBRACE .
+
+    $default  reduce using rule 19 (Block)

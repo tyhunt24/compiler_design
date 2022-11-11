@@ -43,6 +43,7 @@ void addItem(char itemName[50], char itemKind[8], char itemType[8], char scope[5
 		strcpy(symTabItems[symTabIndex].itemKind, itemKind);
 		strcpy(symTabItems[symTabIndex].itemType, itemType);
 		strcpy(symTabItems[symTabIndex].scope, scope);
+		strcpy(symTabItems[symTabIndex].value, "NULL"); // Assign all of the beginning values to NULL
 		symTabIndex++;
 	
 }
