@@ -51,22 +51,33 @@ extern int yydebug;
   {
     TYPE = 258,
     ID = 259,
-    SEMICOLON = 260,
-    COMMA = 261,
-    EQ = 262,
-    OPAREN = 263,
-    CPAREN = 264,
-    OBRACK = 265,
-    CBRACK = 266,
-    OCBRACE = 267,
-    CCBRACE = 268,
-    PLUS = 269,
-    MINUS = 270,
-    MULTIPLY = 271,
-    DIVIDE = 272,
-    NUMBER = 273,
-    WRITE = 274,
-    RETURN = 275
+    IF = 260,
+    ELSE = 261,
+    WHILE = 262,
+    SEMICOLON = 263,
+    COMMA = 264,
+    EQ = 265,
+    OPAREN = 266,
+    CPAREN = 267,
+    OBRACK = 268,
+    CBRACK = 269,
+    OCBRACE = 270,
+    CCBRACE = 271,
+    PLUS = 272,
+    MINUS = 273,
+    MULTIPLY = 274,
+    DIVIDE = 275,
+    NUMBER = 276,
+    LT = 277,
+    GT = 278,
+    GTE = 279,
+    LTE = 280,
+    EQEQ = 281,
+    NOTEQ = 282,
+    AND = 283,
+    OR = 284,
+    WRITE = 285,
+    RETURN = 286
   };
 #endif
 
@@ -81,7 +92,7 @@ union YYSTYPE
     char* string;
     struct AST* ast;
 
-#line 85 "parser.tab.h"
+#line 96 "parser.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;

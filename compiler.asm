@@ -1,15 +1,12 @@
 .text
 main:
-	addi $a0, $zero, 100
-	addi $a1, $zero, 300
-jal add
-move $t5, $v1
-li $v0, 1
-move $a0 $t5
-syscall
+li $t1, 3
+li $t2, 4
+blt $t1, $t2, IfStmt
 li $v0, 10
 syscall
 .end main
-add:
-	add $v1, $a0, $a1
-	jr $ra
+IfStmt:
+	li $v0, 1
+	move $a0 $t2
+	syscall

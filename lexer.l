@@ -52,6 +52,27 @@ NUMBER      {digit}+(\.{digit}+)?(E[+\-]?(digit)+)?
          return RETURN;
 		}
 
+"if" {words++; 
+		 chars += strlen(yytext);
+		 printf("%s : KEYWORD\n", yytext);
+         yylval.string = strdup(yytext);
+         return IF;
+		}
+
+"while" {words++; 
+		 chars += strlen(yytext);
+		 printf("%s : KEYWORD\n", yytext);
+         yylval.string = strdup(yytext);
+         return WHILE;
+		}
+
+"else" {words++; 
+		 chars += strlen(yytext);
+		 printf("%s : KEYWORD\n", yytext);
+         yylval.string = strdup(yytext);
+         return ELSE;
+		}
+
 {ID}	{words++; chars += strlen(yytext);
 		 printf("%s : IDENTIFIER\n",yytext);
          yylval.string = strdup(yytext);
@@ -142,9 +163,57 @@ NUMBER      {digit}+(\.{digit}+)?(E[+\-]?(digit)+)?
      return DIVIDE;
     }
 
+"<" {chars++;
+     printf("%s : OPERATOR\n", yytext);
+     yylval.string = strdup(yytext);
+     return LT;
+    }
+
+">" {chars++;
+     printf("%s : OPERATOR\n", yytext);
+     yylval.string = strdup(yytext);
+     return GT;
+    }
+
+">=" {chars += 2;
+     printf("%s : OPERATOR\n", yytext);
+     yylval.string = strdup(yytext);
+     return GTE;
+    }
+
+"<=" {chars += 2;
+     printf("%s : OPERATOR\n", yytext);
+     yylval.string = strdup(yytext);
+     return LTE;
+    }
+
+"==" {chars+=2;
+     printf("%s : OPERATOR\n", yytext);
+     yylval.string = strdup(yytext);
+     return EQEQ;
+    }
+
+"!=" {chars+=2;
+     printf("%s : OPERATOR\n", yytext);
+     yylval.string = strdup(yytext);
+     return NOTEQ;
+    }
+
+"&&" {chars+=2;
+     printf("%s : OPERATOR\n", yytext);
+     yylval.string = strdup(yytext);
+     return AND;
+    }
+
+"||" {chars+=2;
+     printf("%s : OPERATOR\n", yytext);
+     yylval.string = strdup(yytext);
+     return OR;
+    }
+
 [\n]	{lines++; chars=0;}
 [ \t]	{chars++;}
 .		{chars++;
-         printf("%s : Unrecognized symbol at line %d char %d\n", yytext,lines,chars);
+         //printf("%s : Unrecognized symbol at line %d char %d\n", yytext,lines,chars);
 		}
 %%

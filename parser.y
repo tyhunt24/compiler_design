@@ -16,7 +16,7 @@ extern FILE* yyin;
 
 void yyerror(const char* s);
 char currentScope[50] = "global";
-char label[50];
+char label[50] = "IfStmt";
 char otherScope[50];
 char returnName[50];
 
@@ -47,6 +47,9 @@ int semanticChecks = 1;
 
 %token <string> TYPE
 %token <string> ID
+%token <string> IF
+%token <string> ELSE
+%token <string> WHILE
 %token <char> SEMICOLON
 %token <char> COMMA
 %token <char> EQ
@@ -61,13 +64,21 @@ int semanticChecks = 1;
 %token <char> MULTIPLY
 %token <char> DIVIDE
 %token <number> NUMBER
+%token <string> LT
+%token <string> GT
+%token <string> GTE
+%token <string> LTE
+%token <string> EQEQ
+%token <string> NOTEQ
+%token <string> AND
+%token <string> OR
 %token WRITE
 %token RETURN
 
 %printer { fprintf(yyoutput, "%s", $$); } ID;
 %printer { fprintf(yyoutput, "%d", $$); } NUMBER;
 
-%type <ast> Program DeclList Decl VarDeclList VarDecl FunDecl ParamDecl ParamDecList ParamDecListTail Block CallList StmtList Stmt Expr Math
+%type <ast> Program DeclList Decl VarDeclList VarDecl FunDecl ParamDecl ParamDecList ParamDecListTail Block CallList StmtList Stmt Expr Math IfExpr WhileStmt RelOps
 %left PLUS MINUS
 %left MULTIPLY DIVIDE
 
@@ -148,20 +159,14 @@ ParamDecl: TYPE ID {printf("\nEncountered Parameter\n");
 |   TYPE ID OBRACK CBRACK {printf("\nParameter Array\n");}
 ;
 
-Block:  OCBRACE VarDeclList StmtList CCBRACE {printf("\nBlock Statement\n");
-                                                // ----- AST Actions ----- //
-                                                $$ = add_tree("block", $2, $3);
-
-                                                //currentScope -> Global
-                                                strcpy(currentScope, "global");                                                
-                                            }
-;
 
 StmtList: Stmt  
         | Stmt StmtList
 ;
 
 Stmt: Expr SEMICOLON {$$ = $1;}
+ | IfExpr {$$ = $1;}
+ | WhileStmt {$$ = $1;}
 ;
 
 Expr:   Math {printf("\nRECOGNIZED RULE: Primary Statement\n");
@@ -214,7 +219,8 @@ Expr:   Math {printf("\nRECOGNIZED RULE: Primary Statement\n");
                         $$ = AST_assignment("=", $1, str);
 
                         // ----- IR Code ----- //
-                        
+                        loadValueInts($1, currentScope, str);
+
                         }
     
     | ID EQ ID OPAREN CallList CPAREN {printf("\nCall Function: In ID\n");
@@ -300,8 +306,36 @@ Expr:   Math {printf("\nRECOGNIZED RULE: Primary Statement\n");
 
                     inreturn = 1;
                     } 
+
 ;
 
+IfExpr: IF OPAREN RelOps CPAREN Block {
+    // ----- Generate IR Code -----//
+    // ! Need to Create a label statement here //
+    MipsCreateLabel(label);
+
+    // ----- AST ACTIONS ----- //
+    $$ = add_tree($1, $3, $5);
+}
+;
+
+WhileStmt:  WHILE OPAREN RelOps CPAREN Block {printf("\nRecongized Rule: While Statement\n");
+                                        // --- Generate IR Code --- //
+
+                                        // --- AST Tree --- //
+                                        $$ = add_tree($1, $3, $5);
+                                        }
+
+;
+
+Block:  OCBRACE VarDeclList StmtList CCBRACE {printf("\nBlock Statement\n");
+                                                // ----- AST Actions ----- //
+                                                $$ = add_tree("block", $2, $3);
+
+                                                //currentScope -> Global
+                                                strcpy(currentScope, "global");                                                
+                                            }
+;
 
 CallList: {$$ = NULL;}
         | Math {
@@ -662,7 +696,10 @@ Math: Math PLUS Math {printf("\nReconiged Rule: Addition Expression\n");
         | OPAREN Math CPAREN {
             $$ = $2;
         } 
-        | ID {printf("\n ID\n");}
+        | ID {printf("\n ID\n");
+                printf("\n\n\n\n%s\n\n\n\n", $1);
+                $$ = addTree($1, 0);
+            }
 
         | NUMBER {printf("\n In Number\n");
                     char str[50];
@@ -671,6 +708,55 @@ Math: Math PLUS Math {printf("\nReconiged Rule: Addition Expression\n");
                     }
 
 ;
+
+RelOps: Math GTE Math {printf("\nGreater Than\n");
+                        // --- Generate IR code --- //
+                        bgeMips($1->nodeType, $3->nodeType, currentScope, label);
+
+                        // --- AST Actions --- //
+                        $$ = add_tree($2, $1, $3);
+                        }
+        
+        | Math LTE Math {printf("\nGreater Than\n");
+                        // --- Generate IR code --- //
+                         bleMips($1->nodeType, $3->nodeType, currentScope, label);
+
+                        // --- AST Actions --- //
+                        $$ = add_tree($2, $1, $3);
+                        }
+        
+        | Math GT Math {printf("\nGreater Than\n");
+                        // --- Generate IR code --- //
+                        bgtMips($1->nodeType, $3->nodeType, currentScope, label);
+
+                        // --- AST Actions --- //
+                        $$ = add_tree($2, $1, $3);
+                        }
+        
+        | Math LT Math {printf("\nGreater Than\n");
+                        // --- Generate IR code --- //
+                         bltMips($1->nodeType, currentScope, $3->nodeType, label);
+                        
+                        // --- AST Actions --- //
+                        $$ = add_tree($2, $1, $3);
+                        }
+        
+        | Math EQEQ Math {printf("\nGreater Than\n");
+                        // --- Generate IR code --- //
+                        beqMips($1->nodeType, currentScope, $3->nodeType, label);
+
+                       // --- AST Actions --- //
+                       $$ = add_tree($2, $1, $3);
+                        }
+
+        | Math NOTEQ Math {printf("\nGreater Than\n");
+                        // --- Generate IR code --- //
+                        bneMips($1->nodeType, currentScope, $3->nodeType, label);
+                        // --- AST Actions --- //
+                        $$ = add_tree($2, $1, $3);
+                        }
+;
+
 
 %%
 

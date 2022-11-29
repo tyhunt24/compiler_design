@@ -19,15 +19,12 @@ void initMipsFile() {
 }
 
 // Load what the value of each integer is into mips
-void loadValueInts(char *id, char currentScope[50]) {
+void loadValueInts(char *id, char currentScope[50], char *value) {
     assemblyFile = fopen("compiler.asm", "a");
 
     int var1 = found(id, currentScope);
 
-    char *value1 = getValue(id, currentScope);
-    printf("%s\n", value1);
-
-    fprintf(assemblyFile, "li $t%d, %s\n", var1, value1);
+    fprintf(assemblyFile, "li $t%d, %s\n", var1, value);
 
     fclose(assemblyFile);
 }
@@ -66,11 +63,11 @@ void writeValue(char *id, char currentScope[50]) {
 
     int var1 = found(id, currentScope);
 
-    fprintf(assemblyFile, "li $v0, 1\n");
-    fprintf(assemblyFile, "move $a0 $t%d\n", var1);
-    fprintf(assemblyFile,"syscall\n");
+    fprintf(assemblyFile, "\tli $v0, 1\n");
+    fprintf(assemblyFile, "\tmove $a0 $t%d\n", var1);
+    fprintf(assemblyFile,"\tsyscall\n");
 
-    fclose(assemblyFile);
+    //fclose(assemblyFile);
     }
 
 // The problem is Here
@@ -102,6 +99,15 @@ void MipsCreateFunction(char label[50]) {
  
     fprintf(assemblyFile, "%s:\n", label);
 }
+
+// Use this to create a function in MIPS
+void MipsCreateLabel(char label[50]) {
+    assemblyFile = fopen("compiler.asm", "a");
+    
+ 
+    fprintf(assemblyFile, "%s:\n", label);
+}
+
 
 // Call a function in MIPS
 void mipsJumpFunction(char label[50]) {
@@ -167,6 +173,79 @@ void moveFunction(char *id, char *currentScope) {
 
     fclose(assemblyFile);
 }
+
+void bltMips(char *id1, char* currentScope, char *id2, char *label) {
+    assemblyFile = fopen("compiler.asm", "a");
+
+    int id11 = found(id1, currentScope);
+
+    int id12 = found(id2, currentScope);
+
+    fprintf(assemblyFile, "blt $t%d, $t%d, %s\n", id11, id12, label);
+
+    fclose(assemblyFile);
+}
+
+void bgtMips(char *id1, char *id2, char* currentScope, char *label) {
+        assemblyFile = fopen("compiler.asm", "a");
+
+        int id11 = found(id1, currentScope);
+
+        int id12 = found(id2, currentScope);
+
+        fprintf(assemblyFile, "bgt $t%d, $t%d, %s\n", id11, id12, label);
+
+        fclose(assemblyFile);
+}
+
+void bgeMips(char *id1, char *id2, char* currentScope, char *label) {
+        assemblyFile = fopen("compiler.asm", "a");
+
+        int id11 = found(id1, currentScope);
+
+        int id12 = found(id2, currentScope);
+
+        fprintf(assemblyFile, "bge $t%d, $t%d, %s\n", id11, id12, label);
+
+        fclose(assemblyFile);
+}
+
+void bleMips(char *id1, char *id2, char* currentScope, char *label) {
+        assemblyFile = fopen("compiler.asm", "a");
+
+        int id11 = found(id1, currentScope);
+
+        int id12 = found(id2, currentScope);
+
+        fprintf(assemblyFile, "ble $t%d, $t%d, %s\n", id11, id12, label);
+
+        fclose(assemblyFile);
+}
+
+void beqMips(char *id1, char *id2, char* currentScope, char *label) {
+        assemblyFile = fopen("compiler.asm", "a");
+
+        int id11 = found(id1, currentScope);
+
+        int id12 = found(id2, currentScope);
+
+        fprintf(assemblyFile, "beq $t%d, $t%d, %s\n", id11, id12, label);
+
+        fclose(assemblyFile);
+}
+
+void bneMips(char *id1, char *id2, char* currentScope, char *label) {
+        assemblyFile = fopen("compiler.asm", "a");
+
+        int id11 = found(id1, currentScope);
+
+        int id12 = found(id2, currentScope);
+
+        fprintf(assemblyFile, "bne $t%d, $t%d, %s\n", id11, id12, label);
+
+        fclose(assemblyFile);
+}
+
 
 
 

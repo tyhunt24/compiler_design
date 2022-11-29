@@ -1,13 +1,11 @@
-int add(int a, int b) {
-    int z;
+int x;
 
-    z = a + b;
+int y;
 
-    return z;
+x = 5;
+
+y = 4;
+
+if(x < y) {
+    write y;
 }
-
-int v;
-
-v = add(300, 100);
-
-write v;
