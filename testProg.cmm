@@ -8,4 +8,6 @@ y = 4;
 
 if(x < y) {
     write y;
+} else {
+    write x;
 }

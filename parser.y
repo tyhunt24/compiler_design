@@ -22,6 +22,8 @@ char returnName[50];
 
 int inreturn = 0;
 
+int is_else = 0;
+
 char *returnType;
 
 int semanticChecks = 1;
@@ -86,7 +88,7 @@ int semanticChecks = 1;
 
 %%
 Program: DeclList  {$$ = $1;
-                        endMipsFile();
+                    endMipsFile();
                     }
         
 ;
@@ -290,7 +292,9 @@ Expr:   Math {printf("\nRECOGNIZED RULE: Primary Statement\n");
                      moveFunction($2, currentScope);
                      writeValue($2, currentScope);
                      } else {
+                     jumpExit();
                      writeValue($2, currentScope);
+                     
                      }
 
 
@@ -316,6 +320,15 @@ IfExpr: IF OPAREN RelOps CPAREN Block {
 
     // ----- AST ACTIONS ----- //
     $$ = add_tree($1, $3, $5);
+}
+
+|   IF OPAREN RelOps CPAREN Block {
+    MipsCreateLabel(label);
+} ELSE Block {
+    MipsCreateLabel("ElseStmt");
+    jumpLabel("ElseStmt");
+
+    is_else = 1;
 }
 ;
 
@@ -720,7 +733,7 @@ RelOps: Math GTE Math {printf("\nGreater Than\n");
         | Math LTE Math {printf("\nGreater Than\n");
                         // --- Generate IR code --- //
                          bleMips($1->nodeType, $3->nodeType, currentScope, label);
-
+                       
                         // --- AST Actions --- //
                         $$ = add_tree($2, $1, $3);
                         }
@@ -728,7 +741,7 @@ RelOps: Math GTE Math {printf("\nGreater Than\n");
         | Math GT Math {printf("\nGreater Than\n");
                         // --- Generate IR code --- //
                         bgtMips($1->nodeType, $3->nodeType, currentScope, label);
-
+                       
                         // --- AST Actions --- //
                         $$ = add_tree($2, $1, $3);
                         }
@@ -736,7 +749,8 @@ RelOps: Math GTE Math {printf("\nGreater Than\n");
         | Math LT Math {printf("\nGreater Than\n");
                         // --- Generate IR code --- //
                          bltMips($1->nodeType, currentScope, $3->nodeType, label);
-                        
+
+
                         // --- AST Actions --- //
                         $$ = add_tree($2, $1, $3);
                         }
@@ -744,6 +758,7 @@ RelOps: Math GTE Math {printf("\nGreater Than\n");
         | Math EQEQ Math {printf("\nGreater Than\n");
                         // --- Generate IR code --- //
                         beqMips($1->nodeType, currentScope, $3->nodeType, label);
+                        
 
                        // --- AST Actions --- //
                        $$ = add_tree($2, $1, $3);
@@ -752,6 +767,8 @@ RelOps: Math GTE Math {printf("\nGreater Than\n");
         | Math NOTEQ Math {printf("\nGreater Than\n");
                         // --- Generate IR code --- //
                         bneMips($1->nodeType, currentScope, $3->nodeType, label);
+
+
                         // --- AST Actions --- //
                         $$ = add_tree($2, $1, $3);
                         }

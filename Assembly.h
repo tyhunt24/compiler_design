@@ -66,7 +66,7 @@ void writeValue(char *id, char currentScope[50]) {
     fprintf(assemblyFile, "\tli $v0, 1\n");
     fprintf(assemblyFile, "\tmove $a0 $t%d\n", var1);
     fprintf(assemblyFile,"\tsyscall\n");
-
+   // fprintf(assemblyFile, "j Exit");
     //fclose(assemblyFile);
     }
 
@@ -77,6 +77,7 @@ void writeFunction() {
     fprintf(assemblyFile, "li $v0, 1\n");
     fprintf(assemblyFile, "move $a0 $v1\n");
     fprintf(assemblyFile,"syscall\n");
+   // jumpLabel("exit");
 
     fclose(assemblyFile);
 }
@@ -85,11 +86,12 @@ void writeFunction() {
 void endMipsFile() {
     assemblyFile = fopen("compiler.asm", "a");
 
-    fprintf(assemblyFile,"li $v0, 10\n");
-    fprintf(assemblyFile,"syscall\n");
-    fprintf(assemblyFile, ".end main\n");
+    fprintf(assemblyFile, "Exit: \n");
+    fprintf(assemblyFile,"\tli $v0, 10\n");
+    fprintf(assemblyFile,"\tsyscall\n");
+    fprintf(assemblyFile, "\t.end main\n");
 
-    fclose(assemblyFile);
+    //fclose(assemblyFile);
 }
 
 // Use this to create a function in MIPS
@@ -106,6 +108,7 @@ void MipsCreateLabel(char label[50]) {
     
  
     fprintf(assemblyFile, "%s:\n", label);
+
 }
 
 
@@ -245,6 +248,24 @@ void bneMips(char *id1, char *id2, char* currentScope, char *label) {
 
         fclose(assemblyFile);
 }
+
+void jumpLabel(char * label) {
+    assemblyFile = fopen("compiler.asm", "a");
+
+    fprintf(assemblyFile, "j %s\n", label);
+
+    fclose(assemblyFile); 
+}
+
+void jumpExit() {
+    assemblyFile = fopen("compiler.asm", "a");
+
+    fprintf(assemblyFile, "\tj Exit\n");
+
+    //fclose(assemblyFile); 
+}
+
+
 
 
 
