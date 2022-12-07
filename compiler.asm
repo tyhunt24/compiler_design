@@ -1,6 +1,6 @@
 .text
 main:
-li $t1, 3
+li $t1, 9
 li $t2, 4
 blt $t1, $t2, IfStmt
 j ElseStmt
@@ -17,4 +17,3 @@ IfStmt:
 	li $v0, 1
 	move $a0 $t2
 	syscall
-	j Exit

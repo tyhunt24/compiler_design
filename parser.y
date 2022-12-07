@@ -24,6 +24,10 @@ int inreturn = 0;
 
 int is_else = 0;
 
+int in_true = 0;
+
+int in_loop = 0;
+
 char *returnType;
 
 int semanticChecks = 1;
@@ -270,7 +274,7 @@ Expr:   Math {printf("\nRECOGNIZED RULE: Primary Statement\n");
                         printf("\n\n\n\n%s\n\n\n\n", $3->nodeType);
                 
                         // ----- IR code ----- //
-                        loadAddition($1, currentScope);
+                      //  loadAddition($1, currentScope);
 
                     } else {
                         // ----- IR code ----- //
@@ -292,8 +296,17 @@ Expr:   Math {printf("\nRECOGNIZED RULE: Primary Statement\n");
                      moveFunction($2, currentScope);
                      writeValue($2, currentScope);
                      } else {
-                     jumpExit();
-                     writeValue($2, currentScope);
+                     
+                     if(in_true == 1) {
+                        jumpExit();
+                     }
+                     
+                     if (in_loop == 1) {
+                        writeValueInWhile($2, currentScope);
+                     } else {
+                        writeValue($2, currentScope);
+                     }
+                     
                      
                      }
 
@@ -313,30 +326,37 @@ Expr:   Math {printf("\nRECOGNIZED RULE: Primary Statement\n");
 
 ;
 
-IfExpr: IF OPAREN RelOps CPAREN Block {
-    // ----- Generate IR Code -----//
-    // ! Need to Create a label statement here //
-    MipsCreateLabel(label);
+IfExpr: IF OPAREN RelOps CPAREN Block {printf("Entering if statement");
+                                        in_true = 1;
+                                        // ----- Generate IR Code -----//
+                                         // ! Need to Create a label statement here //
+                                        MipsCreateLabel(label);
 
-    // ----- AST ACTIONS ----- //
-    $$ = add_tree($1, $3, $5);
+                                        // ----- AST ACTIONS ----- //
+                                        $$ = add_tree($1, $3, $5);
 }
 
-|   IF OPAREN RelOps CPAREN Block {
-    MipsCreateLabel(label);
-} ELSE Block {
-    MipsCreateLabel("ElseStmt");
-    jumpLabel("ElseStmt");
+|   IF OPAREN RelOps CPAREN Block {printf("Entering in First if statement");
+                                    in_true = 1;
 
-    is_else = 1;
+                                    // --- Create Mips Label --- //
+                                     MipsCreateLabel(label);
+    } 
+    ELSE Block { printf("Entering into an else statement");
+                        // --- Create Mips Label --- //
+                        MipsCreateLabel("ElseStmt");
+                        jumpLabel("ElseStmt");
+
+                        // ! --- Create the AST Tree --- //
 }
 ;
 
-WhileStmt:  WHILE OPAREN RelOps CPAREN Block {printf("\nRecongized Rule: While Statement\n");
+WhileStmt:  WHILE {strcpy(label, "WhileStmt"); whileMipsCreateLabel(label); in_loop = 1;} OPAREN RelOps CPAREN Block {printf("\nRecongized Rule: While Statement\n");  
                                         // --- Generate IR Code --- //
+                                       // jumpLabel(label);
 
                                         // --- AST Tree --- //
-                                        $$ = add_tree($1, $3, $5);
+                                        $$ = add_tree($1, $4, $6);
                                         }
 
 ;
@@ -418,6 +438,12 @@ Math: Math PLUS Math {printf("\nReconiged Rule: Addition Expression\n");
                                 char *val1 = getValue($1->nodeType, currentScope);
                                 int num1 = atoi(val1);
                                 int num3 = atoi($3->nodeType);
+
+                                if (in_loop == 1) {
+                                    increment(); // loop through the statement
+                                    jumpLabel(label);
+                                }
+                                    
 
                                 //add the numbers and add it to first variable
                                 int number = num1 + num3;
@@ -724,7 +750,12 @@ Math: Math PLUS Math {printf("\nReconiged Rule: Addition Expression\n");
 
 RelOps: Math GTE Math {printf("\nGreater Than\n");
                         // --- Generate IR code --- //
-                        bgeMips($1->nodeType, $3->nodeType, currentScope, label);
+                        if (in_loop == 1) {
+                            bleMips($1->nodeType, $3->nodeType, currentScope, "Exit");
+                        } else {
+                            bgeMips($1->nodeType, $3->nodeType, currentScope, label);
+                        }
+                        
 
                         // --- AST Actions --- //
                         $$ = add_tree($2, $1, $3);
@@ -732,7 +763,12 @@ RelOps: Math GTE Math {printf("\nGreater Than\n");
         
         | Math LTE Math {printf("\nGreater Than\n");
                         // --- Generate IR code --- //
-                         bleMips($1->nodeType, $3->nodeType, currentScope, label);
+                        if(in_loop == 1) {
+                            bgeMips($1->nodeType, $3->nodeType, currentScope, "Exit");
+                        } else {
+                              bleMips($1->nodeType, $3->nodeType, currentScope, label);
+                        }
+                       
                        
                         // --- AST Actions --- //
                         $$ = add_tree($2, $1, $3);
@@ -740,7 +776,13 @@ RelOps: Math GTE Math {printf("\nGreater Than\n");
         
         | Math GT Math {printf("\nGreater Than\n");
                         // --- Generate IR code --- //
-                        bgtMips($1->nodeType, $3->nodeType, currentScope, label);
+                        if(in_loop == 1) {
+                            bltMips($1->nodeType, $3->nodeType, currentScope, "Exit");
+                            
+                        } else {
+                            bgtMips($1->nodeType, $3->nodeType, currentScope, label);
+                        }
+                        
                        
                         // --- AST Actions --- //
                         $$ = add_tree($2, $1, $3);
@@ -748,7 +790,12 @@ RelOps: Math GTE Math {printf("\nGreater Than\n");
         
         | Math LT Math {printf("\nGreater Than\n");
                         // --- Generate IR code --- //
-                         bltMips($1->nodeType, currentScope, $3->nodeType, label);
+                        if(in_loop == 1) {
+                            bgtMips($1->nodeType, $3->nodeType, currentScope, "Exit");
+                            printf("this is what the value is\n\n\n%s\n\n\n\n", $1->nodeType);
+                        }else {
+                            bltMips($1->nodeType, currentScope, $3->nodeType, label);
+                        }
 
 
                         // --- AST Actions --- //

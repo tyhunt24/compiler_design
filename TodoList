@@ -1,0 +1,4 @@
+Get the While loop working
+- Need to change the Math statement for when we have while statements
+- Need to get a better understanding of how the while statement works in MIPS
+- Need to build the AST Tree for the if else statement and the while loop

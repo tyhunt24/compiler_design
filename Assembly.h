@@ -53,7 +53,7 @@ void loadAddition(char *id, char currentScope[50]) {
 
     fprintf(assemblyFile, "\tli $t%d, %s\n", var1, value1);
 
-    fclose(assemblyFile);
+    //fclose(assemblyFile);
 }
 
 
@@ -79,7 +79,7 @@ void writeFunction() {
     fprintf(assemblyFile,"syscall\n");
    // jumpLabel("exit");
 
-    fclose(assemblyFile);
+  fclose(assemblyFile);
 }
 
 //This prints what is at the end of the file.
@@ -108,6 +108,8 @@ void MipsCreateLabel(char label[50]) {
     
  
     fprintf(assemblyFile, "%s:\n", label);
+
+    //fclose(assemblyFile);
 
 }
 
@@ -265,9 +267,46 @@ void jumpExit() {
     //fclose(assemblyFile); 
 }
 
+void whileLoop() {
+    assemblyFile = fopen("compiler.asm", "a");
 
+    fprintf(assemblyFile, "addi $t1,$t1,1");
+}
 
+// ! write the same stuff again but use it for a while statement
+// ! I know that is not ideal but I just need to be able to turn something in
 
+// Use this to create a function in MIPS
+void whileMipsCreateLabel(char label[50]) {
+    assemblyFile = fopen("compiler.asm", "a");
+    
+ 
+    fprintf(assemblyFile, "%s:\n", label);
+
+    fclose(assemblyFile);
+}
+
+//Increment up the list
+void increment() {
+        assemblyFile = fopen("compiler.asm", "a");
+    
+    fprintf(assemblyFile, "addi $t1, $t1, 1\n\n");
+
+    fclose(assemblyFile);
+}
+
+//Code to print the value to the screen
+void writeValueInWhile(char *id, char currentScope[50]) {
+    assemblyFile = fopen("compiler.asm", "a");
+
+    int var1 = found(id, currentScope);
+
+    fprintf(assemblyFile, "\tli $v0, 1\n");
+    fprintf(assemblyFile, "\tmove $a0 $t%d\n", var1);
+    fprintf(assemblyFile,"\tsyscall\n");
+   // fprintf(assemblyFile, "j Exit");
+    fclose(assemblyFile);
+    }
 
 
 
