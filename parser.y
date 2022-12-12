@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 
 #include "symbolTable.h"
 #include "symtab.h"
@@ -35,6 +36,8 @@ int semanticChecks = 1;
 //$$ parses the tree back together
 //parser: reads right to left
 //find the first argument and second argument in this statement
+
+clock_t t;
 
 
 /*
@@ -79,6 +82,7 @@ int semanticChecks = 1;
 %token <string> AND
 %token <string> OR
 %token WRITE
+%token WRITEln
 %token RETURN
 
 %printer { fprintf(yyoutput, "%s", $$); } ID;
@@ -93,6 +97,10 @@ int semanticChecks = 1;
 %%
 Program: DeclList  {$$ = $1;
                     endMipsFile();
+                    t = clock() - t;
+                    double time_taken = ((double)t)/CLOCKS_PER_SEC; // in seconds
+ 
+                    printf("Program took %f seconds to execute \n", time_taken);
                     }
         
 ;
@@ -130,7 +138,7 @@ VarDecl:    TYPE ID SEMICOLON {printf("\n RECOGNIZED RULE: VARIABLE DECLERATION\
 
 FunDecl: TYPE ID OPAREN {
                             // ----- Symbol Table ----- //
-                            addItem($2, "func", $1, currentScope);
+                           // addItem($2, "func", $1, currentScope);
 
                             // copy function name to currentscope
                             strcpy(currentScope, $2);
@@ -312,6 +320,10 @@ Expr:   Math {printf("\nRECOGNIZED RULE: Primary Statement\n");
 
 
                 }
+           
+            |   WRITEln {printf("\nRECONGIZED RULE: write ln Statement\n");
+                    writeNewLine();
+                }
 
     |   RETURN ID {printf("\nFunction Found: Return ID\n");
                     // ----- AST actions ----- //
@@ -440,7 +452,7 @@ Math: Math PLUS Math {printf("\nReconiged Rule: Addition Expression\n");
                                 int num3 = atoi($3->nodeType);
 
                                 if (in_loop == 1) {
-                                    increment(); // loop through the statement
+                                    increment($1->nodeType, $3->nodeType, currentScope); // loop through the statement
                                     jumpLabel(label);
                                 }
                                     
@@ -537,6 +549,12 @@ Math: Math PLUS Math {printf("\nReconiged Rule: Addition Expression\n");
                                 //add the numbers and add it to first variable
                                 int number = num1 - num3;
                                 num += number;
+
+                                //decrement inside of the loop
+                                if (in_loop == 1) {
+                                    decrement($1->nodeType, $3->nodeType, currentScope); // loop through the statement
+                                    jumpLabel(label);
+                                }
 
                                 //printf("%d\n\n\n", num);
                             }
@@ -777,7 +795,8 @@ RelOps: Math GTE Math {printf("\nGreater Than\n");
         | Math GT Math {printf("\nGreater Than\n");
                         // --- Generate IR code --- //
                         if(in_loop == 1) {
-                            bltMips($1->nodeType, $3->nodeType, currentScope, "Exit");
+                            bltMips($1->nodeType, currentScope, $3->nodeType, "Exit");
+                            printf("\n\n\n\n\n%s\n\n\n\n\n", $1->nodeType);
                             
                         } else {
                             bgtMips($1->nodeType, $3->nodeType, currentScope, label);
@@ -829,6 +848,9 @@ int main(int argc, char**argv)
 	// #ifdef YYDEBUG
 	// 	yydebug = 1;
 	// #endif
+
+    t = clock();
+
 
 	printf("\n\n##### COMPILER STARTED #####\n\n");
     initIRcodeFile();

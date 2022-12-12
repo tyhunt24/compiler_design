@@ -287,10 +287,23 @@ void whileMipsCreateLabel(char label[50]) {
 }
 
 //Increment up the list
-void increment() {
-        assemblyFile = fopen("compiler.asm", "a");
+void increment(char *id, char *value, char *currentScope) {
+    assemblyFile = fopen("compiler.asm", "a");
+
+    int var1 = found(id, currentScope);
     
-    fprintf(assemblyFile, "addi $t1, $t1, 1\n\n");
+    fprintf(assemblyFile, "add $t%d, $t%d, %s\n\n", var1, var1, value);
+
+    fclose(assemblyFile);
+}
+
+//Decrement in a loop
+void decrement(char *id, char *value, char *currentScope) {
+    assemblyFile = fopen("compiler.asm", "a");
+
+    int var1 = found(id, currentScope);
+    
+    fprintf(assemblyFile, "sub $t%d, $t%d, %s\n\n", var1, var1, value);
 
     fclose(assemblyFile);
 }
@@ -307,6 +320,16 @@ void writeValueInWhile(char *id, char currentScope[50]) {
    // fprintf(assemblyFile, "j Exit");
     fclose(assemblyFile);
     }
+
+void writeNewLine() {
+    assemblyFile = fopen("compiler.asm", "a");
+
+    fprintf(assemblyFile, "addi $a0, $0, 0xA\n");
+    fprintf(assemblyFile, "addi $v0, $0, 0xB\n");
+    fprintf(assemblyFile, "syscall\n");
+
+    fclose(assemblyFile);
+}
 
 
 

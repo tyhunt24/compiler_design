@@ -45,6 +45,13 @@ NUMBER      {digit}+(\.{digit}+)?(E[+\-]?(digit)+)?
          return WRITE;
 		}
 
+"writeln"	{words++; 
+		 chars += strlen(yytext);
+		 printf("%s : KEYWORD\n", yytext);
+         yylval.string = strdup(yytext);
+         return WRITEln;
+		}
+
 "return" {words++; 
 		 chars += strlen(yytext);
 		 printf("%s : KEYWORD\n", yytext);

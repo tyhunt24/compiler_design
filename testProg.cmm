@@ -1,13 +1,13 @@
-int x;
+    int x;
 
-int y;
+    int y;
 
-x = 0;
+    x = 0;
 
-y = 4;
+    y = 10;
 
-if(x < y) {
-    write y;
-} else {
+while(x < y) {
     write x;
-}
+    writeln;
+    x = x + 1;
+    }

@@ -77,7 +77,8 @@ extern int yydebug;
     AND = 283,
     OR = 284,
     WRITE = 285,
-    RETURN = 286
+    WRITEln = 286,
+    RETURN = 287
   };
 #endif
 
@@ -85,14 +86,14 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 47 "parser.y"
+#line 50 "parser.y"
 
     int number;
     char character;
     char* string;
     struct AST* ast;
 
-#line 96 "parser.tab.h"
+#line 97 "parser.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;

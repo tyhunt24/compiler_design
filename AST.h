@@ -74,6 +74,7 @@ struct AST * addTree(char nodeType[50], int isNum) {
 	astTree->isNumber = isNum;
 }
 
+// adds a NodeType as the head then a stree element on the left and right
 struct AST * add_tree(char nodeType[50], struct AST *l, struct AST * r) {
 	struct AST* astTree = malloc(sizeof(struct AST));
 	strcpy(astTree->nodeType, nodeType);
@@ -83,6 +84,7 @@ struct AST * add_tree(char nodeType[50], struct AST *l, struct AST * r) {
 	return astTree;
 }
 
+// Inserts a function into the AST Tree
 struct AST * ast_func(char nodeType[50], char lhs[50], struct AST *r) {
 	struct AST* astTree = malloc(sizeof(struct AST));
 	strcpy(astTree->nodeType, nodeType);
