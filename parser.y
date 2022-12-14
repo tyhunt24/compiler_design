@@ -97,6 +97,8 @@ clock_t t;
 %%
 Program: DeclList  {$$ = $1;
                     endMipsFile();
+
+                    //Clock Execution
                     t = clock() - t;
                     double time_taken = ((double)t)/CLOCKS_PER_SEC; // in seconds
  
@@ -366,7 +368,8 @@ IfExpr: IF OPAREN RelOps CPAREN Block {printf("Entering if statement");
 }   
 ;
 
-WhileStmt:  WHILE {strcpy(label, "WhileStmt"); whileMipsCreateLabel(label); in_loop = 1;} OPAREN RelOps CPAREN Block {printf("\nRecongized Rule: While Statement\n");  
+WhileStmt:  WHILE {strcpy(label, "WhileStmt"); whileMipsCreateLabel(label); in_loop = 1;} 
+OPAREN RelOps CPAREN Block {printf("\nRecongized Rule: While Statement\n");  
                                         // --- Generate IR Code --- //
                                        // jumpLabel(label);
 
