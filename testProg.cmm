@@ -6,8 +6,9 @@
 
     y = 10;
 
-while(x < y) {
+while (x != y) {
     write x;
     writeln;
     x = x + 1;
-    }
+
+}

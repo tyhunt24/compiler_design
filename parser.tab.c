@@ -588,9 +588,9 @@ static const yytype_int16 yyrline[] =
        0,    98,    98,   108,   111,   114,   115,   116,   119,   120,
      123,   135,   139,   139,   157,   158,   161,   162,   165,   173,
      177,   178,   181,   182,   183,   186,   190,   221,   240,   270,
-     272,   298,   324,   328,   341,   351,   351,   366,   366,   376,
-     385,   386,   393,   403,   505,   594,   671,   753,   756,   761,
-     769,   782,   795,   810,   824,   833
+     272,   298,   324,   328,   341,   351,   351,   369,   369,   379,
+     388,   389,   396,   406,   508,   597,   674,   756,   759,   764,
+     773,   787,   801,   816,   831,   841
 };
 #endif
 
@@ -1805,24 +1805,27 @@ yyreduce:
 
   case 36:
 #line 357 "parser.y"
-               { printf("Entering into an else statement");
+               { printf("Entering into an else statement\n");
                         // --- Create Mips Label --- //
                         MipsCreateLabel("ElseStmt");
                         jumpLabel("ElseStmt");
 
                         // ! --- Create the AST Tree --- //
+                        (yyval.ast) = add_tree((yyvsp[-7].string), (yyvsp[-5].ast), (yyvsp[-3].ast));
+                        (yyval.ast) = ast_func("else", (yyvsp[-1].string), (yyvsp[0].ast));
+
 }
-#line 1816 "parser.tab.c"
+#line 1819 "parser.tab.c"
     break;
 
   case 37:
-#line 366 "parser.y"
+#line 369 "parser.y"
                   {strcpy(label, "WhileStmt"); whileMipsCreateLabel(label); in_loop = 1;}
-#line 1822 "parser.tab.c"
+#line 1825 "parser.tab.c"
     break;
 
   case 38:
-#line 366 "parser.y"
+#line 369 "parser.y"
                                                                                                                      {printf("\nRecongized Rule: While Statement\n");  
                                         // --- Generate IR Code --- //
                                        // jumpLabel(label);
@@ -1830,11 +1833,11 @@ yyreduce:
                                         // --- AST Tree --- //
                                         (yyval.ast) = add_tree((yyvsp[-5].string), (yyvsp[-2].ast), (yyvsp[0].ast));
                                         }
-#line 1834 "parser.tab.c"
+#line 1837 "parser.tab.c"
     break;
 
   case 39:
-#line 376 "parser.y"
+#line 379 "parser.y"
                                              {printf("\nBlock Statement\n");
                                                 // ----- AST Actions ----- //
                                                 (yyval.ast) = add_tree("block", (yyvsp[-2].ast), (yyvsp[-1].ast));
@@ -1842,17 +1845,17 @@ yyreduce:
                                                 //currentScope -> Global
                                                 strcpy(currentScope, "global");                                                
                                             }
-#line 1846 "parser.tab.c"
+#line 1849 "parser.tab.c"
     break;
 
   case 40:
-#line 385 "parser.y"
+#line 388 "parser.y"
           {(yyval.ast) = NULL;}
-#line 1852 "parser.tab.c"
+#line 1855 "parser.tab.c"
     break;
 
   case 41:
-#line 386 "parser.y"
+#line 389 "parser.y"
                {
             // ----- IR Code ----- //
             paramMips((yyvsp[0].ast)->nodeType); // Gives us the value in here
@@ -1860,11 +1863,11 @@ yyreduce:
             // ----- AST Tree -----//
             (yyval.ast) = add_tree("Call", (yyvsp[0].ast), NULL);
         }
-#line 1864 "parser.tab.c"
+#line 1867 "parser.tab.c"
     break;
 
   case 42:
-#line 393 "parser.y"
+#line 396 "parser.y"
                               {
            
             // ----- IR Code ----- //
@@ -1873,11 +1876,11 @@ yyreduce:
             // ----- AST Tree ----- //
             (yyval.ast) = add_tree("Call", (yyvsp[-2].ast), (yyvsp[0].ast));
         }
-#line 1877 "parser.tab.c"
+#line 1880 "parser.tab.c"
     break;
 
   case 43:
-#line 403 "parser.y"
+#line 406 "parser.y"
                      {printf("\nReconiged Rule: Addition Expression\n");
                                 
                             //intialize a number to 0
@@ -1980,11 +1983,11 @@ yyreduce:
 
                             }
                     }
-#line 1984 "parser.tab.c"
+#line 1987 "parser.tab.c"
     break;
 
   case 44:
-#line 505 "parser.y"
+#line 508 "parser.y"
                           {printf("\nReconiged Rule: Subtraction Expression Expression\n");
                             //intialize a number to 0
                             int num = 0;
@@ -2073,11 +2076,11 @@ yyreduce:
                             }
 
                             }
-#line 2077 "parser.tab.c"
+#line 2080 "parser.tab.c"
     break;
 
   case 45:
-#line 594 "parser.y"
+#line 597 "parser.y"
                              {printf("\nReconiged Rule: Addition Expression\n");
                             //intialize a number to 0
                             int num = 0;
@@ -2154,11 +2157,11 @@ yyreduce:
                                 }
                             }
                             }
-#line 2158 "parser.tab.c"
+#line 2161 "parser.tab.c"
     break;
 
   case 46:
-#line 671 "parser.y"
+#line 674 "parser.y"
                            {printf("\nReconiged Rule: Addition Expression\n");
                             //intialize a number to 0
                             int num = 0;
@@ -2240,38 +2243,38 @@ yyreduce:
                                 }
                             }
                             }
-#line 2244 "parser.tab.c"
+#line 2247 "parser.tab.c"
     break;
 
   case 47:
-#line 753 "parser.y"
+#line 756 "parser.y"
                              {
             (yyval.ast) = (yyvsp[-1].ast);
         }
-#line 2252 "parser.tab.c"
+#line 2255 "parser.tab.c"
     break;
 
   case 48:
-#line 756 "parser.y"
+#line 759 "parser.y"
              {printf("\n ID\n");
                 printf("\n\n\n\n%s\n\n\n\n", (yyvsp[0].string));
                 (yyval.ast) = addTree((yyvsp[0].string), 0);
             }
-#line 2261 "parser.tab.c"
+#line 2264 "parser.tab.c"
     break;
 
   case 49:
-#line 761 "parser.y"
+#line 764 "parser.y"
                  {printf("\n In Number\n");
                     char str[50];
                     sprintf(str, "%d", (yyvsp[0].number));
                     (yyval.ast) =addTree(str, 1);
                     }
-#line 2271 "parser.tab.c"
+#line 2274 "parser.tab.c"
     break;
 
   case 50:
-#line 769 "parser.y"
+#line 773 "parser.y"
                       {printf("\nGreater Than\n");
                         // --- Generate IR code --- //
                         if (in_loop == 1) {
@@ -2284,11 +2287,11 @@ yyreduce:
                         // --- AST Actions --- //
                         (yyval.ast) = add_tree((yyvsp[-1].string), (yyvsp[-2].ast), (yyvsp[0].ast));
                         }
-#line 2288 "parser.tab.c"
+#line 2291 "parser.tab.c"
     break;
 
   case 51:
-#line 782 "parser.y"
+#line 787 "parser.y"
                         {printf("\nGreater Than\n");
                         // --- Generate IR code --- //
                         if(in_loop == 1) {
@@ -2301,11 +2304,11 @@ yyreduce:
                         // --- AST Actions --- //
                         (yyval.ast) = add_tree((yyvsp[-1].string), (yyvsp[-2].ast), (yyvsp[0].ast));
                         }
-#line 2305 "parser.tab.c"
+#line 2308 "parser.tab.c"
     break;
 
   case 52:
-#line 795 "parser.y"
+#line 801 "parser.y"
                        {printf("\nGreater Than\n");
                         // --- Generate IR code --- //
                         if(in_loop == 1) {
@@ -2320,11 +2323,11 @@ yyreduce:
                         // --- AST Actions --- //
                         (yyval.ast) = add_tree((yyvsp[-1].string), (yyvsp[-2].ast), (yyvsp[0].ast));
                         }
-#line 2324 "parser.tab.c"
+#line 2327 "parser.tab.c"
     break;
 
   case 53:
-#line 810 "parser.y"
+#line 816 "parser.y"
                        {printf("\nGreater Than\n");
                         // --- Generate IR code --- //
                         if(in_loop == 1) {
@@ -2338,37 +2341,42 @@ yyreduce:
                         // --- AST Actions --- //
                         (yyval.ast) = add_tree((yyvsp[-1].string), (yyvsp[-2].ast), (yyvsp[0].ast));
                         }
-#line 2342 "parser.tab.c"
+#line 2345 "parser.tab.c"
     break;
 
   case 54:
-#line 824 "parser.y"
+#line 831 "parser.y"
                          {printf("\nGreater Than\n");
                         // --- Generate IR code --- //
-                        beqMips((yyvsp[-2].ast)->nodeType, currentScope, (yyvsp[0].ast)->nodeType, label);
+                        beqMips((yyvsp[-2].ast)->nodeType, (yyvsp[0].ast)->nodeType, currentScope, label);
                         
 
                        // --- AST Actions --- //
                        (yyval.ast) = add_tree((yyvsp[-1].string), (yyvsp[-2].ast), (yyvsp[0].ast));
                         }
-#line 2355 "parser.tab.c"
+#line 2358 "parser.tab.c"
     break;
 
   case 55:
-#line 833 "parser.y"
+#line 841 "parser.y"
                           {printf("\nGreater Than\n");
                         // --- Generate IR code --- //
-                        bneMips((yyvsp[-2].ast)->nodeType, currentScope, (yyvsp[0].ast)->nodeType, label);
+                        if(in_loop == 1) {
+                            bgtMips((yyvsp[-2].ast)->nodeType, (yyvsp[0].ast)->nodeType, currentScope, "Exit");
+                        } else {
+                            bneMips((yyvsp[-2].ast)->nodeType, (yyvsp[0].ast)->nodeType, currentScope, label);
+                        }
+                        
 
 
                         // --- AST Actions --- //
                         (yyval.ast) = add_tree((yyvsp[-1].string), (yyvsp[-2].ast), (yyvsp[0].ast));
                         }
-#line 2368 "parser.tab.c"
+#line 2376 "parser.tab.c"
     break;
 
 
-#line 2372 "parser.tab.c"
+#line 2380 "parser.tab.c"
 
       default: break;
     }
@@ -2600,7 +2608,7 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 844 "parser.y"
+#line 857 "parser.y"
 
 
 int main(int argc, char**argv)

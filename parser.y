@@ -354,13 +354,16 @@ IfExpr: IF OPAREN RelOps CPAREN Block {printf("Entering if statement");
                                     // --- Create Mips Label --- //
                                      MipsCreateLabel(label);
     } 
-    ELSE Block { printf("Entering into an else statement");
+    ELSE Block { printf("Entering into an else statement\n");
                         // --- Create Mips Label --- //
                         MipsCreateLabel("ElseStmt");
                         jumpLabel("ElseStmt");
 
                         // ! --- Create the AST Tree --- //
-}
+                        $$ = add_tree($1, $3, $5);
+                        $$ = ast_func("else", $7, $8);
+
+}   
 ;
 
 WhileStmt:  WHILE {strcpy(label, "WhileStmt"); whileMipsCreateLabel(label); in_loop = 1;} OPAREN RelOps CPAREN Block {printf("\nRecongized Rule: While Statement\n");  
@@ -766,6 +769,7 @@ Math: Math PLUS Math {printf("\nReconiged Rule: Addition Expression\n");
 
 ;
 
+//Greater then or Equal too
 RelOps: Math GTE Math {printf("\nGreater Than\n");
                         // --- Generate IR code --- //
                         if (in_loop == 1) {
@@ -779,6 +783,7 @@ RelOps: Math GTE Math {printf("\nGreater Than\n");
                         $$ = add_tree($2, $1, $3);
                         }
         
+        // Less than or equal to
         | Math LTE Math {printf("\nGreater Than\n");
                         // --- Generate IR code --- //
                         if(in_loop == 1) {
@@ -791,7 +796,8 @@ RelOps: Math GTE Math {printf("\nGreater Than\n");
                         // --- AST Actions --- //
                         $$ = add_tree($2, $1, $3);
                         }
-        
+
+        // Greater than
         | Math GT Math {printf("\nGreater Than\n");
                         // --- Generate IR code --- //
                         if(in_loop == 1) {
@@ -806,7 +812,7 @@ RelOps: Math GTE Math {printf("\nGreater Than\n");
                         // --- AST Actions --- //
                         $$ = add_tree($2, $1, $3);
                         }
-        
+            // Less than
         | Math LT Math {printf("\nGreater Than\n");
                         // --- Generate IR code --- //
                         if(in_loop == 1) {
@@ -820,19 +826,26 @@ RelOps: Math GTE Math {printf("\nGreater Than\n");
                         // --- AST Actions --- //
                         $$ = add_tree($2, $1, $3);
                         }
-        
+
+          //equal equal
         | Math EQEQ Math {printf("\nGreater Than\n");
                         // --- Generate IR code --- //
-                        beqMips($1->nodeType, currentScope, $3->nodeType, label);
+                        beqMips($1->nodeType, $3->nodeType, currentScope, label);
                         
 
                        // --- AST Actions --- //
                        $$ = add_tree($2, $1, $3);
                         }
 
+         // Not equal
         | Math NOTEQ Math {printf("\nGreater Than\n");
                         // --- Generate IR code --- //
-                        bneMips($1->nodeType, currentScope, $3->nodeType, label);
+                        if(in_loop == 1) {
+                            bgtMips($1->nodeType, $3->nodeType, currentScope, "Exit");
+                        } else {
+                            bneMips($1->nodeType, $3->nodeType, currentScope, label);
+                        }
+                        
 
 
                         // --- AST Actions --- //
